@@ -1,6 +1,6 @@
-import { Command, Commands } from './commands';
+import commands, { Command, Commands } from './commands';
 
-export default new Commands()
+commands
     .register(new Command('addctf',
         async args => {})
         .description('Add a new ctf')

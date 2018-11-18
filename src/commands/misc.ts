@@ -1,6 +1,6 @@
-import { Command, Commands } from './commands';
+import commands, { Command, Commands } from './commands';
 
-export default new Commands()
+commands
     .register(new Command('ping',
         async args => {
             await args.msg.channel.send('pong'); })

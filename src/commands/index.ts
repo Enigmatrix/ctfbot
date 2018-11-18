@@ -1,5 +1,5 @@
-import { Commands } from './commands';
-import misc from './misc';
-import ctf from './ctf';
+import commands from './commands';
+import './misc';
+import './ctf';
 
-export default new Commands(misc, ctf);
+export default commands;

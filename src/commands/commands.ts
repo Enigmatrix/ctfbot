@@ -28,24 +28,15 @@ export class Command {
 export class Commands {
     private commandMap: Map<string, Command>;
 
-    constructor(...cmds: Commands[]){
+    constructor(){
         this.commandMap = new Map<string, Command>();
-        cmds.forEach(x => {
-            this.merge(x);
-        });
     }
 
     register(cmd: Command): Commands{
         this.commandMap.set(cmd.name, cmd);
         return this;
     }
-
-    merge(other: Commands){
-        other.commandMap.forEach(cmd => {
-            this.register(cmd);
-        });
-        return this;
-    }
+    
 
     run(name: string, runArgs: RunArgs){
         let command = this.commandMap.get(name);
@@ -58,3 +49,5 @@ export class Commands {
             .catch(e => logger.error(`Unexpected error while running ${name}`, e));
     }
 }
+
+export default new Commands();
