@@ -1,11 +1,12 @@
 import { Client } from 'discord.js';
 import logger from './logger';
-import commands from './commands';
+import commands from './commands/index';
 
 const bot = new Client();
 bot.on("ready", () => {
     logger.info('CTFBot Ready');
 });
+
 bot.on('message', msg => {
     if(msg.content[0] !== "!") return;
 

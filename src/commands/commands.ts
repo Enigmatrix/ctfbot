@@ -1,14 +1,13 @@
-import logger from './logger';
+import logger from '../logger';
 import { Message } from 'discord.js';
-import { stringify } from 'querystring';
 
-declare type RunArgs= { args: string[], msg: Message};
-declare type RunMethod = (a:RunArgs) => Promise<void>
+declare type RunArgs = { args: string[], msg: Message };
+declare type RunMethod = (a: RunArgs) => Promise<void>
 
 export class Command {
     public name: string;
-    public _description: string | undefined;
-    public _usage: string | undefined;
+    public _description?: string;
+    public _usage?: string;
     public run: RunMethod;
 
     constructor(name: string, run: RunMethod){
@@ -26,15 +25,25 @@ export class Command {
     }
 }
 
-class Commands {
+export class Commands {
     private commandMap: Map<string, Command>;
 
-    constructor(){
+    constructor(...cmds: Commands[]){
         this.commandMap = new Map<string, Command>();
+        cmds.forEach(x => {
+            this.merge(x);
+        });
     }
 
     register(cmd: Command): Commands{
         this.commandMap.set(cmd.name, cmd);
+        return this;
+    }
+
+    merge(other: Commands){
+        other.commandMap.forEach(cmd => {
+            this.register(cmd);
+        });
         return this;
     }
 
@@ -49,5 +58,3 @@ class Commands {
             .catch(e => logger.error(`Unexpected error while running ${name}`, e));
     }
 }
-
-export default new Commands();
