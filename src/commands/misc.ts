@@ -9,8 +9,7 @@ commands
     .register(new Command('ping',
         async args => {
             await args.msg.channel.send('pong'); })
-        .description('Simple Ping reply')
-        .usage("!ping"))
+        .description('Simple Ping reply'))
     .register(new Command('status', async args => {
         let {channel} = args.msg;
         let uptime = process.uptime()
@@ -31,6 +30,40 @@ commands
                 `**Jobs**:\n`+jobs.map(x => 
                     `_${formatNiceSGT(x.attrs.nextRunAt)}_:\n${x.attrs.name}`).join('\n\n')
         }));
-        
+    })
+        .description('Show status message'))
+    .register(new Command('help',
+        async args => {
+            if(args.args[0] === undefined)
+                args.msg.channel.send(new RichEmbed({
+                    title: ':question: Help',
+                    color: 0x00e676,
+                    fields: Array.from(commands.commandMap.entries())
+                        .map(([key,cmd]) => { return {
+                            name: key,
+                            value: `**${cmd._usage}**\n${cmd._description}`
+                        }})
+                }));
+            else if(commands.commandMap.has(args.args[0])){
+                let cmd = commands.commandMap.get(args.args[0]);
+                if(!cmd)return;
+                args.msg.channel.send(new RichEmbed({
+                    title: ':question: Help for '+args.args,
+                    color: 0x00e676,
+                    fields: [{
+                        name: args.args[0],
+                        value: `**${cmd._usage}**\n${cmd._description}`
+                    }]
+                }));
+            }
+            else{
+                args.msg.channel.send(new RichEmbed({
+                    title: ':question: Command not found',
+                    color: 0xff1744
+                }));
+            }
 
-    }));
+
+        })
+        .usage('!help\n!help <cmd>')
+        .description('Print this help message'));

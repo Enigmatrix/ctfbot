@@ -2,17 +2,19 @@ import logger from '../logger';
 import { Message } from 'discord.js';
 
 declare type RunArgs = { args: string[], msg: Message };
-declare type RunMethod = (a: RunArgs) => Promise<void>
+declare type CmdRunArgs = { args: string[], msg: Message, cmd: Command };
+declare type RunMethod = (a: CmdRunArgs) => Promise<void>
 
 export class Command {
     public name: string;
     public _description?: string;
-    public _usage?: string;
+    public _usage: string;
     public run: RunMethod;
 
     constructor(name: string, run: RunMethod){
         this.name = name;
         this.run = run;
+        this._usage = "!"+name
     }
 
     description(description: string){
@@ -26,7 +28,7 @@ export class Command {
 }
 
 export class Commands {
-    private commandMap: Map<string, Command>;
+    public commandMap: Map<string, Command>;
 
     constructor(){
         this.commandMap = new Map<string, Command>();
@@ -36,7 +38,6 @@ export class Commands {
         this.commandMap.set(cmd.name, cmd);
         return this;
     }
-    
 
     run(name: string, runArgs: RunArgs){
         let command = this.commandMap.get(name);
@@ -45,7 +46,7 @@ export class Commands {
             return;
         }
         logger.info(`Running command ${name} (${runArgs.msg.content})`);
-        command.run(runArgs)
+        command.run({cmd: command, ...runArgs})
             .catch(e => {
                 logger.error(`Unexpected error while running ${name}`, e);
                 console.error(e);

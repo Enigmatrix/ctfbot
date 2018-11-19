@@ -68,7 +68,7 @@ commands
             let ctftimeUrl = args.args[0];
             let {guild, channel} = args.msg;
             if(!ctftimeUrl || !isCtfTimeUrl(ctftimeUrl)){
-                await channel.send('Usage: !addctf <ctftime_url> ');
+                await channel.send(args.cmd._usage);
                 return;
             }
             let ctftimeEvent = await getCtftimeEvent(ctftimeUrl);
@@ -79,7 +79,7 @@ commands
             }
             let newChannel = await guild.createChannel(ctftimeEvent.title, "text") as TextChannel;
             await newChannel.setParent(ctfs);
-            newChannel.setTopic('SEE :pushpin FOR INFO');
+            newChannel.setTopic('SEE :pushpin: FOR INFO');
         
             let board = await trello.board.create({
                 name: ctftimeEvent.title,
@@ -142,7 +142,8 @@ commands
             let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
             await mainMessage.edit(new RichEmbed(copy));
         })
-        .usage('!addcreds field1=value1 field2=value2'))
+        .usage('!addcreds field1=value1 field2=value2')
+        .description('Adds credentials to the pinned CTFBot message.'))
     .register(new Command('rmvcreds',
         async args => {
             let result = await findCredentialsEmbed(args.msg);
@@ -163,7 +164,9 @@ commands
             let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
             await mainMessage.edit(new RichEmbed(copy));
         })
-        .usage('!rmvcreds field1 field2'))
+        .usage('!rmvcreds field1 field2')
+        .description('Removes credentials from the pinned CTFBot message.'))
     .register(new Command('addchallenge',
         async args => {})
+        .usage('!addchallenge <challenge_name> <category>')
         .description("Add a new challenge for the current ctf"));
