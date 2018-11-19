@@ -45,8 +45,8 @@ declare module CtfTime {
 
 
 export const getCtftimeEvent = async (ctftimeUrl: string) => {
-    const segments = ctftimeUrl.split('/');
+    const segments = ctftimeUrl.split('event/');
     let response = await axios.request<CtfTime.Event>({
-        url: `https://ctftime.org/api/v1/events/${segments[segments.length-1]}/`});
+        url: `https://ctftime.org/api/v1/events/${segments[segments.length-1]}`});
     return response.data;
 };
