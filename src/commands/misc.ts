@@ -1,4 +1,4 @@
-import commands, { Command, Commands } from './commands';
+import commands, { Command } from './commands';
 
 commands
     .register(new Command('ping',

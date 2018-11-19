@@ -46,7 +46,10 @@ export class Commands {
         }
         logger.info(`Running command ${name} (${runArgs.msg.content})`);
         command.run(runArgs)
-            .catch(e => logger.error(`Unexpected error while running ${name}`, e));
+            .catch(e => {
+                logger.error(`Unexpected error while running ${name}`, e);
+                console.error(e);
+            });
     }
 }
 
