@@ -1,32 +1,17 @@
 import commands, { Command } from './commands';
 import trello from '../trello';
-import { TextChannel, RichEmbed, Message } from 'discord.js';
+import { TextChannel, RichEmbed, Message, RichEmbedOptions } from 'discord.js';
 import { isCtfTimeUrl, getCtftimeEvent } from '../ctftime';
 import moment from 'moment';
 import { formatNiceSGT } from '../util';
+import logger from '../logger';
 
 // get upcoming list of ctf
 
 // add ctf -> create trello board, get link to ctf, organize username, password, group name?
+const NoCreds = 'None. Use `!addcreds field1=value1 field2=value2`to add credentials';
 
 commands
-    .register(new Command('richembedtest', async args => {
-            await args.msg.channel.send(new RichEmbed({
-                color: 0x1e88e5,
-                fields: [
-                    {
-                        name: 'Trello',
-                        value: 'wew',
-                        inline: true
-                    },{name: 'User', value: 'rgtrtg', inline: true}],
-                author: {
-                    name: 'Information for ',
-                    icon_url: 'https://ctftime.org/media/cache/8d/6e/8d6e60dd2949a3603f597caab9faa45f.png'
-                }
-
-            }));
-
-    }))
     .register(new Command('addctf',
         async args => {
             let ctftimeUrl = args.args[0];
@@ -75,7 +60,7 @@ commands
                     },
                     {
                         name: 'Credentials',
-                        value: 'None. Use `!addcreds field1=value1 field2=value2`to add credentials',
+                        value: NoCreds,
                     }],
                 url: ctftimeEvent.url,
                 footer: {
@@ -92,6 +77,36 @@ commands
         })
         .description('Add a new ctf')
         .usage("!addctf <ctftime_url>"))
+    .register(new Command('addcreds',
+        async args => {
+            let channel = args.msg.channel as TextChannel;
+            let setFields = args.args.map(x => x.split("=")).filter(x => x.length===2);
+            if(channel.parent.name !== "CTFs"){
+                channel.send("!addcreds can only be used in a CTF channel");
+                return;
+            }
+            let pinned = await channel.fetchPinnedMessages();
+            let mainMessage = pinned.size === 0 ? undefined : pinned.first();
+            if(!mainMessage || mainMessage.author.id !== args.msg.client.user.id || mainMessage.embeds.length === 0){
+                channel.send("!addcreds can only be used in a CTF channel");
+                return;
+            }
+            let embed = mainMessage.embeds[0];
+            let creds = embed.fields.find(x => x.name === 'Credentials');
+            if(!creds){
+                logger.error('Credentials not found on pinned CTF message');
+                return;
+            }
+
+            if(creds.value === NoCreds){
+                creds.value = "";
+            }
+            creds.value += '\n'+setFields.map(x => `**__${x[0]}__**: ${x[1]}`).join('\n');
+            let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
+            await mainMessage.edit(new RichEmbed(copy));
+
+        })
+        .usage('!addcreds field1=value1 field2=value2'))
     .register(new Command('addchallenge',
         async args => {})
         .description("Add a new challenge for the current ctf"))
