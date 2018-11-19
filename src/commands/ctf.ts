@@ -1,8 +1,7 @@
 import commands, { Command } from './commands';
 import trello from '../trello';
-import { TextChannel, RichEmbed, Message, RichEmbedOptions } from 'discord.js';
+import { TextChannel, RichEmbed, Message, RichEmbedOptions, MessageEmbed, MessageEmbedField } from 'discord.js';
 import { isCtfTimeUrl, getCtftimeEvent } from '../ctftime';
-import moment from 'moment';
 import { formatNiceSGT } from '../util';
 import logger from '../logger';
 
@@ -10,6 +9,56 @@ import logger from '../logger';
 
 // add ctf -> create trello board, get link to ctf, organize username, password, group name?
 const NoCreds = 'None. Use `!addcreds field1=value1 field2=value2`to add credentials';
+
+let findCredentialsEmbed = async (msg: Message): Promise<undefined | [Message, MessageEmbed, MessageEmbedField]> => {
+    let channel = msg.channel as TextChannel;
+    if(channel.parent.name !== "CTFs"){
+        channel.send("!addcreds can only be used in a CTF channel");
+        return;
+    }
+    let pinned = await channel.fetchPinnedMessages();
+    let mainMessage = pinned.size === 0 ? undefined : pinned.first();
+    if(!mainMessage || mainMessage.author.id !== msg.client.user.id || mainMessage.embeds.length === 0){
+        channel.send("!addcreds can only be used in a CTF channel");
+        return;
+    }
+    let embed = mainMessage.embeds[0];
+    let creds = embed.fields.find(x => x.name === 'Credentials');
+    if(!creds){
+        logger.error('Credentials not found on pinned CTF message');
+        return;
+    }
+    return [mainMessage, embed, creds];
+}
+
+class Credentials {
+    private credMap: Map<string, string>;
+
+    constructor(value: string){
+        this.credMap = new Map<string, string>();
+        if(value === NoCreds)
+            value = "";
+        let stuff = value.split('```').filter(x => x !== '\n' && x !== '');
+        for(let s of stuff){
+            let [key, val] = s.split(" : ");
+            this.credMap.set(key.substr(1), val.substr(0, val.length-1));
+        }
+    }
+
+    add(key: string, value: string){
+        this.credMap.set(key, value);
+    }
+
+    rmv(key: string){
+        this.credMap.delete(key);
+    }
+
+    toString(){
+        return this.credMap.size === 0 ? NoCreds :
+            Array.from(this.credMap.entries()).map(x => "```"+` ${x[0]} : ${x[1]} `+"```").join('')
+    }
+}
+
 
 commands
     .register(new Command('addctf',
@@ -79,34 +128,48 @@ commands
         .usage("!addctf <ctftime_url>"))
     .register(new Command('addcreds',
         async args => {
-            let channel = args.msg.channel as TextChannel;
-            let setFields = args.args.map(x => x.split("=")).filter(x => x.length===2);
-            if(channel.parent.name !== "CTFs"){
-                channel.send("!addcreds can only be used in a CTF channel");
-                return;
-            }
-            let pinned = await channel.fetchPinnedMessages();
-            let mainMessage = pinned.size === 0 ? undefined : pinned.first();
-            if(!mainMessage || mainMessage.author.id !== args.msg.client.user.id || mainMessage.embeds.length === 0){
-                channel.send("!addcreds can only be used in a CTF channel");
-                return;
-            }
-            let embed = mainMessage.embeds[0];
-            let creds = embed.fields.find(x => x.name === 'Credentials');
-            if(!creds){
-                logger.error('Credentials not found on pinned CTF message');
-                return;
-            }
+            let setFields = args.args.map(x => x.split("="))
+                .filter(x => x.length===2)
+                .filter(x => x[0].indexOf("```") === -1 && x[1].indexOf("```") === -1);
+
+            let result = await findCredentialsEmbed(args.msg);
+            if(!result) return;
+            let [mainMessage, embed, creds] = result;
 
             if(creds.value === NoCreds){
                 creds.value = "";
             }
-            creds.value += '\n'+setFields.map(x => `**__${x[0]}__**: ${x[1]}`).join('\n');
+            let credentials = new Credentials(creds.value);
+            setFields.forEach(([key, val]) => {
+                credentials.add(key, val);
+            });
+            creds.value = credentials.toString();
+
             let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
             await mainMessage.edit(new RichEmbed(copy));
-
         })
         .usage('!addcreds field1=value1 field2=value2'))
+    .register(new Command('rmvcreds',
+        async args => {
+            let result = await findCredentialsEmbed(args.msg);
+            if(!result) return;
+            let [mainMessage, embed, creds] = result;
+
+            if(creds.value === NoCreds) return;
+            let credMap = creds.value.split('\n').map(x => x.split(' : '));
+            args.args.forEach(name =>{
+                let c = credMap.findIndex(x => x[0].substring(5, x[0].length-4) === name);
+                if(!c) return;
+                credMap.splice(c, 1);
+            });
+            let credentials = new Credentials(creds.value);
+            args.args.forEach(x => credentials.rmv(x));
+            creds.value = credentials.toString();
+
+            let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
+            await mainMessage.edit(new RichEmbed(copy));
+        })
+        .usage('!rmvcreds field1 field2'))
     .register(new Command('addchallenge',
         async args => {})
         .description("Add a new challenge for the current ctf"))
