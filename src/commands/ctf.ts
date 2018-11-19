@@ -4,6 +4,8 @@ import { TextChannel, RichEmbed, Message, RichEmbedOptions, MessageEmbed, Messag
 import { isCtfTimeUrl, getCtftimeEvent } from '../ctftime';
 import { formatNiceSGT } from '../util';
 import logger from '../logger';
+import agenda, { NOTIFY_CTF_REACTORS } from '../agenda';
+import moment = require('moment');
 
 // get upcoming list of ctf
 
@@ -77,6 +79,7 @@ commands
             }
             let newChannel = await guild.createChannel(ctftimeEvent.title, "text") as TextChannel;
             await newChannel.setParent(ctfs);
+            newChannel.setTopic('SEE :pushpin FOR INFO');
         
             let board = await trello.board.create({
                 name: ctftimeEvent.title,
@@ -95,22 +98,10 @@ commands
                 },
                 description: ctftimeEvent.description,
                 fields: [
-                    {
-                        name: 'Url',
-                        value: ctftimeEvent.url
-                    },
-                    {
-                        name: 'Trello',
-                        value: board.shortUrl,
-                    },
-                    {
-                        name: 'Timing',
-                        value: `${formatNiceSGT(ctftimeEvent.start)} - ${formatNiceSGT(ctftimeEvent.finish)}`
-                    },
-                    {
-                        name: 'Credentials',
-                        value: NoCreds,
-                    }],
+                    { name: 'Url', value: ctftimeEvent.url },
+                    { name: 'Trello', value: board.shortUrl },
+                    { name: 'Timing', value: `${formatNiceSGT(ctftimeEvent.start)} - ${formatNiceSGT(ctftimeEvent.finish)}` },
+                    { name: 'Credentials', value: NoCreds }],
                 url: ctftimeEvent.url,
                 footer: {
                     text: `Hosted by ${ctftimeEvent.organizers.map(x => x.name).join(', ')}. React with 👌 to get a DM 1hr before the CTF starts`
@@ -122,7 +113,10 @@ commands
             }
             await messages[messages.length-1].react('👌');
 
-            //signal watching :ok_hand:
+            await agenda.schedule(
+                moment(ctftimeEvent.start).subtract(moment.duration(1, 'hour')).toDate(),
+                NOTIFY_CTF_REACTORS, {messageId: messages[messages.length-1].id, channelId: newChannel.id, ctftimeEvent })
+            
         })
         .description('Add a new ctf')
         .usage("!addctf <ctftime_url>"))

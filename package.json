@@ -26,8 +26,10 @@
   },
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "dependencies": {
+    "@types/agenda": "^2.0.4",
     "@types/moment-timezone": "^0.5.9",
     "@types/node": "^10.12.9",
+    "agenda": "^2.0.2",
     "axios": "^0.18.0",
     "discord.js": "^11.4.2",
     "moment": "^2.22.2",
