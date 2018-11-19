@@ -172,4 +172,4 @@ commands
         .usage('!rmvcreds field1 field2'))
     .register(new Command('addchallenge',
         async args => {})
-        .description("Add a new challenge for the current ctf"))
+        .description("Add a new challenge for the current ctf"));
