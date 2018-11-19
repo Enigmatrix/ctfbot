@@ -8,7 +8,7 @@ bot.on("ready", () => {
 });
 
 bot.on('message', msg => {
-    if(msg.content[0] !== "!") return;
+    if(msg.content[0] !== "!" || msg.author.id === bot.user.id) return;
 
     let [cmd, ...args] = msg.content.substr(1).split(' ');
     commands.run(cmd, { args, msg });

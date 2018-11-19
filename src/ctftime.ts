@@ -1,7 +1,7 @@
 import axios from 'axios';
 import logger from './logger';
 export function isCtfTimeUrl(s: string){
-    return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+$/.test(s);
+    return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
 }
 
 declare module CtfTime {
