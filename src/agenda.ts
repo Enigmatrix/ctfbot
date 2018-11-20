@@ -39,7 +39,7 @@ agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
 agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
     try{
         let channel =
-            (bot.guilds.first().channels.find(x => x.id === job.attrs.data.channelId) ||
+            (bot.guilds.first().channels.find(x => job.attrs.data ? x.id === job.attrs.data.channelId : false) ||
             bot.guilds.first().channels.find(x => x.name === "upcoming")) as TextChannel;
 
         let ctftimeEvents = await weeklyCtftimeEvents();
@@ -79,8 +79,10 @@ agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
         console.error(e);
     }
 });
-agenda.on('ready', () => {
-    agenda.every('sunday at 3.00 pm', NOTIFY_UPCOMING_CTF, {}, {skipImmediate: true});
+agenda.on('ready', async () => {
+    await agenda.create(NOTIFY_UPCOMING_CTF)
+        .repeatAt('sunday at 6pm')
+        .save();
 })
 
 export default agenda.on('error', (e) => logger.error('Error from agenda', e));
