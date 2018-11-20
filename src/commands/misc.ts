@@ -1,11 +1,17 @@
 import commands, { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import { Message, RichEmbed } from 'discord.js';
 import moment from 'moment';
-import agenda from '../agenda';
+import agenda, { NOTIFY_UPCOMING_CTF } from '../agenda';
 import { formatNiceSGT } from '../util';
 
 @Group('Miscellaneous')
 class Misc extends CommandGroup {
+
+    /*
+    @Command({})
+    async testupcoming(args: CmdRunArgs){
+        await agenda.now(NOTIFY_UPCOMING_CTF, { channelId: args.msg.channel.id });
+    }*/
 
     @Command({
         desc: 'Simple ping reply'

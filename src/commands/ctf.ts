@@ -52,7 +52,7 @@ class Ctf extends CommandGroup {
             },
             description: ctftimeEvent.description,
             fields: [
-                { name: 'Url', value: ctftimeEvent.url },
+                { name: 'URL', value: ctftimeEvent.url },
                 { name: 'Trello', value: board.shortUrl },
                 { name: 'Timing', value: `${formatNiceSGT(ctftimeEvent.start)} - ${formatNiceSGT(ctftimeEvent.finish)}` },
                 { name: 'Credentials', value: Ctf.NoCreds }],

@@ -50,3 +50,16 @@ export const getCtftimeEvent = async (ctftimeUrl: string) => {
         url: `https://ctftime.org/api/v1/events/${segments[segments.length-1]}`});
     return response.data;
 };
+
+export const weeklyCtftimeEvents = async () => {
+    const start = Math.floor(Date.now()/1000);
+    const finish = start + 24*7*60*60;
+    let response = await axios.request<CtfTime.Event[]>({
+        url: `https://ctftime.org/api/v1/events/`,
+        params:{
+            limit: 100,
+            start, finish
+        }
+    });
+    return response.data;
+}
