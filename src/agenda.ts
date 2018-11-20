@@ -80,6 +80,9 @@ agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
     }
 });
 agenda.on('ready', async () => {
+    //maybe start all repeating jobs with repeat_<name>
+    //so that we can remove them and reinstall them easier.
+
     await agenda.create(NOTIFY_UPCOMING_CTF)
         .repeatAt('sunday at 6pm')
         .save();

@@ -75,7 +75,7 @@ class Ctf extends CommandGroup {
 
     @Command({
         desc: 'Add credentials to the pinned CTFBot message',
-        usage: '!addcreds field1=value1 field2=value2 ...'
+        usage: '!addcreds field1=val1 field2=val2...'
     })
     async addcreds(args: CmdRunArgs){
         let setFields = args.args.map(x => x.split("="))
@@ -95,6 +95,7 @@ class Ctf extends CommandGroup {
         let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
         await mainMessage.edit(new RichEmbed(copy));
     }
+
     @Command({
         desc: 'Remove credentials from the pinned CTFBot message',
         usage: '!rmvcreds field1 field2 ...'
@@ -110,6 +111,13 @@ class Ctf extends CommandGroup {
 
         let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
         await mainMessage.edit(new RichEmbed(copy));
+    }
+
+    @Command({
+        desc: 'Archive a CTF',
+    })
+    async archive(args: CmdRunArgs){
+        
     }
 
     static NoCreds = 'None. Use `!addcreds field1=value1 field2=value2`to add credentials';
