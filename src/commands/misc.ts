@@ -1,16 +1,23 @@
-import commands, { Command } from './commands';
-import logger from '../logger';
+import commands, { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import { Message, RichEmbed } from 'discord.js';
-import moment = require('moment');
+import moment from 'moment';
 import agenda from '../agenda';
-import { limit, formatNiceSGT } from '../util';
+import { formatNiceSGT } from '../util';
 
-commands
-    .register(new Command('ping',
-        async args => {
-            await args.msg.channel.send('pong'); })
-        .description('Simple Ping reply'))
-    .register(new Command('status', async args => {
+@Group('Miscellaneous')
+class Misc extends CommandGroup {
+
+    @Command({
+        desc: 'Simple ping reply'
+    })
+    async ping(args: CmdRunArgs){
+        await args.msg.channel.send('pong');
+    }
+
+    @Command({
+        desc: 'Show status message'
+    })
+    async status(args: CmdRunArgs){
         let {channel} = args.msg;
         let uptime = process.uptime()
         let mem = process.memoryUsage().rss;
@@ -30,40 +37,40 @@ commands
                 `**Jobs**:\n`+jobs.map(x => 
                     `_${formatNiceSGT(x.attrs.nextRunAt)}_:\n${x.attrs.name}`).join('\n\n')
         }));
+    }
+
+    @Command({
+        desc: 'Print help message',
+        usage: '!help\n!help <cmd>'
     })
-        .description('Show status message'))
-    .register(new Command('help',
-        async args => {
-            if(args.args[0] === undefined)
-                args.msg.channel.send(new RichEmbed({
-                    title: ':question: Help',
-                    color: 0x00e676,
-                    fields: Array.from(commands.commandMap.entries())
-                        .map(([key,cmd]) => { return {
-                            name: key,
-                            value: `**${cmd._usage}**\n${cmd._description}`
-                        }})
-                }));
-            else if(commands.commandMap.has(args.args[0])){
-                let cmd = commands.commandMap.get(args.args[0]);
-                if(!cmd)return;
-                args.msg.channel.send(new RichEmbed({
-                    title: ':question: Help for '+args.args,
-                    color: 0x00e676,
-                    fields: [{
-                        name: args.args[0],
-                        value: `**${cmd._usage}**\n${cmd._description}`
-                    }]
-                }));
-            }
-            else{
-                args.msg.channel.send(new RichEmbed({
-                    title: ':question: Command not found',
-                    color: 0xff1744
-                }));
-            }
-
-
-        })
-        .usage('!help\n!help <cmd>')
-        .description('Print this help message'));
+    async help(args: CmdRunArgs){
+        if(args.args[0] === undefined)
+            args.msg.channel.send(new RichEmbed({
+                title: ':question: Help',
+                color: 0x00e676,
+                fields: Array.from(commands.commandMap.entries())
+                    .map(([key,cmd]) => { return {
+                        name: key,
+                        value: `**${cmd.usage}**\n${cmd.description}`
+                    }})
+            }));
+        else if(commands.commandMap.has(args.args[0])){
+            let cmd = commands.commandMap.get(args.args[0]);
+            if(!cmd)return;
+            args.msg.channel.send(new RichEmbed({
+                title: ':question: Help for '+args.args,
+                color: 0x00e676,
+                fields: [{
+                    name: args.args[0],
+                    value: `**${cmd.usage}**\n${cmd.description}`
+                }]
+            }));
+        }
+        else{
+            args.msg.channel.send(new RichEmbed({
+                title: ':question: Command not found',
+                color: 0xff1744
+            }));
+        }
+    }
+}

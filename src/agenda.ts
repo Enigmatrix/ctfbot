@@ -6,7 +6,10 @@ import { TextChannel, RichEmbed, ReactionCollector, MessageReaction, ReactionEmo
 
 const agenda =  new Agenda({db: {address: config("MONGO_URI")}});
 
-agenda.define('notifyCtfReactorsv1.0', async (job, done) => {
+export const NOTIFY_CTF_REACTORS = 'notifyCtfReactorsv1.0';
+export const NOTIFY_UPCOMING_CTF = 'notifyUpcomingCtfv1.0';
+
+agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
     let {channelId, messageId, ctftimeEvent} = job.attrs.data;
     let channel = bot.channels.get(channelId) as TextChannel|undefined;
     if(!channel) { done(new Error(`Channel missing ${channelId}`)); return; }
@@ -32,6 +35,12 @@ agenda.define('notifyCtfReactorsv1.0', async (job, done) => {
         }));
     }
 });
+agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
+    let channel = bot.guilds.first().channels.find(x => x.name === "upcoming") as TextChannel;
+    
+    channel.send(new RichEmbed({}));
+});
 
-export const NOTIFY_CTF_REACTORS = 'notifyCtfReactorsv1.0';
+//agenda.every('sunday at 3 pm', NOTIFY_UPCOMING_CTF);
+
 export default agenda.on('error', (e) => logger.error('Error from agenda', e));

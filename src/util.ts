@@ -15,7 +15,7 @@ export function isUrl(s: string){
 }
 
 export function formatNiceSGT(date: Date){
-    return moment(date).tz('Asia/Singapore').format("MMMM Do, h:mm:ss a") + ' (SGT)'
+    return moment(date).tz('Asia/Singapore').format("DD MMM, h:mma") + ' (SGT)'
 }
 
 export function limit(s: string, n: number){

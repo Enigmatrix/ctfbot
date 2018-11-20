@@ -1,40 +1,49 @@
 import logger from '../logger';
 import { Message } from 'discord.js';
 
-declare type RunArgs = { args: string[], msg: Message };
-declare type CmdRunArgs = { args: string[], msg: Message, cmd: Command };
-declare type RunMethod = (a: CmdRunArgs) => Promise<void>
+export declare type RunArgs = { args: string[], msg: Message };
+export declare type CmdRunArgs = { args: string[], msg: Message, cmd: CommandRegistration };
+export declare type RunMethod = (a: CmdRunArgs) => Promise<void>
 
-export class Command {
+export class CommandRegistration {
     public name: string;
-    public _description?: string;
-    public _usage: string;
+    public description?: string;
+    public usage: string;
     public run: RunMethod;
 
-    constructor(name: string, run: RunMethod){
+    constructor(name: string, run: RunMethod, desc?: string, usage?: string){
         this.name = name;
         this.run = run;
-        this._usage = "!"+name
-    }
-
-    description(description: string){
-        this._description = description;
-        return this;
-    }
-    usage(usage: string){
-        this._usage = usage;
-        return this;
+        this.usage = usage || "!"+name
+        this.description = desc;
     }
 }
 
-export class Commands {
-    public commandMap: Map<string, Command>;
+export function Group(name: string){
+    return (obj: any) => {
+        
+    }
+}
+
+export function Command(cmd: {name?: string, desc?: string, usage?: string}) {
+    return (obj: CommandGroup, name: string, descriptor: PropertyDescriptor) => {
+        
+        commands.register(new CommandRegistration(cmd.name || name, descriptor.value as RunMethod, cmd.desc, cmd.usage));
+    }
+}
+
+export class CommandGroup {
+    
+}
+
+export class CommandRegistrations {
+    public commandMap: Map<string, CommandRegistration>;
 
     constructor(){
-        this.commandMap = new Map<string, Command>();
+        this.commandMap = new Map<string, CommandRegistration>();
     }
 
-    register(cmd: Command): Commands{
+    register(cmd: CommandRegistration): CommandRegistrations {
         this.commandMap.set(cmd.name, cmd);
         return this;
     }
@@ -54,4 +63,5 @@ export class Commands {
     }
 }
 
-export default new Commands();
+const commands = new CommandRegistrations();
+export default commands;
