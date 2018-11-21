@@ -1,5 +1,5 @@
 import logger from '../logger';
-import { Message } from 'discord.js';
+import { Message, RichEmbed } from 'discord.js';
 
 export declare type RunArgs = { args: string[], msg: Message };
 export declare type CmdRunArgs = { args: string[], msg: Message, cmd: CommandRegistration };
@@ -33,7 +33,12 @@ export function Command(cmd: {name?: string, desc?: string, usage?: string}) {
 }
 
 export class CommandGroup {
-    
+    async NotImplemented(args: CmdRunArgs){
+        args.msg.channel.send(new RichEmbed({
+            title: ':exclamation: NotImplementedException has been thrown',
+            color: 0xff0000
+        }));
+    }
 }
 
 export class CommandRegistrations {

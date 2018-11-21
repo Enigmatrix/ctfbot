@@ -84,7 +84,8 @@ agenda.on('ready', async () => {
     //so that we can remove them and reinstall them easier.
 
     await agenda.create(NOTIFY_UPCOMING_CTF)
-        .repeatAt('sunday at 6pm')
+        .schedule('sunday at 6pm')
+        .repeatEvery('1 week', { timezone: "Asia/Singapore", skipImmediate: true })
         .save();
 })
 

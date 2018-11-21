@@ -1,4 +1,5 @@
 import { CommandGroup, Command, CmdRunArgs } from "./commands";
+import { RichEmbed } from "discord.js";
 
 class Challenge extends CommandGroup {
 
@@ -7,7 +8,7 @@ class Challenge extends CommandGroup {
         usage: '!addchall <name> <category1>,<category2>..'
     })
     async addchall(args: CmdRunArgs){
-
+        await super.NotImplemented(args);
     }
 
     @Command({
@@ -15,7 +16,7 @@ class Challenge extends CommandGroup {
         usage: '!rmvchall <name>'
     })
     async rmvchall(args: CmdRunArgs){
-        
+        await super.NotImplemented(args);
     }
 
     @Command({
@@ -23,7 +24,7 @@ class Challenge extends CommandGroup {
         usage: '!workon <name>'
     })
     async workon(args: CmdRunArgs){
-
+        await super.NotImplemented(args);
     }
 
     @Command({
@@ -31,7 +32,7 @@ class Challenge extends CommandGroup {
         usage: '!ditch <name>'
     })
     async ditch(args: CmdRunArgs){
-
+        await super.NotImplemented(args);
     }
 
     @Command({
@@ -39,7 +40,7 @@ class Challenge extends CommandGroup {
         usage: '!solve <name>'
     })
     async solve(args: CmdRunArgs){
-
+        await super.NotImplemented(args);
     }
 
     @Command({
@@ -47,6 +48,6 @@ class Challenge extends CommandGroup {
         usage: '!unsolve <name>'
     })
     async unsolve(args: CmdRunArgs){
-
+        await super.NotImplemented(args);
     }
 }
