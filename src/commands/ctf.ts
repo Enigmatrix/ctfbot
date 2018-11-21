@@ -1,4 +1,4 @@
-import commands, { Command, CmdRunArgs, CommandGroup, Group } from './commands';
+import { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import trello from '../trello';
 import { TextChannel, RichEmbed, Message, RichEmbedOptions, MessageEmbed, MessageEmbedField, Channel } from 'discord.js';
 import { isCtfTimeUrl, getCtftimeEvent } from '../ctftime';
@@ -82,7 +82,7 @@ class Ctf extends CommandGroup {
             .filter(x => x.length===2)
             .filter(x => x[0].indexOf("```") === -1 && x[1].indexOf("```") === -1);
 
-        let result = await Ctf.findCredentialsEmbed(args.msg.channel);
+        let result = await Ctf.getCtfChannelDetails(args.msg.channel);
         if(!result) return;
         let [mainMessage, embed, creds] = result;
 
@@ -101,7 +101,7 @@ class Ctf extends CommandGroup {
         usage: '!rmvcreds field1 field2 ...'
     })
     async rmvcreds(args: CmdRunArgs){
-        let result = await Ctf.findCredentialsEmbed(args.msg.channel);
+        let result = await Ctf.getCtfChannelDetails(args.msg.channel);
         if(!result) return;
         let [mainMessage, embed, creds] = result;
 
@@ -117,12 +117,25 @@ class Ctf extends CommandGroup {
         desc: 'Archive a CTF',
     })
     async archive(args: CmdRunArgs){
-        
-    }
+        //untested
+        let channel = args.msg.channel as TextChannel;
+        let details = Ctf.getCtfChannelDetails(channel);
+        if(!details){
+            await channel.send('Use !archive in a CTF channel');
+            return;
+        }
+        let archive = args.msg.guild.channels.find(x => x.name === "archives");
+        if(!archive){
+            await channel.send('CTFs archive channel missing');
+            return;
+        }
 
+        await channel.setParent(archive);
+    }
+   
     static NoCreds = 'None. Use `!addcreds field1=value1 field2=value2`to add credentials';
 
-    static async findCredentialsEmbed(chan: Channel): Promise<undefined | [Message, MessageEmbed, MessageEmbedField]> {
+    static async getCtfChannelDetails(chan: Channel): Promise<undefined | [Message, MessageEmbed, MessageEmbedField]> {
         let channel = chan as TextChannel;
         if(channel.parent.name !== "CTFs"){
             channel.send("!addcreds can only be used in a CTF channel");
