@@ -1,7 +1,7 @@
 import commands, { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import { Message, RichEmbed } from 'discord.js';
 import moment from 'moment';
-import agenda, { NOTIFY_UPCOMING_CTF } from '../agenda';
+import agenda from '../agenda';
 import { formatNiceSGT } from '../util';
 
 @Group('Miscellaneous')

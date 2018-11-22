@@ -4,7 +4,7 @@ export function isCtfTimeUrl(s: string){
     return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
 }
 
-declare module CtfTime {
+export declare module CtfTime {
 
     export interface Organizer {
         id: number;
@@ -46,8 +46,9 @@ declare module CtfTime {
 
 export const getCtftimeEvent = async (ctftimeUrl: string) => {
     const segments = ctftimeUrl.split('event/');
+    const last = segments[segments.length-1];
     let response = await axios.request<CtfTime.Event>({
-        url: `https://ctftime.org/api/v1/events/${segments[segments.length-1]}`});
+        url: `https://ctftime.org/api/v1/events/${last.split('/')[0]}/`});
     return response.data;
 };
 

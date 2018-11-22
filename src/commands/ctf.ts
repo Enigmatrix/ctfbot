@@ -6,6 +6,8 @@ import { formatNiceSGT, cloneEmbed } from '../util';
 import logger from '../logger';
 import agenda, { NOTIFY_CTF_REACTORS } from '../agenda';
 import moment from 'moment';
+import { CTFTimeCTF, Challenge } from '../entities/ctf';
+import bot from '../bot';
 
 @Group('CTF')
 export class Ctf extends CommandGroup {
@@ -44,33 +46,22 @@ export class Ctf extends CommandGroup {
             prefs_invitations: 'members',
         });
     
-        let mainMessage = await newChannel.send(new RichEmbed({
-            color: Ctf.MainMesssage,
-            author: {
-                name: `${ctftimeEvent.title} (${ctftimeEvent.format})`,
-                icon_url: ctftimeEvent.logo === "" ? undefined : ctftimeEvent.logo
-            },
-            description: ctftimeEvent.description,
-            fields: [
-                { name: 'URL', value: ctftimeEvent.url },
-                { name: 'Trello', value: board.shortUrl },
-                { name: 'Timing', value: `${formatNiceSGT(ctftimeEvent.start)} - ${formatNiceSGT(ctftimeEvent.finish)}` },
-                { name: 'Credentials', value: Ctf.NoCreds }],
-            url: ctftimeEvent.url,
-            footer: {
-                text: `Hosted by ${ctftimeEvent.organizers.map(x => x.name).join(', ')}. React with 👌 to get a DM 1hr before the CTF starts`
-            }
-        }));
+        let ctf = new CTFTimeCTF(ctftimeEvent, board.shortUrl, newChannel.id);
+        let mainMessage = await newChannel.send(Ctf.createCtfMainMesssageEmbed(ctf));
+
         let messages = mainMessage instanceof Message ? [mainMessage] : mainMessage;
         for(let message of messages){
             await message.pin();
         }
-        await messages[messages.length-1].react('👌');
+        let lastMsg = messages[messages.length-1];
+        await lastMsg.react('👌');
+        ctf.discordMainMessageId = lastMsg.id;
+        ctf = await ctf.save();
 
+        // use the object id here! not all these values...
         await agenda.schedule(
-            moment(ctftimeEvent.start).subtract(moment.duration(1, 'hour')).toDate(),
-            NOTIFY_CTF_REACTORS, {messageId: messages[messages.length-1].id, channelId: newChannel.id, ctftimeEvent })
-
+            moment(ctf.start).subtract(1, 'hour').toDate(),
+            NOTIFY_CTF_REACTORS, { ctf: ctf.id })
     }
 
     @Command({
@@ -78,21 +69,23 @@ export class Ctf extends CommandGroup {
         usage: '!addcreds field1=val1 field2=val2...'
     })
     async addcreds(args: CmdRunArgs){
-        let setFields = args.args.map(x => x.split("="))
+        let newCreds = args.args.map(x => x.split("="))
             .filter(x => x.length===2)
             .filter(x => x[0].indexOf("```") === -1 && x[1].indexOf("```") === -1);
 
-        let result = await Ctf.getCtfChannelDetails(args.msg.channel);
-        if(!result) return;
-        let [mainMessage, embed, creds] = result;
+        let ctf = await Ctf.getCtf(args.msg.channel as TextChannel);
+        if(!ctf) {
+            args.msg.channel.send(Ctf.NotCtfChannel);
+            return;
+        };
 
-        let credentials = new Credentials(creds.value);
-        setFields.forEach(([key, val]) => {
-            credentials.add(key, val);
-        });
-        creds.value = credentials.toString();
+        for(let [key, val] of newCreds){
+            ctf.credentials[key] = val;
+        }
+        await ctf.save();
 
-        await mainMessage.edit(new RichEmbed(cloneEmbed(embed)));
+        let mainMessage = await Ctf.getCtfMainMessageFromCtfAndChannel(ctf, args.msg.channel as TextChannel);
+        await mainMessage.edit(Ctf.createCtfMainMesssageEmbed(ctf));
     }
 
     @Command({
@@ -100,15 +93,19 @@ export class Ctf extends CommandGroup {
         usage: '!rmvcreds field1 field2 ...'
     })
     async rmvcreds(args: CmdRunArgs){
-        let result = await Ctf.getCtfChannelDetails(args.msg.channel);
-        if(!result) return;
-        let [mainMessage, embed, creds] = result;
+        let ctf = await Ctf.getCtf(args.msg.channel as TextChannel);
+        if(!ctf) {
+            args.msg.channel.send(Ctf.NotCtfChannel);
+            return;
+        };
+        
+        for(let key of args.args){
+            delete ctf.credentials[key];
+        }
+        await ctf.save();
 
-        let credentials = new Credentials(creds.value);
-        args.args.forEach(x => credentials.rmv(x));
-        creds.value = credentials.toString();
-
-        await mainMessage.edit(new RichEmbed(cloneEmbed(embed)));
+        let mainMessage = await Ctf.getCtfMainMessageFromCtfAndChannel(ctf, args.msg.channel as TextChannel);
+        await mainMessage.edit(Ctf.createCtfMainMesssageEmbed(ctf));
     }
 
     @Command({
@@ -117,44 +114,71 @@ export class Ctf extends CommandGroup {
     async archive(args: CmdRunArgs){
         //untested
         let channel = args.msg.channel as TextChannel;
-        if(!await Ctf.getCtfChannelDetails(channel)) return;
+        let ctf = await Ctf.getCtf(args.msg.channel as TextChannel);
+        if(!ctf) {
+            args.msg.channel.send(Ctf.NotCtfChannel);
+            return;
+        };
         let archive = args.msg.guild.channels.find(x => x.name === "archives");
         if(!archive){
             await channel.send('CTFs archive channel missing');
             return;
         }
-
         await channel.setParent(archive);
+        ctf.archived = true;
+        await ctf.save();
     }
    
     static NoCreds = 'None. Use `!addcreds field1=value1 field2=value2`to add credentials';
-    static NotCtfChannel = 'This command is only valid in a CTF channel';
-    static MainMesssage: 0x1e88e5;
+    static NotCtfChannel = 'This command is only valid in a CTF channel'
 
-    public static async isCtfChannel(chan: TextChannel):Promise<boolean> {
-        let details = await Ctf.getCtfChannelDetails(chan);
-        return !!details;
+    public static async getCtf(chan: TextChannel): Promise<CTFTimeCTF|undefined> {
+        return await CTFTimeCTF.findOne({discordChannelId: chan.id, archived: false});
     }
 
-    public static async getCtfChannelDetails(chan: Channel): Promise<undefined | [Message, MessageEmbed, MessageEmbedField]> {
-        let channel = chan as TextChannel;
-        if(channel.parent.name !== "CTFs"){
+    public static async isCtfChannel(chan: TextChannel):Promise<boolean> {
+        return !!await this.getCtf(chan);
+    }
+
+    public static async getCtfMainMessageFromChannel(channel: TextChannel): Promise<undefined | Message> {
+
+        let ctf = await this.getCtf(channel);
+        if(!ctf){
             channel.send(this.NotCtfChannel);
             return;
         }
-        let pinned = await channel.fetchPinnedMessages();
-        let mainMessage = pinned.size === 0 ? undefined : pinned.first();
-        if(!mainMessage || mainMessage.author.id !== channel.client.user.id || mainMessage.embeds.length === 0){
-            channel.send(this.NotCtfChannel);
-            return;
-        }
-        let embed = mainMessage.embeds[0];
-        let creds = embed.fields.find(x => x.name === 'Credentials');
-        if(!creds){
-            logger.error('Credentials not found on pinned CTF message');
-            return;
-        }
-        return [mainMessage, embed, creds];
+        return await Ctf.getCtfMainMessageFromCtfAndChannel(ctf, channel);
+    }
+
+    public static async getCtfMainMessageFromCtf(ctf: CTFTimeCTF): Promise<undefined | Message> {
+        return await this.getCtfMainMessageFromCtfAndChannel(ctf, bot.guilds.first().channels.get(ctf.discordChannelId) as TextChannel);
+    }
+
+    public static async getCtfMainMessageFromCtfAndChannel(ctf: CTFTimeCTF, channel: TextChannel){
+        return await channel.fetchMessage(ctf.discordMainMessageId);
+    }
+
+    public static createCtfMainMesssageEmbed(ctftimeEvent: CTFTimeCTF){
+        return new RichEmbed({
+            color: 0x1e88e5,
+            author: {
+                name: `${ctftimeEvent.name} (${ctftimeEvent.format})`,
+                icon_url: ctftimeEvent.logoUrl,
+            },
+            description: ctftimeEvent.description,
+            fields: [
+                { name: 'URL', value: ctftimeEvent.url },
+                { name: 'Trello', value: ctftimeEvent.trelloUrl },
+                { name: 'Timing', value: `${formatNiceSGT(ctftimeEvent.start)} - ${formatNiceSGT(ctftimeEvent.finish)}` },
+                { name: 'Credentials', value:
+                    Object.keys(ctftimeEvent.credentials).length === 0 ? Ctf.NoCreds :
+                        Object.entries(ctftimeEvent.credentials).map(x => "```"+` ${x[0]} : ${x[1]} `+"```").join('')
+                }],
+            url: ctftimeEvent.url,
+            footer: {
+                text: `Hosted by ${ctftimeEvent.hosts.join(', ')}. React with 👌 to get a DM 1hr before the CTF starts`
+            }
+        })
     }
 }
 

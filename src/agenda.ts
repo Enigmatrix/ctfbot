@@ -2,20 +2,22 @@ import Agenda from 'agenda';
 import { config, formatNiceSGT } from './util';
 import bot from './bot';
 import logger from './logger';
+import {Ctf} from './commands/ctf';
 import { TextChannel, RichEmbed, ReactionCollector, MessageReaction, ReactionEmoji, Emoji } from 'discord.js';
 import { weeklyCtftimeEvents } from './ctftime';
+import { CTFTimeCTF } from './entities/ctf';
 
 const agenda =  new Agenda({db: {address: config("MONGO_URI")}});
 
 export const NOTIFY_CTF_REACTORS = 'notifyCtfReactorsv1.0';
-export const NOTIFY_UPCOMING_CTF = 'notifyUpcomingCtfv1.0';
+export const REPEATED_NOTIFY_UPCOMING_CTF = 'repeated_notifyUpcomingCtfv1.0';
 
-agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
-    let {channelId, messageId, ctftimeEvent} = job.attrs.data;
-    let channel = bot.channels.get(channelId) as TextChannel|undefined;
-    if(!channel) { done(new Error(`Channel missing ${channelId}`)); return; }
-    let message = await channel.fetchMessage(messageId);
-    if(!message) { done(new Error(`Message missing ${messageId} in ${channelId}`)); return; }
+agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
+    let ctfid = job.attrs.data.ctf;
+    let ctf = await CTFTimeCTF.findOne({id: ctfid, archived: false});
+    if(!ctf) { done(new Error(`CTF not found ${ctfid}`)); return; }
+    let message = await Ctf.getCtfMainMessageFromCtf(ctf);
+    if(!message) { done(new Error(`Message missing for CTF ${ctfid}`)); return; }
     
     let reaction = await message.react('👌');
     let users = await reaction.fetchUsers();
@@ -28,15 +30,15 @@ agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
         await dmChannel.send(new RichEmbed({
             color: 0xff6d00,
             author: {
-                name: `Reminder for ${ctftimeEvent.title}`,
-                icon_url: ctftimeEvent.logo === "" ? undefined : ctftimeEvent.logo
+                name: `Reminder for ${ctf.name}`,
+                icon_url: ctf.logoUrl
             },
-            description: `This is a reminder that ${ctftimeEvent.title} starts in 1 hour. Good Luck!`,
-            url: ctftimeEvent.url,
+            description: `This is a reminder that ${ctf.name} starts in 1 hour. Good Luck!`,
+            url: ctf.url,
         }));
     }
 });
-agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
+agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
     try{
         let channel =
             (bot.guilds.first().channels.find(x => job.attrs.data ? x.id === job.attrs.data.channelId : false) ||
@@ -80,10 +82,14 @@ agenda.define(NOTIFY_UPCOMING_CTF, async (job, done) => {
     }
 });
 agenda.on('ready', async () => {
-    //maybe start all repeating jobs with repeat_<name>
-    //so that we can remove them and reinstall them easier.
 
-    await agenda.create(NOTIFY_UPCOMING_CTF)
+    await agenda.purge();
+    let oldRepeatJobs = await agenda.jobs({name: {$regex: "repeated_.*"}});
+    for(let job of oldRepeatJobs){
+        await job.remove();
+    }
+
+    await agenda.create(REPEATED_NOTIFY_UPCOMING_CTF)
         .schedule('sunday at 6pm')
         .repeatEvery('1 week', { timezone: "Asia/Singapore", skipImmediate: true })
         .save();
