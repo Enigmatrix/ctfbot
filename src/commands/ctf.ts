@@ -58,7 +58,6 @@ export class Ctf extends CommandGroup {
         ctf.discordMainMessageId = lastMsg.id;
         ctf = await ctf.save();
 
-        // use the object id here! not all these values...
         await agenda.schedule(
             moment(ctf.start).subtract(1, 'hour').toDate(),
             NOTIFY_CTF_REACTORS, { ctf: ctf.id })
@@ -111,8 +110,7 @@ export class Ctf extends CommandGroup {
     @Command({
         desc: 'Archive a CTF',
     })
-    async archive(args: CmdRunArgs){
-        //untested
+    async archive(args: CmdRunArgs) {
         let channel = args.msg.channel as TextChannel;
         let ctf = await Ctf.getCtf(args.msg.channel as TextChannel);
         if(!ctf) {
@@ -129,14 +127,14 @@ export class Ctf extends CommandGroup {
         await ctf.save();
     }
    
-    static NoCreds = 'None. Use `!addcreds field1=value1 field2=value2`to add credentials';
+    static NoCreds = 'None. Use `!addcreds field1=value1 field2=value2` to add credentials';
     static NotCtfChannel = 'This command is only valid in a CTF channel'
 
     public static async getCtf(chan: TextChannel): Promise<CTFTimeCTF|undefined> {
         return await CTFTimeCTF.findOne({discordChannelId: chan.id, archived: false});
     }
 
-    public static async isCtfChannel(chan: TextChannel):Promise<boolean> {
+    public static async isCtfChannel(chan: TextChannel): Promise<boolean> {
         return !!await this.getCtf(chan);
     }
 
@@ -179,34 +177,5 @@ export class Ctf extends CommandGroup {
                 text: `Hosted by ${ctftimeEvent.hosts.join(', ')}. React with 👌 to get a DM 1hr before the CTF starts`
             }
         })
-    }
-}
-
-
-class Credentials {
-    private credMap: Map<string, string>;
-
-    constructor(value: string){
-        this.credMap = new Map<string, string>();
-        if(value === Ctf.NoCreds)
-            value = "";
-        let stuff = value.split('```').filter(x => x !== '\n' && x !== '');
-        for(let s of stuff){
-            let [key, val] = s.split(" : ");
-            this.credMap.set(key.substr(1), val.substr(0, val.length-1));
-        }
-    }
-
-    add(key: string, value: string){
-        this.credMap.set(key, value);
-    }
-
-    rmv(key: string){
-        this.credMap.delete(key);
-    }
-
-    toString(){
-        return this.credMap.size === 0 ? Ctf.NoCreds :
-            Array.from(this.credMap.entries()).map(x => "```"+` ${x[0]} : ${x[1]} `+"```").join('')
     }
 }

@@ -1,8 +1,4 @@
 import { CommandGroup, Command, CmdRunArgs } from "./commands";
-import { RichEmbed, Channel, TextChannel, Message, MessageEmbed } from "discord.js";
-import { Ctf } from "./ctf";
-import { cloneEmbed } from "../util";
-import bot from "../bot";
 
 class Challenge extends CommandGroup {
 
