@@ -2,13 +2,13 @@ import { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import trello from '../trello';
 import { TextChannel, RichEmbed, Message, RichEmbedOptions, MessageEmbed, MessageEmbedField, Channel } from 'discord.js';
 import { isCtfTimeUrl, getCtftimeEvent } from '../ctftime';
-import { formatNiceSGT } from '../util';
+import { formatNiceSGT, cloneEmbed } from '../util';
 import logger from '../logger';
 import agenda, { NOTIFY_CTF_REACTORS } from '../agenda';
 import moment from 'moment';
 
 @Group('CTF')
-class Ctf extends CommandGroup {
+export class Ctf extends CommandGroup {
 
     constructor(){
         super();
@@ -22,7 +22,7 @@ class Ctf extends CommandGroup {
         let ctftimeUrl = args.args[0];
         let {guild, channel} = args.msg;
         if(!ctftimeUrl || !isCtfTimeUrl(ctftimeUrl)){
-            await channel.send(args.cmd.usage);
+            await channel.send('Usage: '+args.cmd.usage);
             return;
         }
         let ctftimeEvent = await getCtftimeEvent(ctftimeUrl);
@@ -45,7 +45,7 @@ class Ctf extends CommandGroup {
         });
     
         let mainMessage = await newChannel.send(new RichEmbed({
-            color: 0x1e88e5,
+            color: Ctf.MainMesssage,
             author: {
                 name: `${ctftimeEvent.title} (${ctftimeEvent.format})`,
                 icon_url: ctftimeEvent.logo === "" ? undefined : ctftimeEvent.logo
@@ -92,8 +92,7 @@ class Ctf extends CommandGroup {
         });
         creds.value = credentials.toString();
 
-        let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
-        await mainMessage.edit(new RichEmbed(copy));
+        await mainMessage.edit(new RichEmbed(cloneEmbed(embed)));
     }
 
     @Command({
@@ -109,8 +108,7 @@ class Ctf extends CommandGroup {
         args.args.forEach(x => credentials.rmv(x));
         creds.value = credentials.toString();
 
-        let copy = Object.assign({}, embed) as unknown as RichEmbedOptions;
-        await mainMessage.edit(new RichEmbed(copy));
+        await mainMessage.edit(new RichEmbed(cloneEmbed(embed)));
     }
 
     @Command({
@@ -119,11 +117,7 @@ class Ctf extends CommandGroup {
     async archive(args: CmdRunArgs){
         //untested
         let channel = args.msg.channel as TextChannel;
-        let details = Ctf.getCtfChannelDetails(channel);
-        if(!details){
-            await channel.send('Use !archive in a CTF channel');
-            return;
-        }
+        if(!await Ctf.getCtfChannelDetails(channel)) return;
         let archive = args.msg.guild.channels.find(x => x.name === "archives");
         if(!archive){
             await channel.send('CTFs archive channel missing');
@@ -134,17 +128,24 @@ class Ctf extends CommandGroup {
     }
    
     static NoCreds = 'None. Use `!addcreds field1=value1 field2=value2`to add credentials';
+    static NotCtfChannel = 'This command is only valid in a CTF channel';
+    static MainMesssage: 0x1e88e5;
 
-    static async getCtfChannelDetails(chan: Channel): Promise<undefined | [Message, MessageEmbed, MessageEmbedField]> {
+    public static async isCtfChannel(chan: TextChannel):Promise<boolean> {
+        let details = await Ctf.getCtfChannelDetails(chan);
+        return !!details;
+    }
+
+    public static async getCtfChannelDetails(chan: Channel): Promise<undefined | [Message, MessageEmbed, MessageEmbedField]> {
         let channel = chan as TextChannel;
         if(channel.parent.name !== "CTFs"){
-            channel.send("!addcreds can only be used in a CTF channel");
+            channel.send(this.NotCtfChannel);
             return;
         }
         let pinned = await channel.fetchPinnedMessages();
         let mainMessage = pinned.size === 0 ? undefined : pinned.first();
         if(!mainMessage || mainMessage.author.id !== channel.client.user.id || mainMessage.embeds.length === 0){
-            channel.send("!addcreds can only be used in a CTF channel");
+            channel.send(this.NotCtfChannel);
             return;
         }
         let embed = mainMessage.embeds[0];

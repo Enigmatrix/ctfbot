@@ -1,5 +1,6 @@
 import logger from "./logger";
 import moment from 'moment-timezone';
+import { RichEmbed, RichEmbedOptions, MessageEmbed } from "discord.js";
 
 export function config(key: string): string{
     try{
@@ -20,4 +21,8 @@ export function formatNiceSGT(date: Date){
 
 export function limit(s: string, n: number){
     return s.substr(0, n)+'...'
+}
+
+export function cloneEmbed(embed: MessageEmbed){
+    return Object.assign({}, embed) as unknown as RichEmbedOptions;
 }
