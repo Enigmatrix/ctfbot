@@ -1,12 +1,39 @@
 import { CommandGroup, Command, CmdRunArgs } from "./commands";
+import trello, { extractMemberId } from "../trello";
+import { Ctf } from "./ctf";
+import { TextChannel } from "discord.js";
+import { Challenge } from "../entities/ctf";
 
-class Challenge extends CommandGroup {
+class Challenges extends CommandGroup {
 
     @Command({
         desc: 'Add a challenge to this CTF',
         usage: '!addchall <name> <category1>,<category2>..'
     })
     async addchall(args: CmdRunArgs){
+        let channel = args.msg.channel as TextChannel;
+        if(args.args.length !== 2){
+            channel.send(args.cmd.usage);
+            return;
+        }
+        let ctf = await Ctf.getCtf(channel);
+        if(!ctf){
+            channel.send(Ctf.NotCtfChannel);
+            return;
+        }
+        let categories = args.args[1].split(',');
+        let card = await trello.card.create({
+            name: args.args[0],
+            idList: ''
+        });
+        
+        let board = await trello.board.search(extractMemberId(ctf.trelloUrl));
+        console.log(board);
+
+        // setup webhooks for the card here
+
+        ctf.challenges.push(new Challenge(args.args[0], categories))
+        await ctf.save();
         await super.NotImplemented(args);
     }
 

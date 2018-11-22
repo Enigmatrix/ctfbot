@@ -47,16 +47,14 @@ export declare module CtfTime {
 export const getCtftimeEvent = async (ctftimeUrl: string) => {
     const segments = ctftimeUrl.split('event/');
     const last = segments[segments.length-1];
-    let response = await axios.request<CtfTime.Event>({
-        url: `https://ctftime.org/api/v1/events/${last.split('/')[0]}/`});
+    let response = await axios.get<CtfTime.Event>(`https://ctftime.org/api/v1/events/${last.split('/')[0]}/`);
     return response.data;
 };
 
 export const weeklyCtftimeEvents = async () => {
     const start = Math.floor(Date.now()/1000);
     const finish = start + 24*7*60*60;
-    let response = await axios.request<CtfTime.Event[]>({
-        url: `https://ctftime.org/api/v1/events/`,
+    let response = await axios.get<CtfTime.Event[]>(`https://ctftime.org/api/v1/events/`, {
         params:{
             limit: 100,
             start, finish
