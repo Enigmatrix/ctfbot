@@ -58,7 +58,26 @@ class Challenges extends CommandGroup {
         usage: '!rmvchall <name>'
     })
     async rmvchall(args: CmdRunArgs){
-        await super.NotImplemented(args);
+        let channel = args.msg.channel as TextChannel;
+        let name = args.args[0];
+        if(!name){
+            channel.send(args.cmd.usage);
+            return;
+        }
+        let ctf = await Ctf.getCtf(channel);
+        if(!ctf){
+            channel.send(Ctf.NotCtfChannel);
+            return;
+        }
+        let chalIdx = ctf.challenges.findIndex(x => x.name === name);
+        if(chalIdx === -1){
+            channel.send(`Challenge ${name} not found`);
+            return;
+        }
+        let chal = ctf.challenges[chalIdx];
+        await trello.card.del(chal.cardId);
+        ctf.challenges.splice(chalIdx, 1);
+        await ctf.save();
     }
 
     @Command({
