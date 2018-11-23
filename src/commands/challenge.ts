@@ -242,6 +242,52 @@ class Challenges extends CommandGroup {
         usage: '!unsolve <name>'
     })
     async unsolve(args: CmdRunArgs){
-        await super.NotImplemented(args);
+        let channel = args.msg.channel as TextChannel;
+        let name = args.args[0];
+        if(!name){
+            channel.send(args.cmd.usage);
+            return;
+        }
+        let ctf = await Ctf.getCtf(channel);
+        if(!ctf){
+            channel.send(Ctf.NotCtfChannel);
+            return;
+        }
+        let chal = ctf.challenges.find(x => x.name === name);
+        if(!chal){
+            channel.send(`Challenge ${name} not found`);
+            return;
+        }
+        let authorId = args.msg.author.id;
+        let user = await User.findOne({discordId: authorId});
+        if(!user){
+            args.msg.reply('register with `!register <trello_profile_url>` first. // Sorry for the inconvenience');
+            return;
+        }
+        let userId = user.id;
+        const idx = chal.workers.findIndex(x => x.equals(userId));
+        if(idx === -1){
+            channel.send('Seems like you are not working on this challenge...');
+            return;
+        }
+        if(!chal.solvedBy){
+            channel.send('Seems like this challenge has not been solved...')
+            return;
+        }
+        if(!chal.solvedBy.equals(userId)){
+            channel.send('Only the solver can !unsolve');
+            return;
+        }
+
+        let boardId = await trelloEx.board.extractId(ctf.trelloUrl);
+        let doing = await trelloEx.board.getList(boardId, 'Doing');
+        if(!doing){
+            channel.send('Trello `Doing` list is missing');
+            return;
+        }
+        await trelloEx.card.move(chal.cardId, doing.id);
+        chal.solvedBy = undefined;
+        
+        await ctf.save();
     }
 }
