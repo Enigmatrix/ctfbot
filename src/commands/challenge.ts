@@ -111,6 +111,15 @@ class Challenges extends CommandGroup {
         
         await trelloEx.card.addMember(chal.cardId, user.trelloId);
 
+        let boardId = await trelloEx.board.extractId(ctf.trelloUrl);
+        let doing = await trelloEx.board.getList(boardId, 'Doing');
+        if(!doing){
+            channel.send('Trello `Doing` list is missing');
+            return;
+        }
+
+        await trelloEx.card.move(chal.cardId, doing.id);
+
         chal.workers.push(user.id);
         await ctf.save();
     }

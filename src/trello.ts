@@ -87,6 +87,14 @@ export namespace trelloEx {
             });
         }
 
+        export async function move(cardId: ID, newListId: ID){
+            return await trelloApi.put(`cards/${cardId}`, undefined, {
+                params: {
+                    idList: newListId
+                }
+            });
+        }
+
     }
 
     export namespace member {
