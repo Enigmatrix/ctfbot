@@ -14,6 +14,9 @@ export class Challenge {
     @Column()
     cardId: string;
 
+    @Column()
+    solvedBy?: ObjectID;
+
     constructor(name: string, categories: string[], cardId: string){
         this.name = name;
         this.categories = categories;

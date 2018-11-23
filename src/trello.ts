@@ -87,6 +87,10 @@ export namespace trelloEx {
             });
         }
 
+        export async function rmvMember(cardId: ID, memId: ID) {
+            return await trelloApi.delete(`cards/${cardId}/idMembers/${memId}`);
+        }
+
         export async function move(cardId: ID, newListId: ID){
             return await trelloApi.put(`cards/${cardId}`, undefined, {
                 params: {

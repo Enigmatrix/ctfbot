@@ -113,6 +113,10 @@ class Challenges extends CommandGroup {
             channel.send('Seems like you are already working on this challenge...');
             return;
         }
+        if(chal.solvedBy){
+            channel.send('Seems like this challenge has been solved...')
+            return;
+        }
         
         await trelloEx.card.addMember(chal.cardId, user.trelloId);
 
@@ -157,11 +161,30 @@ class Challenges extends CommandGroup {
             return;
         }
         let userId = user.id;
-        if(chal.workers.findIndex(x => x.equals(userId)) === -1){
+        const idx = chal.workers.findIndex(x => x.equals(userId));
+        if(idx === -1){
             channel.send('Seems like you are not working on this challenge...');
             return;
         }
+        if(chal.solvedBy){
+            channel.send('Seems like this challenge has been solved...')
+            return;
+        }
         
+        chal.workers.splice(idx, 1);
+        await trelloEx.card.rmvMember(chal.cardId, user.trelloId);
+
+        if(chal.workers.length === 0){
+            let boardId = await trelloEx.board.extractId(ctf.trelloUrl);
+            let todo = await trelloEx.board.getList(boardId, 'To Do');
+            if(!todo){
+                channel.send('Trello `To Do` list is missing');
+                return;
+            }
+            await trelloEx.card.move(chal.cardId, todo.id);
+        }
+
+        await ctf.save();
 
     }
 
@@ -170,7 +193,48 @@ class Challenges extends CommandGroup {
         usage: '!solve <name>'
     })
     async solve(args: CmdRunArgs){
-        await super.NotImplemented(args);
+        let channel = args.msg.channel as TextChannel;
+        let name = args.args[0];
+        if(!name){
+            channel.send(args.cmd.usage);
+            return;
+        }
+        let ctf = await Ctf.getCtf(channel);
+        if(!ctf){
+            channel.send(Ctf.NotCtfChannel);
+            return;
+        }
+        let chal = ctf.challenges.find(x => x.name === name);
+        if(!chal){
+            channel.send(`Challenge ${name} not found`);
+            return;
+        }
+        let authorId = args.msg.author.id;
+        let user = await User.findOne({discordId: authorId});
+        if(!user){
+            args.msg.reply('register with `!register <trello_profile_url>` first. // Sorry for the inconvenience');
+            return;
+        }
+        let userId = user.id;
+        const idx = chal.workers.findIndex(x => x.equals(userId));
+        if(idx === -1){
+            channel.send('Seems like you are not working on this challenge...');
+            return;
+        }
+        if(chal.solvedBy){
+            channel.send('Seems like this challenge has been solved...')
+            return;
+        }
+
+        let boardId = await trelloEx.board.extractId(ctf.trelloUrl);
+        let done = await trelloEx.board.getList(boardId, 'Done');
+        if(!done){
+            channel.send('Trello `To Do` list is missing');
+            return;
+        }
+        await trelloEx.card.move(chal.cardId, done.id);
+        chal.solvedBy = userId;
+        await ctf.save();
     }
 
     @Command({
