@@ -1,5 +1,5 @@
 import { CommandGroup, Command, CmdRunArgs } from "./commands";
-import trello, { extractMemberId } from "../trello";
+import { trello, trelloEx } from "../trello";
 import { Ctf } from "./ctf";
 import { TextChannel } from "discord.js";
 import { Challenge } from "../entities/ctf";
@@ -12,6 +12,7 @@ class Challenges extends CommandGroup {
     })
     async addchall(args: CmdRunArgs){
         let channel = args.msg.channel as TextChannel;
+        let categories = args.args[1].split(',').map(x => x.toLowerCase());
         if(args.args.length !== 2){
             channel.send(args.cmd.usage);
             return;
@@ -21,20 +22,26 @@ class Challenges extends CommandGroup {
             channel.send(Ctf.NotCtfChannel);
             return;
         }
-        let categories = args.args[1].split(',');
+        let boardId = await trelloEx.board.extractId(ctf.trelloUrl)
+        let board = await trello.board.search(boardId);
+        console.log(board);
+        let todo = await trelloEx.board.getList(boardId, 'To Do');
+        if(!todo){
+            channel.send('Trello `To Do` list is missing');
+            return;
+        }
+
         let card = await trello.card.create({
             name: args.args[0],
-            idList: ''
+            idList: todo.id,
+            pos: 'top',
+            idLabels: []
         });
-        
-        let board = await trello.board.search(extractMemberId(ctf.trelloUrl));
-        console.log(board);
 
         // setup webhooks for the card here
 
         ctf.challenges.push(new Challenge(args.args[0], categories))
         await ctf.save();
-        await super.NotImplemented(args);
     }
 
     @Command({

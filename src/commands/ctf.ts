@@ -1,9 +1,8 @@
 import { Command, CmdRunArgs, CommandGroup, Group } from './commands';
-import trello from '../trello';
-import { TextChannel, RichEmbed, Message, RichEmbedOptions, MessageEmbed, MessageEmbedField, Channel } from 'discord.js';
+import {trello, trelloEx } from '../trello';
+import { TextChannel, RichEmbed, Message, } from 'discord.js';
 import { isCtfTimeUrl, getCtftimeEvent } from '../ctftime';
 import { formatNiceSGT, cloneEmbed } from '../util';
-import logger from '../logger';
 import agenda, { NOTIFY_CTF_REACTORS } from '../agenda';
 import moment from 'moment';
 import { CTFTimeCTF, Challenge } from '../entities/ctf';
@@ -45,6 +44,23 @@ export class Ctf extends CommandGroup {
             prefs_comments: 'members',
             prefs_invitations: 'members',
         });
+
+        let idBoard = board.id;
+        //delete old labels
+        for(let label of await trelloEx.board.getLabels(idBoard)){
+            await trello.label.del(label.id || "");
+        }
+        let labels : trelloEx.Label[] = [
+            {name: 'pwn', color: 'orange', idBoard},
+            {name: 're', color: 'red', idBoard},
+            {name: 'misc', color: 'sky', idBoard},
+            {name: 'web', color: 'green', idBoard},
+            {name: 'stego', color: 'yellow', idBoard},
+            {name: 'crypto', color: 'purple', idBoard},
+            {name: 'forensic', color: 'lime', idBoard}];
+            //create new labels
+        for(let label of labels)
+            await trello.label.create(label);
     
         let ctf = new CTFTimeCTF(ctftimeEvent, board.shortUrl, newChannel.id);
         let mainMessage = await newChannel.send(Ctf.createCtfMainMesssageEmbed(ctf));
@@ -56,6 +72,7 @@ export class Ctf extends CommandGroup {
         let lastMsg = messages[messages.length-1];
         await lastMsg.react('👌');
         ctf.discordMainMessageId = lastMsg.id;
+
         ctf = await ctf.save();
 
         await agenda.schedule(

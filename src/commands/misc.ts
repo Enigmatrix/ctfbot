@@ -4,7 +4,7 @@ import moment from 'moment';
 import agenda from '../agenda';
 import { formatNiceSGT } from '../util';
 import { Ctf } from './ctf';
-import trello, { extractBoardId } from '../trello';
+import { trello, trelloEx } from '../trello';
 
 @Group('Miscellaneous')
 class Misc extends CommandGroup {
@@ -14,15 +14,6 @@ class Misc extends CommandGroup {
     async testupcoming(args: CmdRunArgs){
         await agenda.now(NOTIFY_UPCOMING_CTF, { channelId: args.msg.channel.id });
     }*/
-
-    @Command({})
-    async testtrello(args: CmdRunArgs){
-        let channel = args.msg.channel as TextChannel;
-        let ctf = await Ctf.getCtf(channel);
-        if(!ctf) return;
-        let board = await trello.board.search(extractBoardId(ctf.trelloUrl));
-        console.log(board);
-    }
     
 
     @Command({
