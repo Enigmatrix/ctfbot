@@ -42,18 +42,18 @@ declare global {
 }
 
 export class ContinuationStop extends Error {
-    kind: string;
+    __proto__: Error;
     constructor(){
+        const trueProto = new.target.prototype;
         super();
-        this.kind = "ContinuationStop";
+        this.__proto__ = trueProto;
     }
 }
 
 export const ifNot = async function(val: boolean, fail: () => void): Promise<void>{
-    if(!val){
-        fail();
-        throw new ContinuationStop();
-    }
+    if(val) return;
+    fail();
+    throw new ContinuationStop();
 }
 
 Promise.prototype.expect = async function<T>(this: Promise<T|undefined>, fail: () => void): Promise<T> {

@@ -23,8 +23,8 @@ export class Ctf extends CommandGroup {
         let [ctftimeUrl] = args.checkedArgs(1);
         let {guild, channel} = args.msg;
 
-        ifNot(isCtfTimeUrl(ctftimeUrl),
-            async () => await channel.send('Usage: '+args.cmd.usage));
+        await ifNot(isCtfTimeUrl(ctftimeUrl),
+            async () => await args.printUsage());
 
         let ctftimeEvent = await getCtftimeEvent(ctftimeUrl);
         let ctfs = expect(guild.channels.find(x => x.name === "CTFs"),

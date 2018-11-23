@@ -11,7 +11,7 @@ class Users extends CommandGroup {
     async register(args: CmdRunArgs){
         let [trelloUrl] = args.checkedArgs(1);
         const trelloId = await trelloEx.member.extractId(trelloUrl)
-            .expect(() => args.printUsageAndExit());
+            .expect(async () => await args.printUsage());
         let user = await User.findOne({discordId: args.msg.author.id})
             .expect(() => {
                 user = new User();

@@ -14,14 +14,15 @@ export class CmdRunArgs {
     }
 
     checkedArgs(len: number): string[] {
-        if(len !== this.rawArgs.length)
-            this.printUsageAndExit();
+        if(len !== this.rawArgs.length){
+            this.printUsage();
+            throw new ContinuationStop();
+        }
         return this.rawArgs;
     }
 
-    printUsageAndExit(){
-        this.msg.channel.send(this.cmd.usage);
-        throw new ContinuationStop();
+    async printUsage(){
+        await this.msg.channel.send(this.cmd.usage);
     }
 }
 export declare type RunMethod = (a: CmdRunArgs) => Promise<void>
@@ -82,9 +83,10 @@ export class CommandRegistrations {
         }
         logger.info(`Running command ${name} (${runArgs.msg.content})`);
         command.run(new CmdRunArgs(runArgs.args, runArgs.msg, command))
-            .catch(e => {
-                if(e instanceof ContinuationStop)
+            .catch((e:Error) => {
+                if(e instanceof ContinuationStop){
                     return;
+                }
                 logger.error(`Unexpected error while running ${name}`, e);
                 console.error(e);
             });

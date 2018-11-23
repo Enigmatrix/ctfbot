@@ -6,7 +6,7 @@ import { Challenge } from "../entities/ctf";
 import { User } from "../entities/user";
 
 class Challenges extends CommandGroup {
-
+    /*
     @Command({
         desc: 'Add a challenge to this CTF',
         usage: '!addchall <name> <category1>,<category2>..'
@@ -290,4 +290,5 @@ class Challenges extends CommandGroup {
         
         await ctf.save();
     }
+    */
 }
