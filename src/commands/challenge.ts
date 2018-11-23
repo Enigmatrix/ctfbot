@@ -108,6 +108,11 @@ class Challenges extends CommandGroup {
             args.msg.reply('register with `!register <trello_profile_url>` first. // Sorry for the inconvenience');
             return;
         }
+        let userId = user.id;
+        if(chal.workers.findIndex(x => x === userId)){
+            channel.send('Seems like you are already working on this challenge...');
+            return;
+        }
         
         await trelloEx.card.addMember(chal.cardId, user.trelloId);
 
