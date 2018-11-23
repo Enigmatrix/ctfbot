@@ -1,5 +1,6 @@
 import logger from '../logger';
 import { Message, RichEmbed } from 'discord.js';
+import { ContinuationStop } from '../util';
 
 export declare type RunArgs = { args: string[], msg: Message };
 export declare type CmdRunArgs = { args: string[], msg: Message, cmd: CommandRegistration };
@@ -62,6 +63,8 @@ export class CommandRegistrations {
         logger.info(`Running command ${name} (${runArgs.msg.content})`);
         command.run({cmd: command, ...runArgs})
             .catch(e => {
+                if(e instanceof ContinuationStop)
+                    return;
                 logger.error(`Unexpected error while running ${name}`, e);
                 console.error(e);
             });

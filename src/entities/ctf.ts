@@ -15,7 +15,7 @@ export class Challenge {
     cardId: string;
 
     @Column()
-    solvedBy?: ObjectID;
+    solvedBy: ObjectID | undefined;
 
     constructor(name: string, categories: string[], cardId: string){
         this.name = name;

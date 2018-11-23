@@ -30,3 +30,30 @@ export function cloneEmbed(embed: MessageEmbed){
 export function chooseRandom<T>(arr: T[]): T{
     return arr[Math.floor(Math.random()*arr.length)];
 }
+
+declare global {
+    /*interface Object {
+        ifNot<T>(this: T|undefined, fail: () => void): T;
+    }*/
+
+    interface Promise<T> {
+        ifNot<T>(this: Promise<T|undefined>, fail: () => void): Promise<T>;
+    }
+}
+
+export class ContinuationStop extends Error {
+    kind: string;
+    constructor(){
+        super();
+        this.kind = "ContinuationStop";
+    }
+}
+
+Promise.prototype.ifNot = async function<T>(this: Promise<T|undefined>, fail: () => void): Promise<T> {
+    const x = await this;
+    if (!x) {
+        fail();
+        throw new ContinuationStop();
+    }
+    return x;
+}

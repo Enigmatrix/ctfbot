@@ -14,6 +14,14 @@ class Misc extends CommandGroup {
     async testupcoming(args: CmdRunArgs){
         await agenda.now(NOTIFY_UPCOMING_CTF, { channelId: args.msg.channel.id });
     }*/
+
+    @Command({})
+    async continuation(args: CmdRunArgs){
+        let channel = args.msg.channel as TextChannel;
+        let ctf = await Ctf.getCtf(channel)
+            .ifNot(() => channel.send('continuation success'));
+        console.log('ur mum');
+    }
     
 
     @Command({
