@@ -77,17 +77,26 @@ export namespace trelloEx {
         
     }
 
-    export namespace member {
+    export namespace card {
 
-        export async function isTrelloMemberUrl(s: string) {
-            if (!/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?trello.com\/.*$/.test(s)) 
-                return false;
-            let resp = await trelloApi.get<MemberType>("/types/" + extractId(s));
-            return resp.data.type === "member";
+        export async function addMember(cardId: ID, memId: ID) {
+            return await trelloApi.post(`cards/${cardId}/idMembers`, undefined, {
+                params: {
+                    value: memId
+                }
+            });
         }
 
-        export function extractId(s: string) {
-            return s.split('trello.com/')[1];
+    }
+
+    export namespace member {
+
+        export async function extractId(s: string): Promise<ID|undefined> {
+            if (!/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?trello.com\/.*$/.test(s)) 
+                return;
+            let resp = await trelloApi.get<MemberType>("/types/" + s.split('trello.com/')[1]);
+            if(resp.data.type !== "member") return;
+            return resp.data.id;
         }
     }
 

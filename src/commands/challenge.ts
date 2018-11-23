@@ -3,6 +3,7 @@ import { trello, trelloEx } from "../trello";
 import { Ctf } from "./ctf";
 import { TextChannel } from "discord.js";
 import { Challenge } from "../entities/ctf";
+import { User } from "../entities/user";
 
 class Challenges extends CommandGroup {
 
@@ -85,7 +86,33 @@ class Challenges extends CommandGroup {
         usage: '!workon <name>'
     })
     async workon(args: CmdRunArgs){
-        await super.NotImplemented(args);
+        let channel = args.msg.channel as TextChannel;
+        let name = args.args[0];
+        if(!name){
+            channel.send(args.cmd.usage);
+            return;
+        }
+        let ctf = await Ctf.getCtf(channel);
+        if(!ctf){
+            channel.send(Ctf.NotCtfChannel);
+            return;
+        }
+        let chal = ctf.challenges.find(x => x.name === name);
+        if(!chal){
+            channel.send(`Challenge ${name} not found`);
+            return;
+        }
+        let authorId = args.msg.author.id;
+        let user = await User.findOne({discordId: authorId});
+        if(!user){
+            args.msg.reply('register with `!register <trello_profile_url>` first. // Sorry for the inconvenience');
+            return;
+        }
+        
+        await trelloEx.card.addMember(chal.cardId, user.trelloId);
+
+        chal.workers.push(user.id);
+        await ctf.save();
     }
 
     @Command({
