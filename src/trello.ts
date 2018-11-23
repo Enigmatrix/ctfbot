@@ -1,5 +1,5 @@
 import Trello from 'trello-node-api';
-import {config} from './util';
+import {config, chooseRandom} from './util';
 import Axios from 'axios';
 
 const trello_key = config("TRELLO_KEY");
@@ -20,7 +20,9 @@ export namespace trelloEx {
         cards?: Card[];
     }
 
-    export interface Card {}
+    export interface Card {
+        id: ID;
+    }
 
     export interface Label {
         id?: ID;
@@ -43,7 +45,7 @@ export namespace trelloEx {
     });
 
     export namespace board {
-        export async function extractId(url: string) {
+        export async function extractId(url: string): Promise<ID> {
             const segments = url.split('/').filter(x => x !== '');
             const sid = segments[segments.length - 1];
             const board = await trello.board.search(sid);
@@ -79,5 +81,9 @@ export namespace trelloEx {
         export function extractId(s: string) {
             return s.split('trello.com/')[1];
         }
+    }
+
+    export function randomTrelloColor(){
+        return chooseRandom(["yellow", "purple", "blue", "red", "green", "orange", "black", "sky", "pink", "lime"])
     }
 }

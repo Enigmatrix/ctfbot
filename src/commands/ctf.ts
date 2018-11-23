@@ -58,7 +58,7 @@ export class Ctf extends CommandGroup {
             {name: 'stego', color: 'yellow', idBoard},
             {name: 'crypto', color: 'purple', idBoard},
             {name: 'forensic', color: 'lime', idBoard}];
-            //create new labels
+        //create new labels
         for(let label of labels)
             await trello.label.create(label);
     

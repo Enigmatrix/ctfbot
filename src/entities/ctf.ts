@@ -11,9 +11,13 @@ export class Challenge {
     @Column()
     workers: ObjectID[];
 
-    constructor(name: string, categories: string[]){
+    @Column()
+    cardId: string;
+
+    constructor(name: string, categories: string[], cardId: string){
         this.name = name;
         this.categories = categories;
+        this.cardId = cardId;
         this.workers = [];
     }
 }

@@ -26,3 +26,7 @@ export function limit(s: string, n: number){
 export function cloneEmbed(embed: MessageEmbed){
     return Object.assign({}, embed) as unknown as RichEmbedOptions;
 }
+
+export function chooseRandom<T>(arr: T[]): T{
+    return arr[Math.floor(Math.random()*arr.length)];
+}
