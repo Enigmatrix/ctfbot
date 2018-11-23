@@ -109,7 +109,7 @@ class Challenges extends CommandGroup {
             return;
         }
         let userId = user.id;
-        if(chal.workers.findIndex(x => x === userId) >= 0){
+        if(chal.workers.findIndex(x => x.equals(userId)) >= 0){
             channel.send('Seems like you are already working on this challenge...');
             return;
         }
@@ -157,7 +157,7 @@ class Challenges extends CommandGroup {
             return;
         }
         let userId = user.id;
-        if(chal.workers.findIndex(x => x === userId) === -1){
+        if(chal.workers.findIndex(x => x.equals(userId)) === -1){
             channel.send('Seems like you are not working on this challenge...');
             return;
         }
