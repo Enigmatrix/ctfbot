@@ -2,7 +2,7 @@ import { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import {trello, trelloEx } from '../trello';
 import { TextChannel, RichEmbed, Message, } from 'discord.js';
 import { isCtfTimeUrl, getCtftimeEvent } from '../ctftime';
-import { formatNiceSGT, cloneEmbed } from '../util';
+import { formatNiceSGT, cloneEmbed, ifNot, expect } from '../util';
 import agenda, { NOTIFY_CTF_REACTORS } from '../agenda';
 import moment from 'moment';
 import { CTFTimeCTF, Challenge } from '../entities/ctf';
@@ -20,18 +20,16 @@ export class Ctf extends CommandGroup {
         usage: '!addctf <ctftime_url>'
     })
     async addctf(args: CmdRunArgs){
-        let ctftimeUrl = args.args[0];
+        let [ctftimeUrl] = args.checkedArgs(1);
         let {guild, channel} = args.msg;
-        if(!ctftimeUrl || !isCtfTimeUrl(ctftimeUrl)){
-            await channel.send('Usage: '+args.cmd.usage);
-            return;
-        }
+
+        ifNot(isCtfTimeUrl(ctftimeUrl),
+            async () => await channel.send('Usage: '+args.cmd.usage));
+
         let ctftimeEvent = await getCtftimeEvent(ctftimeUrl);
-        let ctfs = guild.channels.find(x => x.name === "CTFs");
-        if(!ctfs){
-            await channel.send('CTFs category channel missing');
-            return;
-        }
+        let ctfs = expect(guild.channels.find(x => x.name === "CTFs"),
+            async () => await channel.send('CTFs category channel missing'));
+
         let newChannel = await guild.createChannel(ctftimeEvent.title, "text") as TextChannel;
         await newChannel.setParent(ctfs);
         newChannel.setTopic('SEE :pushpin: FOR INFO');
@@ -85,22 +83,21 @@ export class Ctf extends CommandGroup {
         usage: '!addcreds field1=val1 field2=val2...'
     })
     async addcreds(args: CmdRunArgs){
-        let newCreds = args.args.map(x => x.split("="))
+        let newCreds = args.rawArgs.map(x => x.split("="))
             .filter(x => x.length===2)
             .filter(x => x[0].indexOf("```") === -1 && x[1].indexOf("```") === -1);
+        let channel = args.msg.channel as TextChannel;
 
-        let ctf = await Ctf.getCtf(args.msg.channel as TextChannel);
-        if(!ctf) {
-            args.msg.channel.send(Ctf.NotCtfChannel);
-            return;
-        };
+        let ctf = await Ctf.getCtf(channel).expect(
+            async () => await channel.send(Ctf.NotCtfChannel));
 
         for(let [key, val] of newCreds){
             ctf.credentials[key] = val;
         }
+
         await ctf.save();
 
-        let mainMessage = await Ctf.getCtfMainMessageFromCtfAndChannel(ctf, args.msg.channel as TextChannel);
+        let mainMessage = await Ctf.getCtfMainMessageFromCtfAndChannel(ctf, channel);
         await mainMessage.edit(Ctf.createCtfMainMesssageEmbed(ctf));
     }
 
@@ -109,18 +106,16 @@ export class Ctf extends CommandGroup {
         usage: '!rmvcreds field1 field2 ...'
     })
     async rmvcreds(args: CmdRunArgs){
-        let ctf = await Ctf.getCtf(args.msg.channel as TextChannel);
-        if(!ctf) {
-            args.msg.channel.send(Ctf.NotCtfChannel);
-            return;
-        };
+        let channel = args.msg.channel as TextChannel;
+        let ctf = await Ctf.getCtf(channel).expect(
+            async () => await channel.send(Ctf.NotCtfChannel));
         
-        for(let key of args.args){
+        for(let key of args.rawArgs){
             delete ctf.credentials[key];
         }
         await ctf.save();
 
-        let mainMessage = await Ctf.getCtfMainMessageFromCtfAndChannel(ctf, args.msg.channel as TextChannel);
+        let mainMessage = await Ctf.getCtfMainMessageFromCtfAndChannel(ctf, channel);
         await mainMessage.edit(Ctf.createCtfMainMesssageEmbed(ctf));
     }
 
@@ -129,17 +124,13 @@ export class Ctf extends CommandGroup {
     })
     async archive(args: CmdRunArgs) {
         let channel = args.msg.channel as TextChannel;
-        let ctf = await Ctf.getCtf(args.msg.channel as TextChannel);
-        if(!ctf) {
-            args.msg.channel.send(Ctf.NotCtfChannel);
-            return;
-        };
-        let archive = args.msg.guild.channels.find(x => x.name === "archives");
-        if(!archive){
-            await channel.send('CTFs archive channel missing');
-            return;
-        }
+        let ctf = await Ctf.getCtf(channel).expect(
+            async () => await channel.send(Ctf.NotCtfChannel));
+
+        let archive = expect(args.msg.guild.channels.find(x => x.name === "archives"),
+            async () => channel.send('CTFs archive channel missing'));
         await channel.setParent(archive);
+        
         ctf.archived = true;
         await ctf.save();
     }

@@ -9,20 +9,14 @@ class Users extends CommandGroup {
         usage: '!register <trello_profile_url>'
     })
     async register(args: CmdRunArgs){
-        if(!args.args[0]){
-            args.msg.channel.send(args.cmd.usage);
-            return;
-        }
-        const trelloId = await trelloEx.member.extractId(args.args[0]);
-        if(!trelloId){
-            args.msg.channel.send(args.cmd.usage);
-            return;
-        }
-        let user = await User.findOne({discordId: args.msg.author.id});
-        if(!user){
-            user = await new User();
-            user.discordId = args.msg.author.id;
-        }
+        let [trelloUrl] = args.checkedArgs(1);
+        const trelloId = await trelloEx.member.extractId(trelloUrl)
+            .expect(() => args.printUsageAndExit());
+        let user = await User.findOne({discordId: args.msg.author.id})
+            .expect(() => {
+                user = new User();
+                user.discordId = args.msg.author.id;
+            });
         user.trelloId = trelloId;
         await user.save();
     }

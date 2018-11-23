@@ -3,7 +3,27 @@ import { Message, RichEmbed } from 'discord.js';
 import { ContinuationStop } from '../util';
 
 export declare type RunArgs = { args: string[], msg: Message };
-export declare type CmdRunArgs = { args: string[], msg: Message, cmd: CommandRegistration };
+export class CmdRunArgs {
+    rawArgs: string[];
+    msg: Message;
+    cmd: CommandRegistration;
+    constructor(rawArgs: string[], msg: Message, cmd: CommandRegistration){
+        this.rawArgs = rawArgs;
+        this.msg = msg;
+        this.cmd = cmd;
+    }
+
+    checkedArgs(len: number): string[] {
+        if(len !== this.rawArgs.length)
+            this.printUsageAndExit();
+        return this.rawArgs;
+    }
+
+    printUsageAndExit(){
+        this.msg.channel.send(this.cmd.usage);
+        throw new ContinuationStop();
+    }
+}
 export declare type RunMethod = (a: CmdRunArgs) => Promise<void>
 
 export class CommandRegistration {
@@ -15,7 +35,7 @@ export class CommandRegistration {
     constructor(name: string, run: RunMethod, desc?: string, usage?: string){
         this.name = name;
         this.run = run;
-        this.usage = usage || "!"+name
+        this.usage = "Usage: " + (usage || "!"+name)
         this.description = desc;
     }
 }
@@ -61,7 +81,7 @@ export class CommandRegistrations {
             return;
         }
         logger.info(`Running command ${name} (${runArgs.msg.content})`);
-        command.run({cmd: command, ...runArgs})
+        command.run(new CmdRunArgs(runArgs.args, runArgs.msg, command))
             .catch(e => {
                 if(e instanceof ContinuationStop)
                     return;

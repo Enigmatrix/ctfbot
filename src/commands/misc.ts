@@ -2,7 +2,7 @@ import commands, { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import { Message, RichEmbed, TextChannel } from 'discord.js';
 import moment from 'moment';
 import agenda from '../agenda';
-import { formatNiceSGT } from '../util';
+import { formatNiceSGT, ifNot } from '../util';
 import { Ctf } from './ctf';
 import { trello, trelloEx } from '../trello';
 
@@ -14,14 +14,6 @@ class Misc extends CommandGroup {
     async testupcoming(args: CmdRunArgs){
         await agenda.now(NOTIFY_UPCOMING_CTF, { channelId: args.msg.channel.id });
     }*/
-
-    @Command({})
-    async continuation(args: CmdRunArgs){
-        let channel = args.msg.channel as TextChannel;
-        let ctf = await Ctf.getCtf(channel)
-            .ifNot(() => channel.send('continuation success'));
-        console.log('ur mum');
-    }
     
 
     @Command({
@@ -61,7 +53,7 @@ class Misc extends CommandGroup {
         usage: '!help\n!help <cmd>'
     })
     async help(args: CmdRunArgs){
-        if(args.args[0] === undefined)
+        if(args.rawArgs[0] === undefined)
             args.msg.channel.send(new RichEmbed({
                 title: ':question: Help',
                 color: 0x00e676,
@@ -71,14 +63,14 @@ class Misc extends CommandGroup {
                         value: `**${cmd.usage}**\n${cmd.description}`
                     }})
             }));
-        else if(commands.commandMap.has(args.args[0])){
-            let cmd = commands.commandMap.get(args.args[0]);
+        else if(commands.commandMap.has(args.rawArgs[0])){
+            let cmd = commands.commandMap.get(args.rawArgs[0]);
             if(!cmd)return;
             args.msg.channel.send(new RichEmbed({
-                title: ':question: Help for '+args.args,
+                title: ':question: Help for '+args.rawArgs[0],
                 color: 0x00e676,
                 fields: [{
-                    name: args.args[0],
+                    name: args.rawArgs[0],
                     value: `**${cmd.usage}**\n${cmd.description}`
                 }]
             }));
