@@ -109,7 +109,7 @@ class Challenges extends CommandGroup {
             return;
         }
         let userId = user.id;
-        if(chal.workers.findIndex(x => x === userId)){
+        if(chal.workers.findIndex(x => x === userId) >= 0){
             channel.send('Seems like you are already working on this challenge...');
             return;
         }
@@ -134,7 +134,35 @@ class Challenges extends CommandGroup {
         usage: '!ditch <name>'
     })
     async ditch(args: CmdRunArgs){
-        await super.NotImplemented(args);
+        let channel = args.msg.channel as TextChannel;
+        let name = args.args[0];
+        if(!name){
+            channel.send(args.cmd.usage);
+            return;
+        }
+        let ctf = await Ctf.getCtf(channel);
+        if(!ctf){
+            channel.send(Ctf.NotCtfChannel);
+            return;
+        }
+        let chal = ctf.challenges.find(x => x.name === name);
+        if(!chal){
+            channel.send(`Challenge ${name} not found`);
+            return;
+        }
+        let authorId = args.msg.author.id;
+        let user = await User.findOne({discordId: authorId});
+        if(!user){
+            args.msg.reply('register with `!register <trello_profile_url>` first. // Sorry for the inconvenience');
+            return;
+        }
+        let userId = user.id;
+        if(chal.workers.findIndex(x => x === userId) === -1){
+            channel.send('Seems like you are not working on this challenge...');
+            return;
+        }
+        
+
     }
 
     @Command({
