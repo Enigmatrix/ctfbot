@@ -49,8 +49,6 @@ class Challenges extends CommandGroup {
                 .map(x => (x as trelloEx.Label).id)
         });
 
-        // setup webhooks for the card here
-
         ctf.challenges.push(new Challenge(args.args[0], categories, card.id))
         await ctf.save();
     }

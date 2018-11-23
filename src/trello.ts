@@ -23,12 +23,20 @@ export namespace trelloEx {
     export interface Card {
         id: ID;
     }
-
+    
     export interface Label {
         id?: ID;
         idBoard?: ID;
         color : string;
         name : string;
+    }
+
+    export interface Member {
+        id: ID;
+        avatarHash: string;
+        fullName: string;
+        initials: string;
+        username: string;
     }
 
     export interface MemberType {
