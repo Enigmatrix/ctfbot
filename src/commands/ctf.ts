@@ -24,10 +24,10 @@ export class Ctf extends CommandGroup {
         let {guild, channel} = args.msg;
 
         await ifNot(isCtfTimeUrl(ctftimeUrl),
-            async () => await args.printUsage());
+            async () => args.printUsage());
 
         let ctftimeEvent = await getCtftimeEvent(ctftimeUrl);
-        let ctfs = expect(guild.channels.find(x => x.name === "CTFs"),
+        let ctfs = await expect(guild.channels.find(x => x.name === "CTFs"),
             async () => await channel.send('CTFs category channel missing'));
 
         let newChannel = await guild.createChannel(ctftimeEvent.title, "text") as TextChannel;
@@ -127,7 +127,7 @@ export class Ctf extends CommandGroup {
         let ctf = await Ctf.getCtf(channel).expect(
             async () => await channel.send(Ctf.NotCtfChannel));
 
-        let archive = expect(args.msg.guild.channels.find(x => x.name === "archives"),
+        let archive = await expect(args.msg.guild.channels.find(x => x.name === "archives"),
             async () => channel.send('CTFs archive channel missing'));
         await channel.setParent(archive);
         

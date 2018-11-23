@@ -13,7 +13,7 @@ class Users extends CommandGroup {
         const trelloId = await trelloEx.member.extractId(trelloUrl)
             .expect(async () => await args.printUsage());
         let user = await User.findOne({discordId: args.msg.author.id})
-            .expect(() => {
+            .expect(async () => {
                 user = new User();
                 user.discordId = args.msg.author.id;
             });

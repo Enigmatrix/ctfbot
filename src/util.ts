@@ -37,7 +37,7 @@ declare global {
     }*/
 
     interface Promise<T> {
-        expect<T>(this: Promise<T|undefined>, fail: () => void): Promise<T>;
+        expect<T>(this: Promise<T|undefined>, fail: () => Promise<any>): Promise<T>;
     }
 }
 
@@ -50,24 +50,24 @@ export class ContinuationStop extends Error {
     }
 }
 
-export const ifNot = async function(val: boolean, fail: () => void): Promise<void>{
+export const ifNot = async function(val: boolean, fail: () => Promise<any>): Promise<void>{
     if(val) return;
-    fail();
+    await fail();
     throw new ContinuationStop();
 }
 
-Promise.prototype.expect = async function<T>(this: Promise<T|undefined>, fail: () => void): Promise<T> {
+Promise.prototype.expect = async function<T>(this: Promise<T|undefined>, fail: () => Promise<any>): Promise<T> {
     const x = await this;
     if (!x) {
-        fail();
+        await fail();
         throw new ContinuationStop();
     }
     return x;
 }
 
-export function expect<T>(val: T|undefined, fail: ()=>void): T{
+export async function expect<T>(val: T|undefined, fail: ()=>Promise<any>): Promise<T>{
     if(!val){
-        fail();
+        await fail();
         throw new ContinuationStop();
     }
     return val;
