@@ -6,6 +6,7 @@ import {Ctf} from './commands/ctf';
 import { TextChannel, RichEmbed, ReactionCollector, MessageReaction, ReactionEmoji, Emoji } from 'discord.js';
 import { weeklyCtftimeEvents } from './ctftime';
 import { CTFTimeCTF } from './entities/ctf';
+import { ObjectID } from 'typeorm';
 
 const agenda =  new Agenda({db: {address: config("MONGO_URI")}});
 
@@ -13,8 +14,8 @@ export const NOTIFY_CTF_REACTORS = 'notifyCtfReactorsv1.0';
 export const REPEATED_NOTIFY_UPCOMING_CTF = 'repeated_notifyUpcomingCtfv1.0';
 
 agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
-    let ctfid = job.attrs.data.ctf;
-    let ctf = await CTFTimeCTF.findOne({id: ctfid, archived: false});
+    let ctfid = (<ObjectID>job.attrs.data.ctf).toString();
+    let ctf = await CTFTimeCTF.findOne(ctfid, {where: {archived: false}});
     if(!ctf) { done(new Error(`CTF not found ${ctfid}`)); return; }
     let message = await Ctf.getCtfMainMessageFromCtf(ctf);
     if(!message) { done(new Error(`Message missing for CTF ${ctfid}`)); return; }

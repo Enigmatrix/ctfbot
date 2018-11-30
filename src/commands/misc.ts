@@ -1,7 +1,7 @@
 import commands, { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import { Message, RichEmbed, TextChannel } from 'discord.js';
 import moment from 'moment';
-import agenda from '../agenda';
+import agenda, { NOTIFY_CTF_REACTORS } from '../agenda';
 import { formatNiceSGT, ifNot } from '../util';
 import { Ctf } from './ctf';
 import { trello, trelloEx } from '../trello';
@@ -13,6 +13,15 @@ class Misc extends CommandGroup {
     @Command({})
     async testupcoming(args: CmdRunArgs){
         await agenda.now(NOTIFY_UPCOMING_CTF, { channelId: args.msg.channel.id });
+    }*/
+
+    /*@Command({})
+    async notif(args: CmdRunArgs){
+        let channel = args.msg.channel as TextChannel;
+
+        let ctf = await Ctf.getCtf(channel).expect(
+            async () => await channel.send(Ctf.NotCtfChannel));
+        await agenda.now(NOTIFY_CTF_REACTORS, {ctf: ctf.id})
     }*/
     
 
