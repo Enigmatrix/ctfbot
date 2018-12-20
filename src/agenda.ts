@@ -38,6 +38,7 @@ agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
             url: ctf.url,
         }));
     }
+    done()
 });
 agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
     try{
@@ -76,6 +77,7 @@ agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
                 }
             }));
         }
+      done()
     }
     catch(e){
         logger.error('Error:', e);
