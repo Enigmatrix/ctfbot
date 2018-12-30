@@ -38,7 +38,7 @@ agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
             url: ctf.url,
         }));
     }
-    done()
+    done();
 });
 agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
     try{
@@ -53,6 +53,7 @@ agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
                 color: 0xff8f00,
                 title: 'There are no upcoming online CTFs for this week'
             }));
+            done();
             return;
         }
         await channel.send(new RichEmbed({
