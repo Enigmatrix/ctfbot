@@ -42,9 +42,7 @@ agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
 });
 agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
     try{
-        let channel =
-            (bot.guilds.first().channels.find(x => job.attrs.data ? x.id === job.attrs.data.channelId : false) ||
-            bot.guilds.first().channels.find(x => x.name === "upcoming")) as TextChannel;
+        let channel = bot.guilds.first().channels.find(x => x.name === "upcoming") as TextChannel;
 
         let ctftimeEvents = await weeklyCtftimeEvents();
         ctftimeEvents = ctftimeEvents.filter(x => x.finish > x.start && !x.onsite);
@@ -87,7 +85,7 @@ agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
 });
 agenda.on('ready', async () => {
 
-    await agenda.purge();
+    await agenda.purge();/*
     let oldRepeatJobs = await agenda.jobs({name: {$regex: "repeated_.*"}});
     for(let job of oldRepeatJobs){
         await job.remove();
@@ -96,7 +94,7 @@ agenda.on('ready', async () => {
     await agenda.create(REPEATED_NOTIFY_UPCOMING_CTF)
         .schedule('sunday at 6pm')
         .repeatEvery('1 week', { timezone: "Asia/Singapore", skipImmediate: true })
-        .save();
+        .save();*/
 })
 
 export default agenda.on('error', (e) => logger.error('Error from agenda', e));
