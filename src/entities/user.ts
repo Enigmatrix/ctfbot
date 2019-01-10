@@ -1,13 +1,13 @@
-import {Entity, ObjectID, ObjectIdColumn, Column, BaseEntity} from "typeorm";
+import {BaseEntity, Column, Entity, ObjectID, ObjectIdColumn} from "typeorm";
 
 @Entity()
 export class User extends BaseEntity {
     @ObjectIdColumn()
-    id!: ObjectID;
+    public id!: ObjectID;
 
     @Column()
-    discordId!: string;
+    public discordId!: string;
 
     @Column()
-    trelloId!: string;
+    public trelloId!: string;
 }

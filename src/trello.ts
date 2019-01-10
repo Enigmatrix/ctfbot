@@ -1,34 +1,35 @@
-import Trello from 'trello-node-api';
-import {config, chooseRandom} from './util';
-import Axios from 'axios';
+import Axios from "axios";
+import Trello from "trello-node-api";
+import {chooseRandom, config} from "./util";
 
-const trello_key = config("TRELLO_KEY");
-const trello_token = config("TRELLO_TOKEN");
-export const trello = new Trello(trello_key, trello_token);
+const trelloKey = config("TRELLO_KEY");
+const trelloToken = config("TRELLO_TOKEN");
+export const trello = new Trello(trelloKey, trelloToken);
 
+// tslint:disable-next-line:no-namespace
 export namespace trelloEx {
 
     export type ID = string;
 
     export interface List {
-        id : ID;
-        name : string;
-        closed : boolean;
-        idBoard : ID;
-        pos : number;
-        subscribed : boolean;
+        id: ID;
+        name: string;
+        closed: boolean;
+        idBoard: ID;
+        pos: number;
+        subscribed: boolean;
         cards?: Card[];
     }
 
     export interface Card {
         id: ID;
     }
-    
+
     export interface Label {
         id?: ID;
         idBoard?: ID;
-        color : string;
-        name : string;
+        color: string;
+        name: string;
     }
 
     export interface Member {
@@ -40,41 +41,41 @@ export namespace trelloEx {
     }
 
     export interface MemberType {
-        type : "member" | "organization",
-        id : ID
+        type: "member" | "organization";
+        id: ID;
     }
 
     const trelloApi = Axios.create({
-        baseURL: 'https://api.trello.com/1',
+        baseURL: "https://api.trello.com/1",
         params: {
-            key: trello_key,
-            token: trello_token
-        }
+            key: trelloKey,
+            token: trelloToken,
+        },
     });
 
     export namespace board {
         export async function extractId(url: string): Promise<ID> {
-            const segments = url.split('/').filter(x => x !== '');
+            const segments = url.split("/").filter((x) => x !== "");
             const sid = segments[segments.length - 1];
-            const board = await trello.board.search(sid);
-            return board.id;
+            const brd = await trello.board.search(sid);
+            return brd.id;
         }
 
         export async function getLabels(boardId: ID): Promise<Label[]> {
-            return await trelloApi.get<Label[]>(`/boards/${boardId}/labels`).then(x => x.data);
+            return await trelloApi.get<Label[]>(`/boards/${boardId}/labels`).then((x) => x.data);
         }
 
         export async function getLists(boardId: ID): Promise<List[]> {
-            return await trelloApi.get<List[]>(`/boards/${boardId}/lists`).then(x => x.data);
+            return await trelloApi.get<List[]>(`/boards/${boardId}/lists`).then((x) => x.data);
         }
 
         export async function getList(boardId: ID, name: string): Promise<List | undefined> {
-            return await getLists(boardId).then(list => list.find(x => x.name == name));
+            return await getLists(boardId).then((list) => list.find((x) => x.name === name));
         }
     }
 
     export namespace label {
-        
+
     }
 
     export namespace card {
@@ -82,8 +83,8 @@ export namespace trelloEx {
         export async function addMember(cardId: ID, memId: ID) {
             return await trelloApi.post(`cards/${cardId}/idMembers`, undefined, {
                 params: {
-                    value: memId
-                }
+                    value: memId,
+                },
             });
         }
 
@@ -91,11 +92,11 @@ export namespace trelloEx {
             return await trelloApi.delete(`cards/${cardId}/idMembers/${memId}`);
         }
 
-        export async function move(cardId: ID, newListId: ID){
+        export async function move(cardId: ID, newListId: ID) {
             return await trelloApi.put(`cards/${cardId}`, undefined, {
                 params: {
-                    idList: newListId
-                }
+                    idList: newListId,
+                },
             });
         }
 
@@ -104,15 +105,16 @@ export namespace trelloEx {
     export namespace member {
 
         export async function extractId(s: string): Promise<ID|undefined> {
-            if (!/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?trello.com\/.*$/.test(s)) 
+            if (!/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?trello.com\/.*$/.test(s)) {
                 return;
-            let resp = await trelloApi.get<MemberType>("/types/" + s.split('trello.com/')[1]);
-            if(resp.data.type !== "member") return;
+            }
+            const resp = await trelloApi.get<MemberType>("/types/" + s.split("trello.com/")[1]);
+            if (resp.data.type !== "member") { return; }
             return resp.data.id;
         }
     }
 
-    export function randomTrelloColor(){
-        return chooseRandom(["yellow", "purple", "blue", "red", "green", "orange", "black", "sky", "pink", "lime"])
+    export function randomTrelloColor() {
+        return chooseRandom(["yellow", "purple", "blue", "red", "green", "orange", "black", "sky", "pink", "lime"]);
     }
 }

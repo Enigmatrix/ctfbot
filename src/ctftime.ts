@@ -1,10 +1,10 @@
-import axios from 'axios';
-import logger from './logger';
-export function isCtfTimeUrl(s: string){
+import axios from "axios";
+import logger from "./logger";
+export function isCtfTimeUrl(s: string) {
     return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
 }
 
-export declare module CtfTime {
+export declare namespace CtfTime {
 
     export interface Organizer {
         id: number;
@@ -42,23 +42,22 @@ export declare module CtfTime {
 
 }
 
-
-
 export const getCtftimeEvent = async (ctftimeUrl: string) => {
-    const segments = ctftimeUrl.split('event/');
-    const last = segments[segments.length-1];
-    let response = await axios.get<CtfTime.Event>(`https://ctftime.org/api/v1/events/${last.split('/')[0]}/`);
+    const segments = ctftimeUrl.split("event/");
+    const last = segments[segments.length - 1];
+    const response = await axios.get<CtfTime.Event>(`https://ctftime.org/api/v1/events/${last.split("/")[0]}/`);
     return response.data;
 };
 
 export const weeklyCtftimeEvents = async () => {
-    const start = Math.floor(Date.now()/1000);
-    const finish = start + 24*7*60*60;
-    let response = await axios.get<CtfTime.Event[]>(`https://ctftime.org/api/v1/events/`, {
-        params:{
+    const start = Math.floor(Date.now() / 1000);
+    const finish = start + 7 * 24 * 60 * 60;
+    const response = await axios.get<CtfTime.Event[]>(`https://ctftime.org/api/v1/events/`, {
+        params: {
             limit: 100,
-            start, finish
-        }
+            start,
+            finish,
+        },
     });
     return response.data;
-}
+};

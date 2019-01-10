@@ -1,14 +1,14 @@
-import {Connection, createConnection} from 'typeorm';
-import { config } from './util';
+import {Connection, createConnection} from "typeorm";
+import { config } from "./util";
 
-export let initConnection = async() => {
+export let initConnection = async () => {
     connection = await createConnection({
         type: "mongodb",
-        url: config('MONGO_URI'),
+        url: config("MONGO_URI"),
         entities: [
-            __dirname + '/entities/*.js'
-        ]
-    })}
+            __dirname + "/entities/*.js",
+        ],
+    }); }
 ;
 
 export let connection: Connection;

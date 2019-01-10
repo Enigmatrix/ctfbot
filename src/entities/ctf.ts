@@ -1,23 +1,23 @@
-import {Entity, ObjectID, ObjectIdColumn, Column, BaseEntity} from "typeorm";
-import {CtfTime} from '../ctftime';
+import {BaseEntity, Column, Entity, ObjectID, ObjectIdColumn} from "typeorm";
+import {CtfTime} from "../ctftime";
 
 export class Challenge {
     @Column()
-    name: string;
+    public name: string;
 
     @Column()
-    categories: string[];
+    public categories: string[];
 
     @Column()
-    workers: ObjectID[];
+    public workers: ObjectID[];
 
     @Column()
-    cardId: string;
+    public cardId: string;
 
     @Column()
-    solvedBy: ObjectID | undefined;
+    public solvedBy: ObjectID | undefined;
 
-    constructor(name: string, categories: string[], cardId: string){
+    constructor(name: string, categories: string[], cardId: string) {
         this.name = name;
         this.categories = categories;
         this.cardId = cardId;
@@ -25,60 +25,62 @@ export class Challenge {
     }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 @Entity()
 export class CTFTimeCTF extends BaseEntity {
     @ObjectIdColumn()
-    id!: ObjectID;
+    public id!: ObjectID;
 
     @Column()
-    name!: string;
+    public name!: string;
 
     @Column()
-    description!: string;
+    public description!: string;
 
     @Column()
-    format!: string;
+    public format!: string;
 
     @Column()
-    url!: string;
+    public url!: string;
 
     @Column()
-    ctftimeUrl!: string;
+    public ctftimeUrl!: string;
 
     @Column()
-    trelloUrl!: string;
+    public trelloUrl!: string;
 
     @Column()
-    logoUrl!: string | undefined;
+    public logoUrl!: string | undefined;
 
     @Column()
-    discordChannelId!: string;
+    public discordChannelId!: string;
 
     @Column()
-    discordMainMessageId!: string;
+    public discordMainMessageId!: string;
 
     @Column()
-    start!: Date;
+    public start!: Date;
 
     @Column()
-    finish!: Date;
+    public finish!: Date;
 
     @Column()
-    hosts!: string[];
+    public hosts!: string[];
 
     @Column()
-    challenges!: Challenge[];
+    public challenges!: Challenge[];
 
     @Column()
-    credentials!: {[key: string]: string;};
+    public credentials!: {[key: string]: string; };
 
     @Column()
-    archived!: boolean;
+    public archived!: boolean;
 
-    constructor(ctftimeEvent: CtfTime.Event, trelloBoardUrl: string, channelId: string){
+    constructor(ctftimeEvent: CtfTime.Event, trelloBoardUrl: string, channelId: string) {
         super();
-        if(ctftimeEvent === undefined)
+        if (ctftimeEvent === undefined) {
             return;
+        }
         this.name = ctftimeEvent.title;
         this.description = ctftimeEvent.description;
         this.format = ctftimeEvent.format;
@@ -89,7 +91,7 @@ export class CTFTimeCTF extends BaseEntity {
         this.discordChannelId = channelId;
         this.start = ctftimeEvent.start;
         this.finish = ctftimeEvent.finish;
-        this.hosts = ctftimeEvent.organizers.map(x => x.name);
+        this.hosts = ctftimeEvent.organizers.map((x) => x.name);
         this.challenges = [];
         this.credentials = {};
         this.archived = false;

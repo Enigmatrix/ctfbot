@@ -1,60 +1,59 @@
-import { Client } from 'discord.js';
-import logger from './logger';
-import commands from './commands/index';
+import { Client } from "discord.js";
+import commands from "./commands/index";
+import logger from "./logger";
 
 const bot = new Client();
 bot.on("ready", () => {
-    logger.info('CTFBot Ready');
+    logger.info("CTFBot Ready");
 });
 
 function splitter(str: string) {
-    let splits = []
+    const splits = [];
     let last = 0;
     let quote = false;
     let ws = false;
-    for(let i = 0; i < str.length; i++){
-        if(i+1 === str.length && !ws){
+    for (let i = 0; i < str.length; i++) {
+        if (i + 1 === str.length && !ws) {
             splits.push([last, str.length]);
-            continue
+            continue;
         }
-        if(!/\S/.test(str[i]) && !quote){
-            if(!ws){
-                splits.push([last, i])
+        if (!/\S/.test(str[i]) && !quote) {
+            if (!ws) {
+                splits.push([last, i]);
                 ws = true;
             }
-            last = i+1;
+            last = i + 1;
             continue;
         }
         ws = false;
-        if(str[i] === "\"" && !eq(i-1, str, "\\\"")){
-            if(!quote){
-                last = i+1;
+        if (str[i] === "\"" && !eq(i - 1, str, "\\\"")) {
+            if (!quote) {
+                last = i + 1;
                 quote = true;
-            }
-            else{
+            } else {
                 splits.push([last, i]);
-                last = i+1;
+                last = i + 1;
                 quote = false;
-                ws=true;
+                ws = true;
             }
             continue;
         }
 
     }
-    return splits.map(x => str.substring(x[0], x[1]).replace("\\\"", "\""));
+    return splits.map((x) => str.substring(x[0], x[1]).replace("\\\"", "\""));
 }
 
-function eq(i: number, all: string, sub: string){
-    if(i < 0 || i >= all.length || i+sub.length >= all.length)
+function eq(i: number, all: string, sub: string) {
+    if (i < 0 || i >= all.length || i + sub.length >= all.length) {
         return false;
+    }
     return all.substr(i, sub.length) === sub;
 }
 
+bot.on("message", (msg) => {
+    if (msg.content[0] !== "!" || msg.author.id === bot.user.id) { return; }
 
-bot.on('message', msg => {
-    if(msg.content[0] !== "!" || msg.author.id === bot.user.id) return;
-
-    let [cmd, ...args] = splitter(msg.content.substr(1));
+    const [cmd, ...args] = splitter(msg.content.substr(1));
     commands.run(cmd, { args, msg });
 });
 
