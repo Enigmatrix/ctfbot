@@ -58,6 +58,9 @@ export class CTFTimeCTF extends BaseEntity {
     discordMainMessageId!: string;
 
     @Column()
+    discordWriteupMessageId: string|undefined;
+
+    @Column()
     start!: Date;
 
     @Column()

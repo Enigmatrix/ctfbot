@@ -2,10 +2,10 @@ import { Command, CmdRunArgs, CommandGroup, Group } from './commands';
 import {trello, trelloEx } from '../trello';
 import { TextChannel, RichEmbed, Message, } from 'discord.js';
 import { isCtfTimeUrl, getCtftimeEvent } from '../ctftime';
-import { formatNiceSGT, cloneEmbed, ifNot, expect } from '../util';
-import agenda, { NOTIFY_CTF_REACTORS } from '../agenda';
+import { formatNiceSGT, ifNot, expect } from '../util';
+import agenda, { NOTIFY_CTF_REACTORS, NOTIFY_CTF_WRITEUPS_BEGIN } from '../agenda';
 import moment from 'moment';
-import { CTFTimeCTF, Challenge } from '../entities/ctf';
+import { CTFTimeCTF } from '../entities/ctf';
 import bot from '../bot';
 
 @Group('CTF')
@@ -75,7 +75,11 @@ export class Ctf extends CommandGroup {
 
         await agenda.schedule(
             moment(ctf.start).subtract(1, 'hour').toDate(),
-            NOTIFY_CTF_REACTORS, { ctf: ctf.id })
+            NOTIFY_CTF_REACTORS, { ctf: ctf.id });
+            
+        await agenda.schedule(
+            moment(ctf.finish).toDate(),
+            NOTIFY_CTF_WRITEUPS_BEGIN, { ctf: ctf.id });
     }
 
     @Command({
@@ -159,9 +163,35 @@ export class Ctf extends CommandGroup {
     public static async getCtfMainMessageFromCtf(ctf: CTFTimeCTF): Promise<undefined | Message> {
         return await this.getCtfMainMessageFromCtfAndChannel(ctf, bot.guilds.first().channels.get(ctf.discordChannelId) as TextChannel);
     }
+    
+
+    public static async getCtfWriteupMessageFromCtf(ctf: CTFTimeCTF): Promise<undefined | Message> {
+        if(!ctf.discordWriteupMessageId){
+            return undefined;
+        }
+        return await (bot.guilds.first().channels.get(ctf.discordChannelId) as TextChannel).fetchMessage(ctf.discordWriteupMessageId);
+    }
 
     public static async getCtfMainMessageFromCtfAndChannel(ctf: CTFTimeCTF, channel: TextChannel){
         return await channel.fetchMessage(ctf.discordMainMessageId);
+    }
+
+    public static createCtfWriteupsMessageEmbed(ctftimeEvent: CTFTimeCTF){
+        /*
+        var cheerio = require("cheerio")
+var axios = require("axios")
+
+let req = await axios.get("https://ctftime.org/event/664/tasks/");
+let $ = cheerio.load(req.data)
+console.log($('.table.table-striped > tr').map((_, el) => [$(el).find("a").attr('href')]).toArray());
+*/
+        return new RichEmbed({
+            color: 0x006dee,
+            author: {
+                name: `Writeups for ${ctftimeEvent.name}`
+            },
+            
+        });
     }
 
     public static createCtfMainMesssageEmbed(ctftimeEvent: CTFTimeCTF){
