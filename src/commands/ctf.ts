@@ -1,11 +1,11 @@
 import { Message, RichEmbed, TextChannel } from "discord.js";
 import moment from "moment";
-import agenda, { NOTIFY_CTF_REACTORS } from "../agenda";
+import agenda, { NOTIFY_CTF_REACTORS, NOTIFY_CTF_WRITEUPS_BEGIN } from "../agenda";
 import bot from "../bot";
 import { getCtftimeEvent, isCtfTimeUrl } from "../ctftime";
-import { Challenge, CTFTimeCTF } from "../entities/ctf";
+import { CTFTimeCTF } from "../entities/ctf";
 import {trello, trelloEx } from "../trello";
-import { cloneEmbed, expect, formatNiceSGT, ifNot } from "../util";
+import { expect, formatNiceSGT, ifNot } from "../util";
 import { CmdRunArgs, Command, CommandGroup, Group } from "./commands";
 
 @Group("CTF")
@@ -16,6 +16,31 @@ export class Ctf extends CommandGroup {
 
     public static async getCtf(chan: TextChannel): Promise<CTFTimeCTF|undefined> {
         return await CTFTimeCTF.findOne({discordChannelId: chan.id, archived: false});
+    }
+
+    public static async getCtfWriteupMessageFromCtf(ctf: CTFTimeCTF): Promise<undefined | Message> {
+        if (!ctf.discordWriteupMessageId) {
+            return undefined;
+        }
+        return await (bot.guilds.first().channels.get(ctf.discordChannelId) as TextChannel)
+            .fetchMessage(ctf.discordWriteupMessageId);
+    }
+
+    public static createCtfWriteupsMessageEmbed(ctftimeEvent: CTFTimeCTF) {
+        /*
+        var cheerio = require("cheerio")
+var axios = require("axios")
+
+let req = await axios.get("https://ctftime.org/event/664/tasks/");
+let $ = cheerio.load(req.data)
+console.log($('.table.table-striped > tr').map((_, el) => [$(el).find("a").attr('href')]).toArray());
+*/
+        return new RichEmbed({
+            color: 0x006dee,
+            author: {
+                name: `Writeups for ${ctftimeEvent.name}`,
+            },
+        });
     }
 
     public static async isCtfChannel(chan: TextChannel): Promise<boolean> {
@@ -132,6 +157,10 @@ export class Ctf extends CommandGroup {
         await agenda.schedule(
             moment(ctf.start).subtract(1, "hour").toDate(),
             NOTIFY_CTF_REACTORS, { ctf: ctf.id });
+
+        await agenda.schedule(
+            moment(ctf.finish).toDate(),
+            NOTIFY_CTF_WRITEUPS_BEGIN, { ctf: ctf.id });
     }
 
     @Command({

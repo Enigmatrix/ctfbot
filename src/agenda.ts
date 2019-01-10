@@ -11,7 +11,40 @@ import { config, formatNiceSGT } from "./util";
 const agenda =  new Agenda({db: {address: config("MONGO_URI")}});
 
 export const NOTIFY_CTF_REACTORS = "notifyCtfReactorsv1.0";
+export const NOTIFY_CTF_WRITEUPS_BEGIN = "notifyCtfWriteupsBeginv1.0";
+export const NOTIFY_CTF_WRITEUPS = "notifyCtfWriteupsv1.0";
 export const REPEATED_NOTIFY_UPCOMING_CTF = "repeated_notifyUpcomingCtfv1.0";
+
+agenda.define(NOTIFY_CTF_WRITEUPS_BEGIN, async (job, done) => {
+    const ctfid = (job.attrs.data.ctf as ObjectID).toString();
+    const ctf = await CTFTimeCTF.findOne(ctfid, {where: {archived: false}});
+    if (!ctf) { done(new Error(`CTF not found ${ctfid}`)); return; }
+    const message = await Ctf.getCtfMainMessageFromCtf(ctf);
+    if (!message) { done(new Error(`Message missing for CTF ${ctfid}`)); return; }
+
+    const writeupsMessage = await message.channel.sendEmbed(Ctf.createCtfWriteupsMessageEmbed(ctf));
+    await writeupsMessage.pin();
+
+    ctf.discordWriteupMessageId = writeupsMessage.id;
+    await ctf.save();
+
+    agenda.every("3 minutes", NOTIFY_CTF_WRITEUPS, { ctf: job.attrs.data.ctf });
+
+    done();
+});
+
+agenda.define(NOTIFY_CTF_WRITEUPS, async (job, done) => {
+    // TODO agenda.cancel({}) <- do this in !archive
+
+    const ctfid = (job.attrs.data.ctf as ObjectID).toString();
+    const ctf = await CTFTimeCTF.findOne(ctfid, {where: {archived: false}});
+    if (!ctf) { done(new Error(`CTF not found ${ctfid}`)); return; }
+    const message = await Ctf.getCtfWriteupMessageFromCtf(ctf);
+    if (!message) { done(new Error(`Writeups message missing for CTF ${ctfid}`)); return; }
+
+    message.edit(Ctf.createCtfWriteupsMessageEmbed(ctf));
+    done();
+});
 
 agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
     const ctfid = (job.attrs.data.ctf as ObjectID).toString();
