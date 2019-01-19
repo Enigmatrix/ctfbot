@@ -31,10 +31,33 @@ export class Ctf extends CommandGroup {
         var cheerio = require("cheerio")
 var axios = require("axios")
 
-let req = await axios.get("https://ctftime.org/event/664/tasks/");
-let $ = cheerio.load(req.data)
-console.log($('.table.table-striped > tr').map((_, el) => [$(el).find("a").attr('href')]).toArray());
-*/
+let html = async uri => {
+    const res = await axios.get(uri);
+    return cheerio.load(res.data);
+}
+let mainUri = "https://ctftime.org";
+let $ = await html("https://ctftime.org/event/664/tasks/");
+Promise.all($('.table.table-striped > tr:not(:first-child)')
+.map(async (_, el) => {
+    const task = $(el).find("td:first-child > a");
+    if(!task) return;
+    let taskUri = mainUri + task.attr('href');
+    let r = await html(taskUri);
+    let writeups = r(`*:not(#id_description) >
+        .container > .table.table-striped`)
+        .find("tr:not(:first-child)")
+        .map((_, tbl) => mainUri +
+            r(tbl).find("td > a").attr('href'))
+        .toArray();
+    return {
+        name: task.text(),
+        uri: taskUri,
+        writeups,
+    }
+}).toArray())
+    .then(x => console.log(x));
+
+        */
         return new RichEmbed({
             color: 0x006dee,
             author: {
