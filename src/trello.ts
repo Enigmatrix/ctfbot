@@ -76,7 +76,7 @@ export namespace trelloEx {
         export async function addMemberIfNotExists(boardId: ID, memberId: ID): Promise<void> {
             await trelloApi.put(`/boards/${boardId}/members/${memberId}`, undefined, {
                 params: {
-                    type: 'normal'
+                    type: 'admin'
                 }
             });
         }
