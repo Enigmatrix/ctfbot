@@ -130,10 +130,12 @@ agenda.on("ready", async () => {
         await job.remove();
     }*/
 
+    /*
     await agenda.create(REPEATED_NOTIFY_UPCOMING_CTF)
         .schedule('sunday at 6pm')
         .repeatEvery('1 week', { timezone: "Asia/Singapore", skipImmediate: true })
         .save();
+    */
 });
 
 export default agenda.on("error", (e) => logger.error("Error from agenda", e));
