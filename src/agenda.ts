@@ -128,12 +128,12 @@ agenda.on("ready", async () => {
     let oldRepeatJobs = await agenda.jobs({name: {$regex: "repeated_.*"}});
     for(let job of oldRepeatJobs){
         await job.remove();
-    }
+    }*/
 
     await agenda.create(REPEATED_NOTIFY_UPCOMING_CTF)
         .schedule('sunday at 6pm')
         .repeatEvery('1 week', { timezone: "Asia/Singapore", skipImmediate: true })
-        .save();*/
+        .save();
 });
 
 export default agenda.on("error", (e) => logger.error("Error from agenda", e));
