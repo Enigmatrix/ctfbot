@@ -48,7 +48,7 @@ class Challenges extends CommandGroup {
         await ctf.save();
     }
 
-    public async challengeDetails(args: CmdRunArgs): Promise<[string, CTFTimeCTF, number, Challenge]> {
+    public static async challengeDetails(args: CmdRunArgs): Promise<[string, CTFTimeCTF, number, Challenge]> {
         const channel = args.msg.channel as TextChannel;
         const [name] = args.checkedArgs(1);
         const ctf = await Ctf.getCtf(channel)
@@ -61,7 +61,7 @@ class Challenges extends CommandGroup {
         return [name, ctf, idx, ctf.challenges[idx]];
     }
 
-    public async getUserAndChallDetails(args: CmdRunArgs, chal: Challenge, workingOnByYou: boolean, solved: boolean) {
+    public static async getUserAndChallDetails(args: CmdRunArgs, chal: Challenge, workingOnByYou: boolean, solved: boolean) {
         const user =  await User.findOne({discordId: args.msg.author.id}).expect(
             async () => await args.msg.reply(
                 "register with `!register <trello_profile_url>` first. // Sorry for the inconvenience"));
@@ -91,7 +91,7 @@ class Challenges extends CommandGroup {
         return [user];
     }
 
-    public async getBoardList(channel: TextChannel, url: string, listName: string): Promise<[string, trelloEx.List]> {
+    public static async getBoardList(channel: TextChannel, url: string, listName: string): Promise<[string, trelloEx.List]> {
         const boardId = await trelloEx.board.extractId(url);
         const doing = await trelloEx.board.getList(boardId, listName);
         if (!doing) {
@@ -106,7 +106,7 @@ class Challenges extends CommandGroup {
         usage: "!rmvchall <name>",
     })
     public async rmvchall(args: CmdRunArgs) {
-        const [name, ctf, idx, chal] = await this.challengeDetails(args);
+        const [name, ctf, idx, chal] = await Challenges.challengeDetails(args);
         await trello.card.del(chal.cardId);
         ctf.challenges.splice(idx, 1);
         await ctf.save();
@@ -118,11 +118,11 @@ class Challenges extends CommandGroup {
     })
     public async workon(args: CmdRunArgs) {
         const channel = args.msg.channel as TextChannel;
-        const [name, ctf, idx, chal] = await this.challengeDetails(args);
-        const [user] = await this.getUserAndChallDetails(args, chal, false, false);
+        const [name, ctf, idx, chal] = await Challenges.challengeDetails(args);
+        const [user] = await Challenges.getUserAndChallDetails(args, chal, false, false);
         
 
-        const [boardId, doing] = await this.getBoardList(channel, ctf.trelloUrl, "Doing");
+        const [boardId, doing] = await Challenges.getBoardList(channel, ctf.trelloUrl, "Doing");
 
         await trelloEx.board.addMemberIfNotExists(boardId, user.trelloId);
         await trelloEx.card.addMember(chal.cardId, user.trelloId);
@@ -139,14 +139,14 @@ class Challenges extends CommandGroup {
     })
     public async ditch(args: CmdRunArgs) {
         const channel = args.msg.channel as TextChannel;
-        const [name, ctf, idx, chal] = await this.challengeDetails(args);
-        const [user] = await this.getUserAndChallDetails(args, chal, true, false);
+        const [name, ctf, idx, chal] = await Challenges.challengeDetails(args);
+        const [user] = await Challenges.getUserAndChallDetails(args, chal, true, false);
 
         chal.workers.splice(idx, 1);
         await trelloEx.card.rmvMember(chal.cardId, user.trelloId);
 
         if (chal.workers.length === 0) {
-            const [_, todo] = await this.getBoardList(channel, ctf.trelloUrl, "To Do");
+            const [_, todo] = await Challenges.getBoardList(channel, ctf.trelloUrl, "To Do");
             await trelloEx.card.move(chal.cardId, todo.id);
         }
 
@@ -160,10 +160,10 @@ class Challenges extends CommandGroup {
     })
     public async solve(args: CmdRunArgs) {
         const channel = args.msg.channel as TextChannel;
-        const [name, ctf, idx, chal] = await this.challengeDetails(args);
-        const [user] = await this.getUserAndChallDetails(args, chal, true, false);
+        const [name, ctf, idx, chal] = await Challenges.challengeDetails(args);
+        const [user] = await Challenges.getUserAndChallDetails(args, chal, true, false);
 
-        const [_, done] = await this.getBoardList(channel, ctf.trelloUrl, "Done");
+        const [_, done] = await Challenges.getBoardList(channel, ctf.trelloUrl, "Done");
         await trelloEx.card.move(chal.cardId, done.id);
         chal.solvedBy = user.id;
         await ctf.save();
@@ -175,14 +175,14 @@ class Challenges extends CommandGroup {
     })
     public async unsolve(args: CmdRunArgs) {
         const channel = args.msg.channel as TextChannel;
-        const [name, ctf, idx, chal] = await this.challengeDetails(args);
-        const [user] = await this.getUserAndChallDetails(args, chal, true, true);
+        const [name, ctf, idx, chal] = await Challenges.challengeDetails(args);
+        const [user] = await Challenges.getUserAndChallDetails(args, chal, true, true);
         if (!(chal.solvedBy as ObjectID).equals(user.id)) {
             channel.send("Only the solver can !unsolve");
             return;
         }
 
-        const [_, doing] = await this.getBoardList(channel, ctf.trelloUrl, "Doing");
+        const [_, doing] = await Challenges.getBoardList(channel, ctf.trelloUrl, "Doing");
         await trelloEx.card.move(chal.cardId, doing.id);
         chal.solvedBy = undefined;
 
