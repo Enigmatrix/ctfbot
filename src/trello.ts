@@ -72,6 +72,10 @@ export namespace trelloEx {
         export async function getList(boardId: ID, name: string): Promise<List | undefined> {
             return await getLists(boardId).then((list) => list.find((x) => x.name === name));
         }
+
+        export async function addMemberIfNotExists(boardId: ID, memberId: ID): Promise<void> {
+            await trelloApi.put(`/boards/${boardId}/members/${memberId}`);
+        }
     }
 
     export namespace label {

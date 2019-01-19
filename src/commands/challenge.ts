@@ -120,10 +120,13 @@ class Challenges extends CommandGroup {
         const channel = args.msg.channel as TextChannel;
         const [name, ctf, idx, chal] = await this.challengeDetails(args);
         const [user] = await this.getUserAndChallDetails(args, chal, false, false);
-
-        await trelloEx.card.addMember(chal.cardId, user.trelloId);
+        
 
         const [boardId, doing] = await this.getBoardList(channel, ctf.trelloUrl, "Doing");
+
+        await trelloEx.board.addMemberIfNotExists(boardId, user.trelloId);
+        await trelloEx.card.addMember(chal.cardId, user.trelloId);
+
         await trelloEx.card.move(chal.cardId, doing.id);
 
         chal.workers.push(user.id);
