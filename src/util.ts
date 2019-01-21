@@ -39,6 +39,7 @@ declare global {
     // tslint:disable-next-line:interface-name
     interface Promise<T> {
         expect<T>(this: Promise<T|undefined>, fail: () => Promise<any>): Promise<T>;
+        orElse<T>(this: Promise<T|undefined>, fail: () => Promise<T>): Promise<T>;
     }
 }
 
@@ -63,6 +64,14 @@ Promise.prototype.expect = async function<T>(this: Promise<T|undefined>, fail: (
     if (!x) {
         await fail();
         throw new ContinuationStop();
+    }
+    return x;
+};
+
+Promise.prototype.orElse = async function<T>(this: Promise<T|undefined>, fail: () => Promise<T>): Promise<T> {
+    const x = await this;
+    if (!x) {
+        return await fail();
     }
     return x;
 };

@@ -14,9 +14,10 @@ class Users extends CommandGroup {
             .expect(async () => await args.printUsage());
         let user: User;
         user = await User.findOne({ discordId: args.msg.author.id })
-            .expect(async () => {
-                user = new User();
-                user.discordId = args.msg.author.id;
+            .orElse(async () => {
+                let usr = new User();
+                usr.discordId = args.msg.author.id;
+                return usr
             });
         user.trelloId = trelloId;
         await user.save();
