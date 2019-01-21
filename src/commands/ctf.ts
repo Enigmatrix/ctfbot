@@ -18,27 +18,11 @@ export class Ctf extends CommandGroup {
         return await CTFTimeCTF.findOne({discordChannelId: chan.id, archived: false});
     }
 
-    public static async getCtfWriteupMessageFromCtf(ctf: CTFTimeCTF): Promise<undefined | Message> {
-        if (!ctf.discordWriteupMessageId) {
-            return undefined;
-        }
-        return await (bot.guilds.first().channels.get(ctf.discordChannelId) as TextChannel)
-            .fetchMessage(ctf.discordWriteupMessageId);
-    }
-
-    public static createCtfWriteupsMessageEmbed(ctftimeEvent: CTFTimeCTF) {
-        /*
-        var cheerio = require("cheerio")
-var axios = require("axios")
-
-let req = await axios.get("https://ctftime.org/event/664/tasks/");
-let $ = cheerio.load(req.data)
-console.log($('.table.table-striped > tr').map((_, el) => [$(el).find("a").attr('href')]).toArray());
-*/
+    public static createCtfWriteupMessageEmbed(writeupName: string, writeupLink: string) {
         return new RichEmbed({
             color: 0x006dee,
             author: {
-                name: `Writeups for ${ctftimeEvent.name}`,
+              name: `Writeup for ${writeupName}: ${writeupLink}`,
             },
         });
     }
