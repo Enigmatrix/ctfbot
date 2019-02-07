@@ -59,7 +59,7 @@ export class CTFTimeCTF extends BaseEntity {
     public discordMainMessageId!: string;
 
     @Column()
-    public discordWriteupMessageId: string|undefined;
+    public writeupLinks!: string[];
 
     @Column()
     public start!: Date;
@@ -95,6 +95,7 @@ export class CTFTimeCTF extends BaseEntity {
         this.start = ctftimeEvent.start;
         this.finish = ctftimeEvent.finish;
         this.hosts = ctftimeEvent.organizers.map((x) => x.name);
+        this.writeupLinks = [];
         this.challenges = [];
         this.credentials = {};
         this.archived = false;

@@ -1,5 +1,8 @@
 import axios from "axios";
 import logger from "./logger";
+import Parser from 'rss-parser';
+import cheerio from 'cheerio';
+
 export function isCtfTimeUrl(s: string) {
     return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
 }
@@ -61,3 +64,36 @@ export const weeklyCtftimeEvents = async () => {
     });
     return response.data;
 };
+
+const parser = new Parser();
+
+const getWriteupLinks = async () => {
+  const url = "https://ctftime.org/writeups/rss/";
+  let feed = await parser.parseURL(url);
+  if(!feed.items) return <string[]>[];
+    return <string[]>feed.items.map(x => x.link);
+}
+
+const download = async (uri: string): Promise<string> => {
+  try{
+    return await axios.get(uri).then(x => x.data);
+  }
+  catch{
+    //console.log('Retrying ', uri, ' ..');
+    return download(uri);
+  }
+}
+
+const getWriteupInfo = async (url: string) => {
+  let $ = await cheerio.load(await download(url));
+  let ctfUrl = $(".breadcrumb > li:nth-child(3) > a").attr('href');
+  let ctfTask = $(".breadcrumb > li:nth-child(6) > a");
+  let ctfTaskUrl = ctfTask.attr('href');
+  let ctfTaskName = ctfTask.text();
+  return { ctfUrl, ctfTaskUrl, ctfTaskName, url };
+}
+
+export const getLatestWriteups = async () => {
+  let writeupLinks = await getWriteupLinks();
+  return await Promise.all(writeupLinks.map(x => getWriteupInfo(x)));
+}

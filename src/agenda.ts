@@ -3,7 +3,7 @@ import { Emoji, MessageReaction, ReactionCollector, ReactionEmoji, RichEmbed, Te
 import { ObjectID } from "typeorm";
 import bot from "./bot";
 import {Ctf} from "./commands/ctf";
-import { weeklyCtftimeEvents } from "./ctftime";
+import { weeklyCtftimeEvents, getLatestWriteups } from "./ctftime";
 import { CTFTimeCTF } from "./entities/ctf";
 import logger from "./logger";
 import { config, formatNiceSGT } from "./util";
@@ -21,12 +21,7 @@ agenda.define(NOTIFY_CTF_WRITEUPS_BEGIN, async (job, done) => {
     if (!ctf) { done(new Error(`CTF not found ${ctfid}`)); return; }
     const message = await Ctf.getCtfMainMessageFromCtf(ctf);
     if (!message) { done(new Error(`Message missing for CTF ${ctfid}`)); return; }
-
-    const writeupsMessage = await message.channel.sendEmbed(Ctf.createCtfWriteupsMessageEmbed(ctf));
-    await writeupsMessage.pin();
-
-    ctf.discordWriteupMessageId = writeupsMessage.id;
-    await ctf.save();
+    //TODO find a way to combine this
 
     agenda.every("3 minutes", NOTIFY_CTF_WRITEUPS, { ctf: job.attrs.data.ctf });
 
@@ -39,10 +34,18 @@ agenda.define(NOTIFY_CTF_WRITEUPS, async (job, done) => {
     const ctfid = (job.attrs.data.ctf as ObjectID).toString();
     const ctf = await CTFTimeCTF.findOne(ctfid, {where: {archived: false}});
     if (!ctf) { done(new Error(`CTF not found ${ctfid}`)); return; }
-    const message = await Ctf.getCtfWriteupMessageFromCtf(ctf);
-    if (!message) { done(new Error(`Writeups message missing for CTF ${ctfid}`)); return; }
 
-    message.edit(Ctf.createCtfWriteupsMessageEmbed(ctf));
+    let shortUrl = ctf.url.split('.org')[1]
+    let writeups = await getLatestWriteups()
+    ctf.writeupLinks = ctf.writeupLinks || [];
+    await Promise.all(writeups
+      .filter(x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1)
+      .map(async x => {
+        await Ctf.createCtfWriteupMessageEmbed(x.ctfTaskName, x.url);
+        ctf.writeupLinks.push(x.url);
+      }));
+
+    await ctf.save();
     done();
 });
 
