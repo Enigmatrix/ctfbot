@@ -74,6 +74,11 @@ export namespace trelloEx {
         }
 
         export async function addMemberIfNotExists(boardId: ID, memberId: ID): Promise<void> {
+            let all:Member[] = await trelloApi.get(`/boards/${boardId}/members`)
+                .then(x => x.data);
+            if(all.findIndex(x => x.id == memberId) !== -1)
+                return;
+            
             await trelloApi.put(`/boards/${boardId}/members/${memberId}`, undefined, {
                 params: {
                     type: 'admin'
