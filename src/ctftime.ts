@@ -3,6 +3,8 @@ import logger from "./logger";
 import Parser from 'rss-parser';
 import cheerio from 'cheerio';
 
+axios.defaults.headers.common['User-Agent'] = 'akashman'
+
 export function isCtfTimeUrl(s: string) {
     return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
 }
