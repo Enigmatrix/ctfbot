@@ -30,6 +30,7 @@
     "@types/cheerio": "^0.22.10",
     "@types/moment-timezone": "^0.5.9",
     "@types/node": "^10.12.9",
+    "@types/uuid": "^3.4.4",
     "@types/xml2js": "^0.4.3",
     "agenda": "^2.0.2",
     "axios": "^0.18.0",
@@ -42,6 +43,7 @@
     "rss-parser": "^3.6.2",
     "trello-node-api": "0.0.6",
     "typeorm": "^0.2.9",
+    "uuid": "^3.3.2",
     "winston": "^3.1.0"
   },
   "devDependencies": {
