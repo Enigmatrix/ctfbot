@@ -2,9 +2,8 @@ import axios from "axios";
 import logger from "./logger";
 import Parser from 'rss-parser';
 import cheerio from 'cheerio';
-import uuid from 'uuid/v4'
 
-axios.defaults.headers.common['User-Agent'] = uuid();
+axios.defaults.headers.common['User-Agent'] = "Chrome";
 
 export function isCtfTimeUrl(s: string) {
     return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
