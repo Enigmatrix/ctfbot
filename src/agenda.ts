@@ -21,12 +21,13 @@ agenda.define(NOTIFY_CTF_WRITEUPS, async (job, done) => {
     const ctf = await CTFTimeCTF.findOne(ctfid, {where: {archived: false}});
     if (!ctf) { done(new Error(`CTF not found ${ctfid}`)); return; }
 
-    let shortUrl = ctf.url.split('.org')[1]
-    let writeups = await getLatestWriteups()
+    const shortUrl = ctf.url.split('.org')[1];
+    const writeups = await getLatestWriteups();
     ctf.writeupLinks = ctf.writeupLinks || [];
+    console.log(writeups);
     await Promise.all(writeups
-      .filter(x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1)
-      .map(async x => {
+      .filter((x) => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1)
+      .map(async (x) => {
         await Ctf.createCtfWriteupMessageEmbed(x.ctfTaskName, x.url);
         ctf.writeupLinks.push(x.url);
       }));
