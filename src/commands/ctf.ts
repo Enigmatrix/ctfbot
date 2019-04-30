@@ -1,6 +1,6 @@
 import { Message, RichEmbed, TextChannel } from "discord.js";
 import moment from "moment";
-import agenda, { NOTIFY_CTF_REACTORS, NOTIFY_CTF_WRITEUPS_BEGIN } from "../agenda";
+import agenda, { NOTIFY_CTF_REACTORS, NOTIFY_CTF_WRITEUPS } from "../agenda";
 import bot from "../bot";
 import { getCtftimeEvent, isCtfTimeUrl } from "../ctftime";
 import { CTFTimeCTF } from "../entities/ctf";
@@ -142,9 +142,10 @@ export class Ctf extends CommandGroup {
             moment(ctf.start).subtract(1, "hour").toDate(),
             NOTIFY_CTF_REACTORS, { ctf: ctf.id });
 
-        await agenda.schedule(
-            moment(ctf.finish).toDate(),
-            NOTIFY_CTF_WRITEUPS_BEGIN, { ctf: ctf.id });
+        await agenda.create(NOTIFY_CTF_WRITEUPS, { ctf: ctf.id })
+            .schedule(moment(ctf.finish).toDate())
+            .repeatEvery("3 minutes")
+            .save();
     }
 
     @Command({
@@ -199,6 +200,9 @@ export class Ctf extends CommandGroup {
         const archive = await expect(args.msg.guild.channels.find((x) => x.name === "archives"),
             async () => channel.send("CTFs archive channel missing"));
         await channel.setParent(archive);
+
+        // TODO wtf is this syntax
+        // await agenda.cancel({});
 
         ctf.archived = true;
         await ctf.save();
