@@ -201,8 +201,8 @@ export class Ctf extends CommandGroup {
             async () => channel.send("CTFs archive channel missing"));
         await channel.setParent(archive);
 
-        // TODO wtf is this syntax
-        // await agenda.cancel({});
+        // cancel the writeup job
+        await agenda.cancel({ name: NOTIFY_CTF_WRITEUPS, data: { ctf : ctf.id.toString() } });
 
         ctf.archived = true;
         await ctf.save();

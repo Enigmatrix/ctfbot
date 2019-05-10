@@ -24,7 +24,7 @@ agenda.define(NOTIFY_CTF_WRITEUPS, async (job, done) => {
     const shortUrl = ctf.url.split('.org')[1];
     const writeups = await getLatestWriteups();
     ctf.writeupLinks = ctf.writeupLinks || [];
-    console.log(writeups);
+
     await Promise.all(writeups
       .filter((x) => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1)
       .map(async (x) => {
