@@ -178,7 +178,7 @@ agenda.on("ready", async () => {
         .save();
     */
 
-        await agenda.every('every 3 minutes', REPEATED_NOTIFY_CTF_WRITEUPS);
+    //await agenda.every('every 3 minutes', REPEATED_NOTIFY_CTF_WRITEUPS);
 });
 
 export default agenda.on("error", e => logger.error("Error from agenda", e));
