@@ -1,6 +1,6 @@
 import { Message, RichEmbed, TextChannel } from "discord.js";
 import moment from "moment";
-import agenda, { NOTIFY_CTF_REACTORS, REPEATED_NOTIFY_UPCOMING_CTF, NOTIFY_CTF_WRITEUPS } from "../agenda";
+import agenda, { NOTIFY_CTF_REACTORS, REPEATED_NOTIFY_UPCOMING_CTF } from "../agenda";
 import { trello, trelloEx } from "../trello";
 import { formatNiceSGT, ifNot } from "../util";
 import commands, { CmdRunArgs, Command, CommandGroup, Group } from "./commands";
@@ -11,7 +11,7 @@ class Misc extends CommandGroup {
 
     @Command({})
     public async test(args: CmdRunArgs) {
-        await agenda.now(NOTIFY_CTF_WRITEUPS, { ctf: "5cd43d17f04af80017714968" });
+
     }
 
     /*@Command({})

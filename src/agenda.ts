@@ -18,32 +18,32 @@ import { config, formatNiceSGT } from "./util";
 const agenda = new Agenda({ db: { address: config("MONGO_URI") } });
 
 export const NOTIFY_CTF_REACTORS = "notifyCtfReactorsv1.0";
-export const NOTIFY_CTF_WRITEUPS = "notifyCtfWriteupsv1.0";
+export const REPEATED_NOTIFY_CTF_WRITEUPS = "repeated_notifyCtfWriteupsv1.0";
 export const REPEATED_NOTIFY_UPCOMING_CTF = "repeated_notifyUpcomingCtfv1.0";
 
-agenda.define(NOTIFY_CTF_WRITEUPS, async (job, done) => {
+agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
   let err;
   try {
-    const ctfid = (job.attrs.data.ctf as ObjectID).toString();
-    const ctf = await CTFTimeCTF.findOne(ctfid, { where: { archived: false } });
-    if (!ctf) {
-      throw new Error(`CTF not found ${ctfid}`);
-    }
-
-    const shortUrl = ctf.url.split(".org")[1];
     const writeups = await getLatestWriteups();
-    ctf.writeupLinks = ctf.writeupLinks || [];
+    const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
 
-    await Promise.all(
-      writeups
-        .filter(x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1)
-        .map(async x => {
-          await Ctf.createCtfWriteupMessageEmbed(x.ctfTaskName, x.url);
-          ctf.writeupLinks.push(x.url);
-        })
-    );
+    for (const ctf of ctfs) {
+      const shortUrl = ctf.url.split(".org")[1];
+      ctf.writeupLinks = ctf.writeupLinks || [];
 
-    await ctf.save();
+      await Promise.all(
+        writeups
+          .filter(
+            x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1
+          )
+          .map(async x => {
+            await Ctf.createCtfWriteupMessageEmbed(x.ctfTaskName, x.url);
+            ctf.writeupLinks.push(x.url);
+          })
+      );
+
+      await ctf.save();
+    }
   } catch (e) {
     err = e;
   } finally {
@@ -177,6 +177,8 @@ agenda.on("ready", async () => {
         .repeatEvery('1 week', { timezone: "Asia/Singapore", skipImmediate: true })
         .save();
     */
+
+        await agenda.every('every 3 minutes', REPEATED_NOTIFY_CTF_WRITEUPS);
 });
 
 export default agenda.on("error", e => logger.error("Error from agenda", e));
