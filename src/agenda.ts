@@ -92,6 +92,7 @@ agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
   done();
 });
 agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
+  let err;
   try {
     const channel = bot.guilds
       .first()
@@ -157,9 +158,10 @@ agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
         })
       );
     }
-    done();
   } catch (e) {
-    logger.error("Error:", e);
+    err = e;
+  } finally {
+    done(err);
   }
 });
 agenda.on("ready", async () => {
