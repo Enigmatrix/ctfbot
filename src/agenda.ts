@@ -56,8 +56,8 @@ agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
       );
 
       await ctf.save();
-        logger.info("CTF Writeups Job...Success")
     }
+    logger.info("CTF Writeups Job...Success")
   } catch (e) {
     err = e;
     logger.error('CTF Writeups Job...Error');
