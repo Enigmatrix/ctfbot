@@ -31,7 +31,9 @@ agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
     logger.info(`Adding writeups for ${JSON.stringify(writeups)}`);
 
     for (const ctf of ctfs) {
-      const shortUrl = ctf.url.split(".org")[1];
+      const num = ctf.url.split(".org/event/")[1].split("/")[0];
+      const shortUrl = `/event/${num}`;
+
       ctf.writeupLinks = ctf.writeupLinks || [];
 
       await Promise.all(
@@ -40,12 +42,17 @@ agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
             x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1
           )
           .map(async x => {
-            const embed = await Ctf.createCtfWriteupMessageEmbed(x.ctfTaskName, x.url);
-            const channel = bot.guilds.first().channels.get(ctf.discordChannelId) as TextChannel;
+            const embed = await Ctf.createCtfWriteupMessageEmbed(
+              x.ctfTaskName,
+              x.url
+            );
+            const channel = bot.guilds
+              .first()
+              .channels.get(ctf.discordChannelId) as TextChannel;
             await channel.sendEmbed(embed);
 
             ctf.writeupLinks.push(x.url);
-            console.log(`Added ${x.url} to ${ctf.name}`)
+            console.log(`Added ${x.url} to ${ctf.name}`);
           })
       );
 
@@ -185,7 +192,7 @@ agenda.on("ready", async () => {
         .save();
     */
 
-    await agenda.every('every 3 minutes', REPEATED_NOTIFY_CTF_WRITEUPS);
+  await agenda.every("every 3 minutes", REPEATED_NOTIFY_CTF_WRITEUPS);
 });
 
 export default agenda.on("error", e => logger.error("Error from agenda", e));
