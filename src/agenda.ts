@@ -31,7 +31,7 @@ agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
     logger.info(`Adding writeups for ${JSON.stringify(writeups)}`);
 
     for (const ctf of ctfs) {
-      const num = ctf.url.split(".org/event/")[1].split("/")[0];
+      const num = ctf.ctftimeUrl.split(".org/event/")[1].split("/")[0];
       const shortUrl = `/event/${num}`;
 
       ctf.writeupLinks = ctf.writeupLinks || [];
