@@ -16,7 +16,8 @@ class Misc extends CommandGroup {
     args.msg.channel.send(
       new RichEmbed({
         color: 0x006dee,
-        description: `Writeup for [Nani](https://ctftime.org/writeup/15274)`
+        author: { name: `Writeup for Nani` },
+        description: `https://ctftime.org/writeup/15274`
       })
     );
   }
