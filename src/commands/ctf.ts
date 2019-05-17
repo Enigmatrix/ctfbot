@@ -19,12 +19,11 @@ export class Ctf extends CommandGroup {
     }
 
     public static createCtfWriteupMessageEmbed(writeupName: string, writeupLink: string) {
-        return new RichEmbed({
-            color: 0x006dee,
-            author: {
-                name: `Writeup for [${writeupName}](${writeupLink})`,
-            },
-        });
+    return new RichEmbed({
+        color: 0x006dee,
+        author: { name: `Writeup for ${writeupName}` },
+        description: writeupLink
+      });
     }
 
     public static async isCtfChannel(chan: TextChannel): Promise<boolean> {
