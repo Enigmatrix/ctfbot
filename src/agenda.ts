@@ -30,7 +30,7 @@ function defineJob(name: string, code: (job: Job) => Promise<void>) {
     } catch (e) {
       err = e;
       logger.error(`Job '${name}' failed:`);
-      console.err(e);
+      console.error(e);
     } finally {
       done(err);
     }
