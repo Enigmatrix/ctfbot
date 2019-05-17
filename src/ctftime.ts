@@ -3,7 +3,7 @@ import logger from "./logger";
 import Parser from 'rss-parser';
 import cheerio from 'cheerio';
 
-axios.defaults.headers.common['User-Agent'] = "Chrome";
+axios.defaults.headers.common['User-Agent'] = "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19";
 
 export function isCtfTimeUrl(s: string) {
     return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
@@ -78,7 +78,7 @@ const getWriteupLinks = async () => {
 
 const download = async (uri: string): Promise<string> => {
   try{
-    return await axios.get(uri).then(x => x.data);
+      return await axios.get(uri, {}).then(x => x.data);
   }
   catch{
     //console.log('Retrying ', uri, ' ..');
