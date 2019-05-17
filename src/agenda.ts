@@ -27,8 +27,7 @@ agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
     const writeups = await getLatestWriteups();
     const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
 
-    logger.info(`Adding writeups for ${JSON.stringify(ctfs)}`);
-    logger.info(`Adding writeups for ${JSON.stringify(writeups)}`);
+    logger.info("Running CTF Writeups Job...")
 
     for (const ctf of ctfs) {
       const num = ctf.ctftimeUrl.split(".org/event/")[1].split("/")[0];
@@ -57,9 +56,12 @@ agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
       );
 
       await ctf.save();
+        logger.info("CTF Writeups Job...Success")
     }
   } catch (e) {
     err = e;
+    logger.error('CTF Writeups Job...Error');
+    logger.error(err);
   } finally {
     done(err);
   }

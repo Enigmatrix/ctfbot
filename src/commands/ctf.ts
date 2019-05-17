@@ -22,7 +22,7 @@ export class Ctf extends CommandGroup {
         return new RichEmbed({
             color: 0x006dee,
             author: {
-              name: `Writeup for ${writeupName}: ${writeupLink}`,
+                name: `Writeup for [${writeupName}](${writeupLink})`,
             },
         });
     }
