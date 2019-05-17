@@ -1,4 +1,4 @@
-import Agenda from "agenda";
+ijjjjjjjjjjjjmport Agenda from "agenda";
 import {
   Emoji,
   MessageReaction,
@@ -21,13 +21,16 @@ export const NOTIFY_CTF_REACTORS = "notifyCtfReactorsv1.0";
 export const REPEATED_NOTIFY_CTF_WRITEUPS = "repeated_notifyCtfWriteupsv1.0";
 export const REPEATED_NOTIFY_UPCOMING_CTF = "repeated_notifyUpcomingCtfv1.0";
 
-agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
+agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
   let err;
   try {
+    console.log('Running CTF Writeups Job');
+      logger.info('yippee');
     const writeups = await getLatestWriteups();
     const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
 
     for (const ctf of ctfs) {
+      console.log(`\tAdding writeups for ${ctf.name}`);
       const shortUrl = ctf.url.split(".org")[1];
       ctf.writeupLinks = ctf.writeupLinks || [];
 
@@ -37,8 +40,12 @@ agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
             x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1
           )
           .map(async x => {
-            await Ctf.createCtfWriteupMessageEmbed(x.ctfTaskName, x.url);
+            const embed = await Ctf.createCtfWriteupMessageEmbed(x.ctfTaskName, x.url);
+            const channel = bot.guilds.first().channels.get(ctf.discordChannelId) as TextChannel;
+            await channel.sendEmbed(embed);
+
             ctf.writeupLinks.push(x.url);
+            console.log(`Added ${x.url} to ${ctf.name}`)
           })
       );
 
