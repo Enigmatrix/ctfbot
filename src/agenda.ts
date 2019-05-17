@@ -28,7 +28,7 @@ agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
     const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
 
     logger.info(`Adding writeups for ${ctfs.map(x => x.name)}`);
-    logger.info(`Adding writeups for ${JSON.stringify(writeups})`);
+    logger.info(`Adding writeups for ${JSON.stringify(writeups)}`);
 
     for (const ctf of ctfs) {
       const shortUrl = ctf.url.split(".org")[1];
