@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios-https-proxy-fix";
 import logger from "./logger";
 import Parser from 'rss-parser';
 import cheerio from 'cheerio';

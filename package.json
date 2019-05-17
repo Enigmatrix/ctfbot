@@ -34,6 +34,7 @@
     "@types/xml2js": "^0.4.3",
     "agenda": "^2.0.2",
     "axios": "^0.18.0",
+    "axios-https-proxy-fix": "^0.17.1",
     "cheerio": "^1.0.0-rc.2",
     "discord.js": "^11.4.2",
     "moment": "^2.22.2",
