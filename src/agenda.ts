@@ -24,13 +24,13 @@ export const REPEATED_NOTIFY_UPCOMING_CTF = "repeated_notifyUpcomingCtfv1.0";
 agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
   let err;
   try {
-    console.log('Running CTF Writeups Job');
-      logger.info('yippee');
     const writeups = await getLatestWriteups();
     const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
 
+    logger.info(`Adding writeups for ${ctfs.map(x => x.name)}`);
+    logger.info(`Adding writeups for ${writeups}`);
+
     for (const ctf of ctfs) {
-      console.log(`\tAdding writeups for ${ctf.name}`);
       const shortUrl = ctf.url.split(".org")[1];
       ctf.writeupLinks = ctf.writeupLinks || [];
 
