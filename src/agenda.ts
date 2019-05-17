@@ -1,4 +1,4 @@
-import Agenda from "agenda";
+import Agenda, { Job } from "agenda";
 import {
   Emoji,
   MessageReaction,
@@ -21,63 +21,64 @@ export const NOTIFY_CTF_REACTORS = "notifyCtfReactorsv1.0";
 export const REPEATED_NOTIFY_CTF_WRITEUPS = "repeated_notifyCtfWriteupsv1.0";
 export const REPEATED_NOTIFY_UPCOMING_CTF = "repeated_notifyUpcomingCtfv1.0";
 
-agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
-  let err;
-  try {
-    const writeups = await getLatestWriteups();
-    const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
-
-    logger.info("Running CTF Writeups Job...")
-
-    for (const ctf of ctfs) {
-      const num = ctf.ctftimeUrl.split(".org/event/")[1].split("/")[0];
-      const shortUrl = `/event/${num}`;
-
-      ctf.writeupLinks = ctf.writeupLinks || [];
-
-      await Promise.all(
-        writeups
-          .filter(
-            x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1
-          )
-          .map(async x => {
-            const embed = await Ctf.createCtfWriteupMessageEmbed(
-              x.ctfTaskName,
-              x.url
-            );
-            const channel = bot.guilds
-              .first()
-              .channels.get(ctf.discordChannelId) as TextChannel;
-            await channel.sendEmbed(embed);
-
-            ctf.writeupLinks.push(x.url);
-            console.log(`Added ${x.url} to ${ctf.name}`);
-          })
-      );
-
-      await ctf.save();
+function defineJob(name: string, code: (job: Job) => Promise<void>) {
+  agenda.define(name, async (job, done) => {
+    let err;
+    try {
+      await code(job);
+      logger.info(`Job '${name}' run successfully.`);
+    } catch (e) {
+      err = e;
+      logger.error(`Job '${name}' failed:`);
+      logger.error(e);
+    } finally {
+      done(err);
     }
-    logger.info("CTF Writeups Job...Success")
-  } catch (e) {
-    err = e;
-    logger.error('CTF Writeups Job...Error');
-    logger.error(err);
-  } finally {
-    done(err);
+  });
+}
+
+defineJob(REPEATED_NOTIFY_CTF_WRITEUPS, async job => {
+  const writeups = await getLatestWriteups();
+  const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
+
+  for (const ctf of ctfs) {
+    const num = ctf.ctftimeUrl.split(".org/event/")[1].split("/")[0];
+    const shortUrl = `/event/${num}`;
+
+    ctf.writeupLinks = ctf.writeupLinks || [];
+
+    await Promise.all(
+      writeups
+        .filter(
+          x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1
+        )
+        .map(async x => {
+          const embed = await Ctf.createCtfWriteupMessageEmbed(
+            x.ctfTaskName,
+            x.url
+          );
+          const channel = bot.guilds
+            .first()
+            .channels.get(ctf.discordChannelId) as TextChannel;
+          await channel.sendEmbed(embed);
+
+          ctf.writeupLinks.push(x.url);
+        })
+    );
+
+    await ctf.save();
   }
 });
 
-agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
+defineJob(NOTIFY_CTF_REACTORS, async job => {
   const ctfid = (job.attrs.data.ctf as ObjectID).toString();
   const ctf = await CTFTimeCTF.findOne(ctfid, { where: { archived: false } });
   if (!ctf) {
-    done(new Error(`CTF not found ${ctfid}`));
-    return;
+    throw new Error(`CTF not found ${ctfid}`);
   }
   const message = await Ctf.getCtfMainMessageFromCtf(ctf);
   if (!message) {
-    done(new Error(`Message missing for CTF ${ctfid}`));
-    return;
+    throw new Error(`Message missing for CTF ${ctfid}`);
   }
 
   const reaction = await message.react("👌");
@@ -105,79 +106,71 @@ agenda.define(NOTIFY_CTF_REACTORS, async (job, done) => {
       })
     );
   }
-  done();
 });
-agenda.define(REPEATED_NOTIFY_UPCOMING_CTF, async (job, done) => {
-  let err;
-  try {
-    const channel = bot.guilds
-      .first()
-      .channels.find(x => x.name === "upcoming") as TextChannel;
 
-    let ctftimeEvents = await weeklyCtftimeEvents();
-    ctftimeEvents = ctftimeEvents.filter(x => x.finish > x.start && !x.onsite);
-    if (ctftimeEvents.length === 0) {
-      await channel.send(
-        new RichEmbed({
-          color: 0xff8f00,
-          title: "There are no upcoming online CTFs for this week"
-        })
-      );
-      done();
-      return;
-    }
-    const eventNumberTitle =
-      `There ${ctftimeEvents.length === 1 ? "is" : "are"} ${
-        ctftimeEvents.length
-      } ` +
-      `upcoming online CTF${
-        ctftimeEvents.length === 1 ? "" : "s"
-      } for this week:`;
+defineJob(REPEATED_NOTIFY_UPCOMING_CTF, async job => {
+  const channel = bot.guilds
+    .first()
+    .channels.find(x => x.name === "upcoming") as TextChannel;
+
+  let ctftimeEvents = await weeklyCtftimeEvents();
+  ctftimeEvents = ctftimeEvents.filter(x => x.finish > x.start && !x.onsite);
+  if (ctftimeEvents.length === 0) {
     await channel.send(
       new RichEmbed({
-        color: 0x76ff03,
-        title: eventNumberTitle
+        color: 0xff8f00,
+        title: "There are no upcoming online CTFs for this week"
       })
     );
-    for (const ctftimeEvent of ctftimeEvents) {
-      const addCtfText =
-        `${ctftimeEvent.ctftime_url}\nRun \`!addctf ${
-          ctftimeEvent.ctftime_url
-        }\`` + `to add this CTF`;
-      await channel.send(
-        new RichEmbed({
-          color: 0x1e88e5,
-          author: {
-            name: `${ctftimeEvent.title} (${ctftimeEvent.format}, ${
-              ctftimeEvent.restrictions
-            })`,
-            icon_url: ctftimeEvent.logo === "" ? undefined : ctftimeEvent.logo
+    return;
+  }
+  const eventNumberTitle =
+    `There ${ctftimeEvents.length === 1 ? "is" : "are"} ${
+      ctftimeEvents.length
+    } ` +
+    `upcoming online CTF${
+      ctftimeEvents.length === 1 ? "" : "s"
+    } for this week:`;
+  await channel.send(
+    new RichEmbed({
+      color: 0x76ff03,
+      title: eventNumberTitle
+    })
+  );
+  for (const ctftimeEvent of ctftimeEvents) {
+    const addCtfText =
+      `${ctftimeEvent.ctftime_url}\nRun \`!addctf ${
+        ctftimeEvent.ctftime_url
+      }\`` + `to add this CTF`;
+    await channel.send(
+      new RichEmbed({
+        color: 0x1e88e5,
+        author: {
+          name: `${ctftimeEvent.title} (${ctftimeEvent.format}, ${
+            ctftimeEvent.restrictions
+          })`,
+          icon_url: ctftimeEvent.logo === "" ? undefined : ctftimeEvent.logo
+        },
+        description: ctftimeEvent.description,
+        fields: [
+          { name: "URL", value: ctftimeEvent.url },
+          // tslint:disable-next-line:max-line-length
+          {
+            name: "Timing",
+            value: `${formatNiceSGT(ctftimeEvent.start)} - ${formatNiceSGT(
+              ctftimeEvent.finish
+            )}`
           },
-          description: ctftimeEvent.description,
-          fields: [
-            { name: "URL", value: ctftimeEvent.url },
-            // tslint:disable-next-line:max-line-length
-            {
-              name: "Timing",
-              value: `${formatNiceSGT(ctftimeEvent.start)} - ${formatNiceSGT(
-                ctftimeEvent.finish
-              )}`
-            },
-            { name: "CTFtime URL", value: addCtfText }
-          ],
-          url: ctftimeEvent.url,
-          footer: {
-            text: `Hosted by ${ctftimeEvent.organizers
-              .map(x => x.name)
-              .join(", ")}.`
-          }
-        })
-      );
-    }
-  } catch (e) {
-    err = e;
-  } finally {
-    done(err);
+          { name: "CTFtime URL", value: addCtfText }
+        ],
+        url: ctftimeEvent.url,
+        footer: {
+          text: `Hosted by ${ctftimeEvent.organizers
+            .map(x => x.name)
+            .join(", ")}.`
+        }
+      })
+    );
   }
 });
 agenda.on("ready", async () => {
