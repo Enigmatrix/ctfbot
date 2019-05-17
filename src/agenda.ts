@@ -28,7 +28,7 @@ agenda.define(REPEATED_NOTIFY_CTF_WRITEUPS, async (job, done) => {
     const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
 
     logger.info(`Adding writeups for ${ctfs.map(x => x.name)}`);
-    logger.info(`Adding writeups for ${writeups}`);
+    logger.info(`Adding writeups for ${JSON.stringify(writeups})`);
 
     for (const ctf of ctfs) {
       const shortUrl = ctf.url.split(".org")[1];
@@ -185,7 +185,7 @@ agenda.on("ready", async () => {
         .save();
     */
 
-    await agenda.every('every 3 minutes', REPEATED_NOTIFY_CTF_WRITEUPS);
+    await agenda.every('every 10 seconds', REPEATED_NOTIFY_CTF_WRITEUPS);
 });
 
 export default agenda.on("error", e => logger.error("Error from agenda", e));
