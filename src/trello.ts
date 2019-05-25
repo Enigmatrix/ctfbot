@@ -1,4 +1,4 @@
-import Axios from "axios";
+import Axios from "./request";
 import Trello from "trello-node-api";
 import {chooseRandom, config} from "./util";
 
