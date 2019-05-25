@@ -1,8 +1,8 @@
 import axios, { AxiosProxyConfig } from "axios-https-proxy-fix";
-import ProxyList from "proxy-sources";
+const ProxyList = require("proxy-sources");
 import { chooseRandom } from './util';
 
-axios.interceptors.request.use(config => {
+axios.interceptors.request.use(async config => {
     const proxyAddrs:string[] = await ProxyList();
     const chosenProxyAddrParts = chooseRandom(proxyAddrs).split(":");
     const chosenProxy : AxiosProxyConfig = {
