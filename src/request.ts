@@ -1,5 +1,5 @@
 import axios, { AxiosProxyConfig } from "axios-https-proxy-fix";
-import { chooseRandom } from "./util";
+/*import { chooseRandom } from "./util";
 const ProxyList = require("proxy-sources");
 
 axios.interceptors.request.use(async config => {
@@ -18,6 +18,6 @@ axios.interceptors.request.use(async config => {
   console.log(`Using proxy ${chosenProxyAddrParts} for ${config.url}`);
   config.proxy = chosenProxy;
   return config;
-});
+});*/
 
 export default axios;
