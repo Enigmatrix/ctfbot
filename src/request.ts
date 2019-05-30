@@ -1,4 +1,9 @@
-import axios, { AxiosProxyConfig } from "axios-https-proxy-fix";
+import axios, { AxiosProxyConfig, AxiosStatic } from "axios-https-proxy-fix";
+const rateLimit = require ("axios-rate-limit").default;
+
+axios.defaults.headers['User-Agent'] = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0";
+const axios2: AxiosStatic = rateLimit(axios, {maxRequests: 1, perMilliseconds: 2000});
+/*require('axios-debug')(axios);*/
 /*import { chooseRandom } from "./util";
 const ProxyList = require("proxy-sources");
 
@@ -20,4 +25,4 @@ axios.interceptors.request.use(async config => {
   return config;
 });*/
 
-export default axios;
+export default axios2;

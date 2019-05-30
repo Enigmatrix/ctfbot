@@ -22,6 +22,11 @@ class Misc extends CommandGroup {
     );
   }
 
+    @Command({})
+    public async testupcoming() {
+        await agenda.now(REPEATED_NOTIFY_UPCOMING_CTF);
+    }
+
   /*@Command({})
     async notif(args: CmdRunArgs){
         let channel = args.msg.channel as TextChannel;
