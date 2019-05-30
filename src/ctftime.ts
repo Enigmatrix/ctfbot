@@ -74,18 +74,8 @@ const getWriteupLinks = async () => {
     return <string[]>feed.items.map(x => x.link);
 }
 
-const download = async (uri: string): Promise<string> => {
-  try{
-      return await axios.get(uri, {}).then(x => x.data);
-  }
-  catch{
-    //console.log('Retrying ', uri, ' ..');
-    return download(uri);
-  }
-}
-
 const getWriteupInfo = async (url: string) => {
-  let $ = await cheerio.load(await download(url));
+  let $ = await cheerio.load(await axios.get(url, {}).then(x => x.data));
   let ctfUrl = $(".breadcrumb > li:nth-child(3) > a").attr('href');
   let ctfTask = $(".breadcrumb > li:nth-child(6) > a");
   let ctfTaskUrl = ctfTask.attr('href');
