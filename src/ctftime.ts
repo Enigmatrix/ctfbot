@@ -1,4 +1,4 @@
-import axios from "./request";
+import axios, {COMMON_UA} from "./request";
 import logger from "./logger";
 import Parser from 'rss-parser';
 import cheerio from 'cheerio';
@@ -64,8 +64,9 @@ export const weeklyCtftimeEvents = async () => {
     });
     return response.data;
 };
-
-const parser = new Parser();
+let parser = new Parser({
+    headers: {'User-Agent': COMMON_UA, Accept: "*"},
+});
 
 const getWriteupLinks = async () => {
   const url = "https://ctftime.org/writeups/rss/";
