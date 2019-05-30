@@ -83,3 +83,7 @@ export async function expect<T>(val: T|undefined, fail: () => Promise<any>): Pro
     }
     return val;
 }
+
+export async function wait(num: number) : Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, num) );
+}
