@@ -16,4 +16,7 @@ export class Resource extends BaseEntity {
 
     @Column()
     public tags!: string[];
+
+    @Column()
+    public timestamp!: Date;
 }

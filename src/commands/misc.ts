@@ -3,7 +3,7 @@ import moment from "moment";
 import agenda, {
   REPEATED_NOTIFY_UPCOMING_CTF,
 } from "../agenda";
-import { formatNiceSGT, isUrl } from "../util";
+import { formatNiceSGT, isUrl, isInInterestLabChannel } from "../util";
 import commands, { CmdRunArgs, Command, CommandGroup, Group } from "./commands";
 import {Resource} from '../entities/resource';
 
@@ -29,7 +29,7 @@ class Misc extends CommandGroup {
         const [link, tagsRaw, desc] = args.checkedArgs(3);
         const tags = tagsRaw.split(",");
 
-        if (chan.parent.name !== "Interest Labs") {
+        if (isInInterestLabChannel(args.msg)) {
             args.msg.reply(`please post the link under the INTEREST LABS category, under a meaningful channel`);
             return;
         }
@@ -50,6 +50,7 @@ class Misc extends CommandGroup {
         res.tags = tags;
         res.link = link;
         res.description = desc;
+        res.timestamp = new Date();
 
         await res.save();
     }

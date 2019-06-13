@@ -1,4 +1,4 @@
-import { MessageEmbed, RichEmbed, RichEmbedOptions } from "discord.js";
+import { Message, MessageEmbed, RichEmbed, RichEmbedOptions, TextChannel } from "discord.js";
 import moment from "moment-timezone";
 import logger from "./logger";
 
@@ -13,6 +13,10 @@ export function config(key: string) {
 export function isUrl(s: string) {
     // tslint:disable-next-line:max-line-length
     return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(s);
+}
+
+export function isInInterestLabChannel(msg: Message): boolean {
+    return (msg.channel as TextChannel).parent.name === "Interest Labs";
 }
 
 export function formatNiceSGT(date: Date) {
@@ -84,6 +88,6 @@ export async function expect<T>(val: T|undefined, fail: () => Promise<any>): Pro
     return val;
 }
 
-export async function wait(num: number) : Promise<void> {
+export async function wait(num: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, num) );
 }
