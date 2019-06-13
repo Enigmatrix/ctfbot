@@ -1,46 +1,15 @@
 import { Client } from "discord.js";
 import commands from "./commands/index";
 import logger from "./logger";
+const splitargs = require("splitargs");
 
 const bot = new Client();
 bot.on("ready", () => {
     logger.info("CTFBot Ready");
 });
 
-function splitter(str: string) {
-    const splits = [];
-    let last = 0;
-    let quote = false;
-    let ws = false;
-    for (let i = 0; i < str.length; i++) {
-        if (i + 1 === str.length && !ws) {
-            splits.push([last, str.length]);
-            continue;
-        }
-        if (!/\S/.test(str[i]) && !quote) {
-            if (!ws) {
-                splits.push([last, i]);
-                ws = true;
-            }
-            last = i + 1;
-            continue;
-        }
-        ws = false;
-        if (str[i] === "\"" && !eq(i - 1, str, "\\\"")) {
-            if (!quote) {
-                last = i + 1;
-                quote = true;
-            } else {
-                splits.push([last, i]);
-                last = i + 1;
-                quote = false;
-                ws = true;
-            }
-            continue;
-        }
-
-    }
-    return splits.map((x) => str.substring(x[0], x[1]).replace("\\\"", "\""));
+function splitter(str: string): string[] {
+    return splitargs(str) as string[];
 }
 
 function eq(i: number, all: string, sub: string) {

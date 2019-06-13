@@ -46,6 +46,7 @@
     "proxy-sources": "^1.0.2",
     "reflect-metadata": "^0.1.13",
     "rss-parser": "^3.7.1",
+    "splitargs": "0.0.7",
     "trello-node-api": "0.0.6",
     "typeorm": "^0.2.17",
     "uws": "^100.0.1",

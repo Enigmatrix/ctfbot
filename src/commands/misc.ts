@@ -1,13 +1,11 @@
 import { Message, RichEmbed, TextChannel } from "discord.js";
 import moment from "moment";
 import agenda, {
-  NOTIFY_CTF_REACTORS,
-  REPEATED_NOTIFY_UPCOMING_CTF
+  REPEATED_NOTIFY_UPCOMING_CTF,
 } from "../agenda";
-import { trello, trelloEx } from "../trello";
-import { formatNiceSGT, ifNot } from "../util";
+import { formatNiceSGT, isUrl } from "../util";
 import commands, { CmdRunArgs, Command, CommandGroup, Group } from "./commands";
-import { Ctf } from "./ctf";
+import {Resource} from '../entities/resource';
 
 @Group("Miscellaneous")
 class Misc extends CommandGroup {
@@ -17,10 +15,44 @@ class Misc extends CommandGroup {
       new RichEmbed({
         color: 0x006dee,
         author: { name: `Writeup for Nani` },
-        description: `https://ctftime.org/writeup/15274`
-      })
+        description: `https://ctftime.org/writeup/15274`,
+      }),
     );
   }
+
+    @Command({
+        desc: "Insert link to a resource",
+        usage: "!res link tag1,tag2..tagn desc",
+    })
+    public async res(args: CmdRunArgs) {
+        const chan = args.msg.channel as TextChannel;
+        const [link, tagsRaw, desc] = args.checkedArgs(3);
+        const tags = tagsRaw.split(",");
+
+        if (chan.parent.name !== "Interest Labs") {
+            args.msg.reply(`please post the link under the INTEREST LABS category, under a meaningful channel`);
+            return;
+        }
+
+        const existing = await Resource.findOne({ link });
+        if (existing) {
+            args.msg.reply(`the link seems to be posted before already, under \`${existing.category}\``);
+            return;
+        }
+
+        if (!isUrl(link)) {
+            args.msg.reply(`that doesn't seem like a link to me ...`);
+            return;
+        }
+
+        const res = new Resource();
+        res.category = chan.name;
+        res.tags = tags;
+        res.link = link;
+        res.description = desc;
+
+        await res.save();
+    }
 
     @Command({})
     public async testupcoming() {
@@ -37,14 +69,14 @@ class Misc extends CommandGroup {
     }*/
 
   @Command({
-    desc: "Simple ping reply"
+    desc: "Simple ping reply",
   })
   public async ping(args: CmdRunArgs) {
     await args.msg.channel.send("pong");
   }
 
   @Command({
-    desc: "Show status message"
+    desc: "Show status message",
   })
   public async status(args: CmdRunArgs) {
     const { channel } = args.msg;
@@ -53,7 +85,7 @@ class Misc extends CommandGroup {
 
     const pingStart = Date.now();
     const msg = (await channel.send(
-      new RichEmbed({ title: "Pinging...", color: 0xffeb3b })
+      new RichEmbed({ title: "Pinging...", color: 0xffeb3b }),
     )) as Message;
     const pingEnd = Date.now();
     const jobs = await agenda.jobs({ nextRunAt: { $gte: new Date() } });
@@ -74,15 +106,15 @@ class Misc extends CommandGroup {
           `**Memory**: ${memoryInfo}\n` +
           `**Jobs**:\n` +
           jobs
-            .map(x => `_${formatNiceSGT(x.attrs.nextRunAt)}_:\n${x.attrs.name}`)
-            .join("\n\n")
-      })
+            .map((x) => `_${formatNiceSGT(x.attrs.nextRunAt)}_:\n${x.attrs.name}`)
+            .join("\n\n"),
+      }),
     );
   }
 
   @Command({
     desc: "Print help message",
-    usage: "!help\n!help <cmd>"
+    usage: "!help\n!help <cmd>",
   })
   public async help(args: CmdRunArgs) {
     if (args.rawArgs[0] === undefined) {
@@ -94,11 +126,11 @@ class Misc extends CommandGroup {
             ([key, cmd]) => {
               return {
                 name: key,
-                value: `**${cmd.usage}**\n${cmd.description}`
+                value: `**${cmd.usage}**\n${cmd.description}`,
               };
-            }
-          )
-        })
+            },
+          ),
+        }),
       );
     } else if (commands.commandMap.has(args.rawArgs[0])) {
       const cmd = commands.commandMap.get(args.rawArgs[0]);
@@ -112,17 +144,17 @@ class Misc extends CommandGroup {
           fields: [
             {
               name: args.rawArgs[0],
-              value: `**${cmd.usage}**\n${cmd.description}`
-            }
-          ]
-        })
+              value: `**${cmd.usage}**\n${cmd.description}`,
+            },
+          ],
+        }),
       );
     } else {
       args.msg.channel.send(
         new RichEmbed({
           title: ":question: Command not found",
-          color: 0xff1744
-        })
+          color: 0xff1744,
+        }),
       );
     }
   }
