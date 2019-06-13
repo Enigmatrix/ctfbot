@@ -40,6 +40,7 @@
     "bufferutil": "^4.0.1",
     "cheerio": "^1.0.0-rc.3",
     "discord.js": "^11.5.1",
+    "fastify": "^2.5.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.25",
     "mongodb": "^3.2.6",
