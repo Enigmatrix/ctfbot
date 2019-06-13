@@ -1,4 +1,5 @@
 import fastify from "fastify";
+import {initConnection} from './data';
 import {Resource} from "./entities/resource";
 import {config} from "./util";
 
@@ -10,10 +11,15 @@ app.get("/api/resources/:category", async (request, reply) => {
 });
 
 // Run the server!
-export const setupServer = async () => {
+const setupServer = async () => {
   try {
     await app.listen(config("PORT"));
   } catch (err) {
     app.log.error(err);
   }
 };
+
+(async () => {
+    await initConnection();
+    setupServer();
+})();

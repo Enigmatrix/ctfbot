@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npm run build && node build/index.js",
     "start": "node build/index.js",
+    "server": "node build/server.js",
     "build": "./node_modules/.bin/tsc",
     "postinstall": "npm run build",
     "lint": "./node_modules/.bin/tslint --project tsconfig.json"
