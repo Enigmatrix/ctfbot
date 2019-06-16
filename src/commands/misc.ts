@@ -29,7 +29,7 @@ class Misc extends CommandGroup {
         const [link, tagsRaw, desc] = args.checkedArgs(3);
         const tags = tagsRaw.split(",");
 
-        if (isInInterestLabChannel(args.msg)) {
+        if (!isInInterestLabChannel(args.msg)) {
             args.msg.reply(`please post the link under the INTEREST LABS category, under a meaningful channel`);
             return;
         }
