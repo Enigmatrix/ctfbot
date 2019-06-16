@@ -8,7 +8,7 @@ import { config } from "./util";
 const app = fastify({ logger: true });
 
 app.register(cors, {
-  origin: true,
+  origin: false,
 });
 
 app.get("/api/resources/categories", async (request, reply) => {
