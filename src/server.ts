@@ -8,7 +8,7 @@ import { config } from "./util";
 const app = fastify({ logger: true });
 
 app.register(cors, {
-  origin: false,
+  origin: "*",
 });
 
 app.get("/api/resources/categories", async (request, reply) => {
@@ -22,16 +22,10 @@ app.get("/api/resources/by_category/:category", async (request, reply) => {
   });
 });
 
-// Run the server!
-const setupServer = async () => {
+export const setupServer = async () => {
   try {
-    await app.listen(config("PORT"), "0.0.0.0");
+    await app.listen(config("PORT"));
   } catch (err) {
     app.log.error(err);
   }
 };
-
-(async () => {
-  await initConnection();
-  setupServer();
-})();

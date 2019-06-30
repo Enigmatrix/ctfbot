@@ -2,7 +2,7 @@ import { User } from "../entities/user";
 import { trelloEx } from "../trello";
 import { CmdRunArgs, Command, CommandGroup } from "./commands";
 
-class Users extends CommandGroup {
+export class Users extends CommandGroup {
 
     @Command({
         desc: "Register a trello profile url (e.g. https://trello.com/iamuser) with your Discord account",

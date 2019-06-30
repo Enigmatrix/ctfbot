@@ -8,7 +8,7 @@ import commands, { CmdRunArgs, Command, CommandGroup, Group } from "./commands";
 import {Resource} from '../entities/resource';
 
 @Group("Miscellaneous")
-class Misc extends CommandGroup {
+export class Misc extends CommandGroup {
   @Command({})
   public async test(args: CmdRunArgs) {
     args.msg.channel.send(

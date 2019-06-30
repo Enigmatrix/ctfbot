@@ -7,7 +7,7 @@ import { ContinuationStop } from "../util";
 import { CmdRunArgs, Command, CommandGroup } from "./commands";
 import { Ctf } from "./ctf";
 
-class Challenges extends CommandGroup {
+export class Challenges extends CommandGroup {
 
     @Command({
         desc: "Add a challenge to this CTF",

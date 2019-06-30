@@ -13,13 +13,6 @@ function splitter(str: string): string[] {
     return splitargs(str) as string[];
 }
 
-function eq(i: number, all: string, sub: string) {
-    if (i < 0 || i >= all.length || i + sub.length >= all.length) {
-        return false;
-    }
-    return all.substr(i, sub.length) === sub;
-}
-
 bot.on("message", (msg) => {
     // reminder if people post links in interest lab channel without the !res command
     if (isUrl(msg.content) && isInInterestLabChannel(msg)) {

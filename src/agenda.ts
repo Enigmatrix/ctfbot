@@ -1,16 +1,12 @@
 import Agenda, { Job } from "agenda";
 import {
-  Emoji,
-  MessageReaction,
-  ReactionCollector,
-  ReactionEmoji,
   RichEmbed,
-  TextChannel
+  TextChannel,
 } from "discord.js";
 import { ObjectID } from "typeorm";
 import bot from "./bot";
 import { Ctf } from "./commands/ctf";
-import { weeklyCtftimeEvents, getLatestWriteups } from "./ctftime";
+import { getLatestWriteups, weeklyCtftimeEvents } from "./ctftime";
 import { CTFTimeCTF } from "./entities/ctf";
 import logger from "./logger";
 import { config, formatNiceSGT } from "./util";
@@ -37,7 +33,7 @@ function defineJob(name: string, code: (job: Job) => Promise<void>) {
   });
 }
 
-defineJob(REPEATED_NOTIFY_CTF_WRITEUPS, async job => {
+defineJob(REPEATED_NOTIFY_CTF_WRITEUPS, async (job) => {
   const writeups = await getLatestWriteups();
   const ctfs = await CTFTimeCTF.find({ where: { archived: false } });
 
@@ -50,12 +46,12 @@ defineJob(REPEATED_NOTIFY_CTF_WRITEUPS, async job => {
     await Promise.all(
       writeups
         .filter(
-          x => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1
+          (x) => x.ctfUrl === shortUrl && ctf.writeupLinks.indexOf(x.url) === -1,
         )
-        .map(async x => {
+        .map(async (x) => {
           const embed = await Ctf.createCtfWriteupMessageEmbed(
             x.ctfTaskName,
-            x.url
+            x.url,
           );
           const channel = bot.guilds
             .first()
@@ -63,14 +59,14 @@ defineJob(REPEATED_NOTIFY_CTF_WRITEUPS, async job => {
           await channel.sendEmbed(embed);
 
           ctf.writeupLinks.push(x.url);
-        })
+        }),
     );
 
     await ctf.save();
   }
 });
 
-defineJob(NOTIFY_CTF_REACTORS, async job => {
+defineJob(NOTIFY_CTF_REACTORS, async (job) => {
   const ctfid = (job.attrs.data.ctf as ObjectID).toString();
   const ctf = await CTFTimeCTF.findOne(ctfid, { where: { archived: false } });
   if (!ctf) {
@@ -97,30 +93,30 @@ defineJob(NOTIFY_CTF_REACTORS, async job => {
         color: 0xff6d00,
         author: {
           name: `Reminder for ${ctf.name}`,
-          icon_url: ctf.logoUrl
+          icon_url: ctf.logoUrl,
         },
         description: `This is a reminder that ${
           ctf.name
         } starts in 1 hour. Good Luck!`,
-        url: ctf.url
-      })
+        url: ctf.url,
+      }),
     );
   }
 });
 
-defineJob(REPEATED_NOTIFY_UPCOMING_CTF, async job => {
+defineJob(REPEATED_NOTIFY_UPCOMING_CTF, async (job) => {
   const channel = bot.guilds
     .first()
-    .channels.find(x => x.name === "upcoming") as TextChannel;
+    .channels.find((x) => x.name === "upcoming") as TextChannel;
 
   let ctftimeEvents = await weeklyCtftimeEvents();
-  ctftimeEvents = ctftimeEvents.filter(x => x.finish > x.start && !x.onsite);
+  ctftimeEvents = ctftimeEvents.filter((x) => x.finish > x.start && !x.onsite);
   if (ctftimeEvents.length === 0) {
     await channel.send(
       new RichEmbed({
         color: 0xff8f00,
-        title: "There are no upcoming online CTFs for this week"
-      })
+        title: "There are no upcoming online CTFs for this week",
+      }),
     );
     return;
   }
@@ -134,8 +130,8 @@ defineJob(REPEATED_NOTIFY_UPCOMING_CTF, async job => {
   await channel.send(
     new RichEmbed({
       color: 0x76ff03,
-      title: eventNumberTitle
-    })
+      title: eventNumberTitle,
+    }),
   );
   for (const ctftimeEvent of ctftimeEvents) {
     const addCtfText =
@@ -149,7 +145,7 @@ defineJob(REPEATED_NOTIFY_UPCOMING_CTF, async job => {
           name: `${ctftimeEvent.title} (${ctftimeEvent.format}, ${
             ctftimeEvent.restrictions
           })`,
-          icon_url: ctftimeEvent.logo === "" ? undefined : ctftimeEvent.logo
+          icon_url: ctftimeEvent.logo === "" ? undefined : ctftimeEvent.logo,
         },
         description: ctftimeEvent.description,
         fields: [
@@ -158,18 +154,18 @@ defineJob(REPEATED_NOTIFY_UPCOMING_CTF, async job => {
           {
             name: "Timing",
             value: `${formatNiceSGT(ctftimeEvent.start)} - ${formatNiceSGT(
-              ctftimeEvent.finish
-            )}`
+              ctftimeEvent.finish,
+            )}`,
           },
-          { name: "CTFtime URL", value: addCtfText }
+          { name: "CTFtime URL", value: addCtfText },
         ],
         url: ctftimeEvent.url,
         footer: {
           text: `Hosted by ${ctftimeEvent.organizers
-            .map(x => x.name)
-            .join(", ")}.`
-        }
-      })
+            .map((x) => x.name)
+            .join(", ")}.`,
+        },
+      }),
     );
   }
 });
@@ -190,4 +186,4 @@ agenda.on("ready", async () => {
   await agenda.every("every 3 minutes", REPEATED_NOTIFY_CTF_WRITEUPS);
 });
 
-export default agenda.on("error", e => logger.error("Error from agenda", e));
+export default agenda.on("error", (e) => logger.error("Error from agenda", e));

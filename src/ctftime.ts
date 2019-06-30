@@ -2,7 +2,7 @@ import axios, { COMMON_UA } from "./request";
 import logger from "./logger";
 import Parser from "rss-parser";
 import cheerio from "cheerio";
-import { wait } from "./util";
+import { wait, config } from "./util";
 
 export function isCtfTimeUrl(s: string) {
   return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(
@@ -50,7 +50,7 @@ export const getCtftimeEvent = async (ctftimeUrl: string) => {
   const segments = ctftimeUrl.split("event/");
   const last = segments[segments.length - 1];
   const response = await axios.get<CtfTime.Event>(
-    `https://ctftime.org/api/v1/events/${last.split("/")[0]}/`
+    config("PROXY") + `https://ctftime.org/api/v1/events/${last.split("/")[0]}/`
   );
   return response.data;
 };
@@ -59,7 +59,7 @@ export const weeklyCtftimeEvents = async () => {
   const start = Math.floor(Date.now() / 1000);
   const finish = start + 7 * 24 * 60 * 60;
   const response = await axios.get<CtfTime.Event[]>(
-    `https://ctftime.org/api/v1/events/`,
+    config("PROXY") + `https://ctftime.org/api/v1/events/`,
     {
       params: {
         limit: 100,
@@ -75,7 +75,7 @@ let parser = new Parser({
 });
 
 const getWriteupLinks = async () => {
-  const url = "https://ctftime.org/writeups/rss/";
+  const url = config("PROXY") + "https://ctftime.org/writeups/rss/";
   let feed = await parser.parseURL(url);
   await wait(2000);
   if (!feed.items) return <string[]>[];
@@ -83,7 +83,7 @@ const getWriteupLinks = async () => {
 };
 
 const getWriteupInfo = async (url: string) => {
-  let $ = await cheerio.load(await axios.get(url, {}).then(x => x.data));
+  let $ = await cheerio.load(await axios.get(config("PROXY") + url, {}).then(x => x.data));
   let ctfUrl = $(".breadcrumb > li:nth-child(3) > a").attr("href");
   let ctfTask = $(".breadcrumb > li:nth-child(6) > a");
   let ctfTaskUrl = ctfTask.attr("href");
