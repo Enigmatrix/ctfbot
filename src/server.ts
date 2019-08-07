@@ -11,6 +11,10 @@ app.register(cors, {
   origin: "*",
 });
 
+app.get("/haelth", async (request, reply) => {
+    return { OK: true };
+});
+
 app.get("/api/resources/categories", async (request, reply) => {
     return getMongoRepository(Resource).distinct("category", {});
 });
