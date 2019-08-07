@@ -24,7 +24,7 @@ app.get("/api/resources/by_category/:category", async (request, reply) => {
 
 export const setupServer = async () => {
   try {
-    await app.listen(config("PORT"));
+    await app.listen(config("PORT"), "0.0.0.0");
   } catch (err) {
     app.log.error(err);
   }
