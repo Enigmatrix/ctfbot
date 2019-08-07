@@ -11,7 +11,7 @@ app.register(cors, {
   origin: "*",
 });
 
-app.get("/haelth", async (request, reply) => {
+app.get("/health", async (request, reply) => {
     return { OK: true };
 });
 
