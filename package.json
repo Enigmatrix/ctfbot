@@ -26,10 +26,13 @@
   },
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "dependencies": {
+    "@types/winston": "^2.4.4",
+    "discord.js": "^11.5.1",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
-    "tslint": "^5.17.0",
-    "typescript": "^3.5.2",
-    "typescript-tslint-plugin": "^0.1.2"
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.4",
+    "typescript-tslint-plugin": "^0.5.4"
   }
 }
