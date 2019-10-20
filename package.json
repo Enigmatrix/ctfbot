@@ -26,8 +26,11 @@
   },
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "dependencies": {
+    "@types/moment": "^2.13.0",
     "@types/winston": "^2.4.4",
     "discord.js": "^11.5.1",
+    "moment": "^2.24.0",
+    "splitargs2": "^0.1.3",
     "winston": "^3.2.1"
   },
   "devDependencies": {
