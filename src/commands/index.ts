@@ -1,8 +1,8 @@
 import commands from "./definitions";
 
-//import "./challenge";
+// import "./challenge";
 import "./ctf";
 import "./misc";
-//import "./user";
+// import "./user";
 
 export default commands;

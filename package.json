@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "dependencies": {
     "@types/moment": "^2.13.0",
+    "@types/node": "^12.11.1",
     "@types/winston": "^2.4.4",
     "discord.js": "^11.5.1",
     "moment": "^2.24.0",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "tslint": "^5.20.0",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.6.4",
     "typescript-tslint-plugin": "^0.5.4"
   }
