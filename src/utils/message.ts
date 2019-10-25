@@ -1,5 +1,5 @@
 import {CmdCtx} from '../commands/definitions';
-import {Message} from 'discord.js';
+import {Message, MessageEmbed, RichEmbed} from 'discord.js';
 
 export class Stop extends Error {
   // tslint:disable-next-line:variable-name
@@ -28,13 +28,22 @@ export class Flow<T> {
   }
 
   public async run() {
-    let init = {};
-    const msg = await this.ctx.msg.channel.send("Starting " + this.ctx.cmd.name)
-    for (const [desc, func] of this.prevs) {
-      init = func(init);
-      (msg as Message).edit(desc);
+    let [desc, func] = this.prevs[0];
+    const msg = await this.ctx.msg.channel.send(this.embed(1, this.prevs.length, desc));
+    let init = await func({});
+    for (let i = 0; i < this.prevs.length; i++) {
+      [desc, func] = this.prevs[i]
+      let ginit = await func(init);
+      for(let k in ginit) {
+        init[k] = ginit[k];
+      }
+      (msg as Message).edit(this.embed(i+1, this.prevs.length, desc));
     }
     (msg as Message).edit("Done");
+  }
+
+  private embed(id: number, total: number, desc: string): RichEmbed {
+    return new RichEmbed({ description: `${id}/${total} ${desc}`});
   }
 }
 
