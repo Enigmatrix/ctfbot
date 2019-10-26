@@ -4,7 +4,7 @@
   "description": "CTF Bot for Discord",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run build && node build/index.js",
+    "dev": "nodemon --watch '*.ts' --exec 'ts-node' src/index.ts",
     "start": "node build/index.js",
     "server": "node build/server.js",
     "build": "./node_modules/.bin/tsc",
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "dependencies": {
+    "@discordjs/uws": "^10.149.0",
     "@types/moment": "^2.13.0",
     "@types/node": "^12.11.1",
     "@types/winston": "^2.4.4",
@@ -36,6 +37,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "nodemon": "^1.19.4",
+    "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.6.4",
