@@ -26,7 +26,7 @@ export default class CTF extends CommandGroup {
 
       .step("Creating new channel", async ({ ctftimeEvent }) => {
         const ctfCatChannel = guild.channels.find(x => x.name === "CTFs");
-        const newCtfChannel = (await guild.createChannel(ctftimeEvent.title, "text")) as TextChannel;
+        const newCtfChannel = await guild.createChannel(ctftimeEvent.title, "text") as TextChannel;
         await newCtfChannel.setParent(ctfCatChannel);
         newCtfChannel.setTopic("SEE :pushpin: FOR INFO");
         // TODO put embed here

@@ -1,6 +1,6 @@
-import {Message, RichEmbed} from 'discord.js';
-import {CmdCtx} from '../commands/definitions';
-import logger from './logger';
+import { Message, RichEmbed } from "discord.js";
+import { CmdCtx } from "../commands/definitions";
+import logger from "./logger";
 
 export class CommandError extends Error {
   public msg: string;
@@ -25,35 +25,35 @@ export class CommandStop extends Error {
 }
 
 export function info(title: string, description?: string): RichEmbed {
-    return new RichEmbed({
-        title,
-        description,
-        color: 0x17a2b8
-    });
+  return new RichEmbed({
+    title,
+    description,
+    color: 0x17a2b8
+  });
 }
 
 export function success(title: string, description?: string): RichEmbed {
-    return new RichEmbed({
-        title,
-        description: description ? ":white_check_mark: " + description : undefined,
-        color: 0x28a745
-    });
+  return new RichEmbed({
+    title,
+    description: description ? ":white_check_mark: " + description : undefined,
+    color: 0x28a745
+  });
 }
 
 export function warn(title: string, description?: string): RichEmbed {
-    return new RichEmbed({
-        title,
-        description: description ? ":warn: " + description : undefined,
-        color: 0xffc107
-    });
+  return new RichEmbed({
+    title,
+    description: description ? ":warn: " + description : undefined,
+    color: 0xffc107
+  });
 }
 
 export function error(title: string, description?: string): RichEmbed {
-    return new RichEmbed({
-        title,
-        description: description ? ":x: " + description : undefined,
-        color: 0xdc3545
-    });
+  return new RichEmbed({
+    title,
+    description: description ? ":x: " + description : undefined,
+    color: 0xdc3545
+  });
 }
 
 interface FlowState {
@@ -62,11 +62,10 @@ interface FlowState {
 }
 
 export class Flow<T> {
-
   private state: FlowState;
 
   constructor(state: FlowState) {
-      this.state = state;
+    this.state = state;
   }
 
   public step<U>(desc: string, func: (a: T) => Promise<U>): Flow<U & T> {
@@ -75,32 +74,38 @@ export class Flow<T> {
   }
 
   public async run(endMsg?: string) {
-    const state = {}
+    const state = {};
     let [desc, func] = this.state.funcs[0];
 
-    const msg = await this.state.ctx.msg.channel.send(
-      this.progress(1, desc)) as Message;
+    const msg = (await this.state.ctx.msg.channel.send(
+      this.progress(1, desc)
+    )) as Message;
     await this.runFunc(state, func, msg);
 
     for (let i = 0; i < this.state.funcs.length; i++) {
-      [desc, func] = this.state.funcs[i]
-      await msg.edit(this.progress(i+1, desc));
+      [desc, func] = this.state.funcs[i];
+      await msg.edit(this.progress(i + 1, desc));
       await this.runFunc(state, func, msg);
     }
 
     await msg.edit(success("Done!", endMsg));
   }
 
-  private async runFunc(state: any, func: (a: any) => Promise<any>, msg: Message) {
+  private async runFunc(
+    state: any,
+    func: (a: any) => Promise<any>,
+    msg: Message
+  ) {
     try {
-      const temp = await func(state);
-      for(const k of Object.keys(temp)) {
+      const temp = await func(state) || {};
+      for (const k of Object.keys(temp)) {
         state[k] = temp[k];
       }
     } catch (e) {
-      if (e instanceof CommandError) { 
-        logger.warn(`Error in ${this.state.ctx.cmd.name}: ${e.msg}`);
-        await msg.edit(error(`Error in \`${this.state.ctx.cmd.name}\`:`, e.msg));
+      if (e instanceof CommandError) {
+        await msg.edit(
+          error(`Error in \`${this.state.ctx.cmd.name}\`:`, e.msg)
+        );
         throw new CommandStop();
       }
       throw e;
@@ -108,9 +113,9 @@ export class Flow<T> {
   }
 
   private progress(id: number, desc: string): RichEmbed {
-    return info(`Running ${this.state.ctx.cmd.name} ...`,
-                `\`[${id}/${this.state.funcs.length}]\` ${desc}`);
+    return info(
+      `Running ${this.state.ctx.cmd.name} ...`,
+      `\`[${id}/${this.state.funcs.length}]\` ${desc}`
+    );
   }
 }
-
-

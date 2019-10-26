@@ -1,6 +1,6 @@
 import { Message, RichEmbed } from "discord.js";
 import logger from "../utils/logger";
-import { CommandError, CommandStop, Flow } from "../utils/message";
+import { CommandError, CommandStop, error, Flow } from "../utils/message";
 
 export function Group(name: string) {
   return <T extends new (...args: any[]) => {}>(ctor: T) => {
@@ -44,6 +44,7 @@ export class CmdCtx {
   }
 
   public async error(err: string): Promise<never> {
+    logger.warn(`Error in ${this.cmd.name}: ${err}`);
     throw new CommandError(err);
   }
 
@@ -114,7 +115,7 @@ export class CommandDefinitions {
         return;
       }
       if (e instanceof CommandError) {
-        logger.warn(`Error in ${name}: ${e.msg}`);
+        await runArgs.msg.channel.send(error(`Error in \`${name}\`:`, e.msg));
         return;
       }
       logger.error(`Unexpected error while running ${name}`);
