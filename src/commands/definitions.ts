@@ -1,6 +1,6 @@
 import {Message, RichEmbed} from "discord.js";
 import logger from "../utils/logger";
-import {Stop} from "../utils/message";
+import {Stop, Flow} from "../utils/message";
 
 export function Group(name: string) {
   return <T extends new (...args: any[]) => {}>(ctor: T) => {
@@ -32,6 +32,10 @@ export class CmdCtx {
 
   public async printUsage() {
     await this.msg.channel.send(this.cmd.usage);
+  }
+
+  public flow(): Flow<{}> {
+      return new Flow<{}>({ ctx: this, funcs: [] });
   }
 }
 

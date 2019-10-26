@@ -1,7 +1,7 @@
 import {Message, RichEmbed} from "discord.js";
 import moment from "moment";
+import {Flow, info} from '../utils/message';
 import commands, {CmdCtx, Command, CommandGroup, Group} from "./definitions";
-import {Flow} from '../utils/message';
 
 @Group("Miscellaneous/Utility")
 export default class Misc extends CommandGroup {
@@ -9,14 +9,12 @@ export default class Misc extends CommandGroup {
 
   @Command({desc: "Simple ping reply"})
   public async test(ctx: CmdCtx) {
-    let flow = new Flow<{}>(ctx, []);
-    flow = flow.step("hello", async () => {
-      return {bae: 45};
-    })
+    const flow = ctx.flow()
+      .step("hello", async () => ({bae: 45}))
       .step("no", async ({bae}) => ({h: bae.toString()}))
       .step("no2", async ({bae, h}) => ({h1: h + bae.toString()}))
-      .step("no2", async ({h1}) => await ctx.msg.reply(h1));
-    await flow.run();
+      .step("no2", async ({h1}) => await ctx.msg.channel.send(info("info from `test`", "wow damn long running computation: "+h1)));
+    await flow.run("checkout #random for some fun!");
   }
 
   @Command({desc: "Simple ping reply"})

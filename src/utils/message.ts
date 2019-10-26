@@ -1,5 +1,5 @@
+import {Message, RichEmbed} from 'discord.js';
 import {CmdCtx} from '../commands/definitions';
-import {Message, MessageEmbed, RichEmbed} from 'discord.js';
 
 export class Stop extends Error {
   // tslint:disable-next-line:variable-name
@@ -11,39 +11,60 @@ export class Stop extends Error {
   }
 }
 
+export function info(title: string, description?: string): RichEmbed {
+    return new RichEmbed({
+        title,
+        description,
+        color: 0x17a2b8
+    });
+}
+
+export function success(title: string, description?: string): RichEmbed {
+    return new RichEmbed({
+        title,
+        description,
+        color: 0x28a745
+    });
+}
+
+interface FlowState {
+  funcs: Array<[string, (a: any) => Promise<any>]>;
+  ctx: CmdCtx;
+}
+
 // tslint:disable-next-line: max-classes-per-file
 export class Flow<T> {
 
-  private prevs: Array<[string, (a: any) => Promise<any>]>;
-  private ctx: CmdCtx;
+  private state: FlowState;
 
-  constructor(ctx: CmdCtx, prevs: Array<[string, (a: any) => Promise<any>]>) {
-    this.prevs = prevs;
-    this.ctx = ctx;
+  constructor(state: FlowState) {
+      this.state = state;
   }
 
   public step<U>(desc: string, func: (a: T) => Promise<U>): Flow<U & T> {
-    this.prevs.push([desc, func]);
-    return new Flow<U & T>(this.ctx, this.prevs);
+    this.state.funcs.push([desc, func]);
+    return new Flow<U & T>(this.state);
   }
 
-  public async run() {
-    let [desc, func] = this.prevs[0];
-    const msg = await this.ctx.msg.channel.send(this.embed(1, this.prevs.length, desc));
-    let init = await func({});
-    for (let i = 0; i < this.prevs.length; i++) {
-      [desc, func] = this.prevs[i]
-      let ginit = await func(init);
-      for(let k in ginit) {
-        init[k] = ginit[k];
+  public async run(endMsg?: string) {
+    let [desc, func] = this.state.funcs[0];
+    const msg = await this.state.ctx.msg.channel.send(
+        this.progress(1, desc)) as Message;
+    const state = await func({});
+    for (let i = 0; i < this.state.funcs.length; i++) {
+      [desc, func] = this.state.funcs[i]
+      const temp = await func(state);
+      for(const k of Object.keys(temp)) {
+        state[k] = temp[k];
       }
-      (msg as Message).edit(this.embed(i+1, this.prevs.length, desc));
+      await msg.edit(this.progress(i+1, desc));
     }
-    (msg as Message).edit("Done");
+    await msg.edit(success("Done!", endMsg));
   }
 
-  private embed(id: number, total: number, desc: string): RichEmbed {
-    return new RichEmbed({ description: `${id}/${total} ${desc}`});
+  private progress(id: number, desc: string): RichEmbed {
+    return info(`Running ${this.state.ctx.cmd.name} ...`,
+                `\`[${id}/${this.state.funcs.length}]\` ${desc}`);
   }
 }
 
