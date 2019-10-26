@@ -73,7 +73,7 @@ export class Flow<T> {
     return new Flow<U & T>(this.state);
   }
 
-  public async run(endMsg?: string) {
+  public async run(endMsgFunc: (a: T) => Promise<string>) {
     const state = {};
     let [desc, func] = this.state.funcs[0];
 
@@ -82,13 +82,13 @@ export class Flow<T> {
     )) as Message;
     await this.runFunc(state, func, msg);
 
-    for (let i = 0; i < this.state.funcs.length; i++) {
+    for (let i = 1; i < this.state.funcs.length; i++) {
       [desc, func] = this.state.funcs[i];
       await msg.edit(this.progress(i + 1, desc));
       await this.runFunc(state, func, msg);
     }
 
-    await msg.edit(success("Done!", endMsg));
+    await msg.edit(success("Done!", await endMsgFunc(state as T)));
   }
 
   private async runFunc(
