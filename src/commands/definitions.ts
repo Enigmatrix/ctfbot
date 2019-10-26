@@ -121,20 +121,21 @@ export class CommandDefinitions {
     }
     logger.info(`Running command ${name} (${runArgs.msg.content})`);
 
+    const ctx = new CmdCtx(runArgs.args, runArgs.msg, command)
     try {
-      await command.run(new CmdCtx(runArgs.args, runArgs.msg, command));
+      await command.run(ctx);
     } catch (e) {
       if (e instanceof CommandFlowError) {
-        await this.handleError(e.actualErr, runArgs.msg.channel, e.editMsg);
+        await this.handleError(ctx, e.actualErr, e.editMsg);
       } else {
-        await this.handleError(e, runArgs.msg.channel);
+        await this.handleError(ctx, e);
       }
     }
   }
 
   private async handleError(
+    ctx: CmdCtx,
     e: Error,
-    channel: TextChannel | DMChannel | GroupDMChannel,
     editMsg?: Message
   ) {
     if (e instanceof CommandStop) {
@@ -143,10 +144,10 @@ export class CommandDefinitions {
     // TODO test this (throw fatal errors in flows and non-flows)
     let embed: RichEmbed;
     if (e instanceof CommandError) {
-      embed = error(`Error in \`${name}\`:`, e.msg);
+      embed = error(`Error in \`${ctx.cmd.name}\`:`, e.msg);
     } else {
       embed = error(
-        `Unexpected error in \`${name}\`:`,
+        `Unexpected error in \`${ctx.cmd.name}\`:`,
         "Check logs to debug or contact bot developers"
       );
     }
@@ -154,7 +155,7 @@ export class CommandDefinitions {
     if (editMsg) {
       await editMsg.edit(embed);
     } else {
-      await channel.send(embed);
+      await ctx.msg.channel.send(embed);
     }
 
     if (e instanceof CommandError) {
