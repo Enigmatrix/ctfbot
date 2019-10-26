@@ -62,7 +62,7 @@ export default class Misc extends CommandGroup {
     usage: "!help\n!help <cmd>",
   })
   public async help(ctx: CmdCtx) {
-    if (ctx.rawArgs[0] === undefined) {
+    if (ctx.args[0] === undefined) {
       ctx.msg.channel.send(
         new RichEmbed({
           title: ":question: Help",
@@ -75,18 +75,18 @@ export default class Misc extends CommandGroup {
               };
             })
         }));
-    } else if (commands.commandMap.has(ctx.rawArgs[0])) {
-      const cmd = commands.commandMap.get(ctx.rawArgs[0]);
+    } else if (commands.commandMap.has(ctx.args[0])) {
+      const cmd = commands.commandMap.get(ctx.args[0]);
       if (!cmd) {
         return;
       }
       ctx.msg.channel.send(
         new RichEmbed({
-          title: ":question: Help for " + ctx.rawArgs[0],
+          title: ":question: Help for " + ctx.args[0],
           color: 0x00e676,
           fields: [
             {
-              name: ctx.rawArgs[0],
+              name: ctx.args[0],
               value: `**${cmd.usage}**\n${cmd.desc}`,
             },
           ],

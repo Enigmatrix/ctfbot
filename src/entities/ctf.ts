@@ -1,5 +1,5 @@
 import {BaseEntity, Column, Entity, ObjectID, ObjectIdColumn} from "typeorm";
-import {CtfTime} from "../services/ctftime";
+import {CTFTime} from "../services/ctftime";
 
 export class Challenge {
     @Column()
@@ -79,7 +79,7 @@ export class CTFTimeCTF extends BaseEntity {
     public archived!: boolean;
 
     // TODO extract this constructor out (leave as plain pojo)
-    constructor(ctftimeEvent: CtfTime.Event, trelloBoardUrl: string, channelId: string) {
+    constructor(ctftimeEvent: CTFTime.Event, trelloBoardUrl: string, channelId: string) {
         super();
         if (ctftimeEvent === undefined) {
             return;

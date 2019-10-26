@@ -1,7 +1,20 @@
 import {Message, RichEmbed} from 'discord.js';
 import {CmdCtx} from '../commands/definitions';
+import logger from './logger';
 
-export class Stop extends Error {
+export class CommandError extends Error {
+  public msg: string;
+  // tslint:disable-next-line: variable-name
+  protected __proto__: Error;
+  constructor(msg: string) {
+    const trueProto = new.target.prototype;
+    super();
+    this.__proto__ = trueProto;
+    this.msg = msg;
+  }
+}
+
+export class CommandStop extends Error {
   // tslint:disable-next-line:variable-name
   protected __proto__: Error;
   constructor() {
@@ -22,8 +35,24 @@ export function info(title: string, description?: string): RichEmbed {
 export function success(title: string, description?: string): RichEmbed {
     return new RichEmbed({
         title,
-        description,
+        description: description ? ":white_check_mark: " + description : undefined,
         color: 0x28a745
+    });
+}
+
+export function warn(title: string, description?: string): RichEmbed {
+    return new RichEmbed({
+        title,
+        description: description ? ":warn: " + description : undefined,
+        color: 0xffc107
+    });
+}
+
+export function error(title: string, description?: string): RichEmbed {
+    return new RichEmbed({
+        title,
+        description: description ? ":x: " + description : undefined,
+        color: 0xdc3545
     });
 }
 
@@ -46,19 +75,36 @@ export class Flow<T> {
   }
 
   public async run(endMsg?: string) {
+    const state = {}
     let [desc, func] = this.state.funcs[0];
+
     const msg = await this.state.ctx.msg.channel.send(
-        this.progress(1, desc)) as Message;
-    const state = await func({});
+      this.progress(1, desc)) as Message;
+    await this.runFunc(state, func, msg);
+
     for (let i = 0; i < this.state.funcs.length; i++) {
       [desc, func] = this.state.funcs[i]
+      await msg.edit(this.progress(i+1, desc));
+      await this.runFunc(state, func, msg);
+    }
+
+    await msg.edit(success("Done!", endMsg));
+  }
+
+  private async runFunc(state: any, func: (a: any) => Promise<any>, msg: Message) {
+    try {
       const temp = await func(state);
       for(const k of Object.keys(temp)) {
         state[k] = temp[k];
       }
-      await msg.edit(this.progress(i+1, desc));
+    } catch (e) {
+      if (e instanceof CommandError) { 
+        logger.warn(`Error in ${this.state.ctx.cmd.name}: ${e.msg}`);
+        await msg.edit(error(`Error in \`${this.state.ctx.cmd.name}\`:`, e.msg));
+        throw new CommandStop();
+      }
+      throw e;
     }
-    await msg.edit(success("Done!", endMsg));
   }
 
   private progress(id: number, desc: string): RichEmbed {

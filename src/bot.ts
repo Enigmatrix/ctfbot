@@ -8,11 +8,11 @@ bot.on("ready", () => {
   log.info("bot client up!");
 });
 
-bot.on("message", (msg) => {
+bot.on("message", async (msg) => {
   if (msg.content[0] !== "!" || msg.author.id === bot.user.id) {return;}
 
   const [cmd, ...args] = splitargs(msg.content.substr(1));
-  commands.run(cmd, {args, msg});
+  await commands.run(cmd, {args, msg});
 });
 
 export default bot;

@@ -1,30 +1,40 @@
-import {Message, RichEmbed} from "discord.js";
+import { Message, RichEmbed } from "discord.js";
 import logger from "../utils/logger";
-import {Flow, Stop} from "../utils/message";
+import { CommandError, CommandStop, Flow } from "../utils/message";
 
 export function Group(name: string) {
   return <T extends new (...args: any[]) => {}>(ctor: T) => {
     return class extends ctor {
       public name = name;
-    }
-  }
-}
-
-export function Command(cmd: {name?: string, desc?: string, usage?: string}) {
-  return (grp: CommandGroup, name: string, descriptor: PropertyDescriptor) => {
-    commands.register(new CommandDefinition(
-      cmd.name || name, descriptor.value as RunMethod, grp, cmd.desc, cmd.usage));
+    };
   };
 }
 
-export declare interface RunArgs {args: string[]; msg: Message}
+export function Command(cmd: { name?: string; desc?: string; usage?: string }) {
+  return (grp: CommandGroup, name: string, descriptor: PropertyDescriptor) => {
+    commands.register(
+      new CommandDefinition(
+        cmd.name || name,
+        descriptor.value as RunMethod,
+        grp,
+        cmd.desc,
+        cmd.usage
+      )
+    );
+  };
+}
+
+export declare interface RunArgs {
+  args: string[];
+  msg: Message;
+}
 
 export class CmdCtx {
-  public rawArgs: string[];
+  public args: string[];
   public msg: Message;
   public cmd: CommandDefinition;
   constructor(rawArgs: string[], msg: Message, cmd: CommandDefinition) {
-    this.rawArgs = rawArgs;
+    this.args = rawArgs;
     this.msg = msg;
     this.cmd = cmd;
   }
@@ -33,8 +43,12 @@ export class CmdCtx {
     await this.msg.channel.send(this.cmd.usage);
   }
 
+  public async error(err: string): Promise<never> {
+    throw new CommandError(err);
+  }
+
   public flow(): Flow<{}> {
-      return new Flow<{}>({ ctx: this, funcs: [] });
+    return new Flow<{}>({ ctx: this, funcs: [] });
   }
 }
 
@@ -47,7 +61,13 @@ export class CommandDefinition {
   public run: RunMethod;
   public grp: CommandGroup;
 
-  constructor(name: string, run: RunMethod, grp: CommandGroup, desc?: string, usage?: string) {
+  constructor(
+    name: string,
+    run: RunMethod,
+    grp: CommandGroup,
+    desc?: string,
+    usage?: string
+  ) {
     this.name = name;
     this.run = run;
     this.usage = "Usage: " + (usage || "!" + name);
@@ -58,10 +78,12 @@ export class CommandDefinition {
 
 export class CommandGroup {
   public async NotImplemented(args: CmdCtx) {
-    args.msg.channel.send(new RichEmbed({
-      title: ":exclamation: NotImplementedException has been thrown",
-      color: 0xff0000,
-    }));
+    args.msg.channel.send(
+      new RichEmbed({
+        title: ":exclamation: NotImplementedException has been thrown",
+        color: 0xff0000
+      })
+    );
   }
 }
 
@@ -77,22 +99,27 @@ export class CommandDefinitions {
     return this;
   }
 
-  public run(name: string, runArgs: RunArgs) {
+  public async run(name: string, runArgs: RunArgs) {
     const command = this.commandMap.get(name);
     if (!command) {
       logger.warn(`Unrecognized command: ${name} (${runArgs.msg.content})`);
       return;
     }
     logger.info(`Running command ${name} (${runArgs.msg.content})`);
-    command
-      .run(new CmdCtx(runArgs.args, runArgs.msg, command))
-      .catch((e: Error) => {
-        if (e instanceof Stop) {
-          return;
-        }
-        logger.error(`Unexpected error while running ${name}`);
-        logger.error(e);
-      });
+
+    try {
+      await command.run(new CmdCtx(runArgs.args, runArgs.msg, command));
+    } catch (e) {
+      if (e instanceof CommandStop) {
+        return;
+      }
+      if (e instanceof CommandError) {
+        logger.warn(`Error in ${name}: ${e.msg}`);
+        return;
+      }
+      logger.error(`Unexpected error while running ${name}`);
+      logger.error(e);
+    }
   }
 }
 
