@@ -32,7 +32,6 @@ interface FlowState {
   ctx: CmdCtx;
 }
 
-// tslint:disable-next-line: max-classes-per-file
 export class Flow<T> {
 
   private state: FlowState;

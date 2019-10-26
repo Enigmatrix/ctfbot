@@ -1,6 +1,6 @@
 import {Message, RichEmbed} from "discord.js";
 import logger from "../utils/logger";
-import {Stop, Flow} from "../utils/message";
+import {Flow, Stop} from "../utils/message";
 
 export function Group(name: string) {
   return <T extends new (...args: any[]) => {}>(ctor: T) => {
@@ -19,7 +19,6 @@ export function Command(cmd: {name?: string, desc?: string, usage?: string}) {
 
 export declare interface RunArgs {args: string[]; msg: Message}
 
-// tslint:disable-next-line:max-classes-per-file
 export class CmdCtx {
   public rawArgs: string[];
   public msg: Message;
@@ -41,7 +40,6 @@ export class CmdCtx {
 
 export declare type RunMethod = (a: CmdCtx) => Promise<void>;
 
-// tslint:disable-next-line:max-classes-per-file
 export class CommandDefinition {
   public name: string;
   public desc?: string;
@@ -58,8 +56,6 @@ export class CommandDefinition {
   }
 }
 
-
-// tslint:disable-next-line:max-classes-per-file
 export class CommandGroup {
   public async NotImplemented(args: CmdCtx) {
     args.msg.channel.send(new RichEmbed({
@@ -69,7 +65,6 @@ export class CommandGroup {
   }
 }
 
-// tslint:disable-next-line:max-classes-per-file
 export class CommandDefinitions {
   public commandMap: Map<string, CommandDefinition>;
 
