@@ -1,6 +1,19 @@
-import { Message, RichEmbed } from "discord.js";
+import {
+  Message,
+  RichEmbed,
+  TextChannel,
+  Channel,
+  DMChannel,
+  GroupDMChannel
+} from "discord.js";
 import logger from "../utils/logger";
-import { CommandError, CommandStop, error, Flow } from "../utils/message";
+import {
+  CommandError,
+  CommandStop,
+  error,
+  Flow,
+  CommandFlowError
+} from "../utils/message";
 
 export function Group(name: string) {
   return <T extends new (...args: any[]) => {}>(ctor: T) => {
@@ -51,6 +64,15 @@ export class CmdCtx {
   public flow(): Flow<{}> {
     return new Flow<{}>({ ctx: this, funcs: [] });
   }
+
+  public async NotImplemented(args: CmdCtx) {
+    args.msg.channel.send(
+      new RichEmbed({
+        title: ":exclamation: NotImplementedException has been thrown",
+        color: 0xff0000
+      })
+    );
+  }
 }
 
 export declare type RunMethod = (a: CmdCtx) => Promise<void>;
@@ -77,16 +99,7 @@ export class CommandDefinition {
   }
 }
 
-export class CommandGroup {
-  public async NotImplemented(args: CmdCtx) {
-    args.msg.channel.send(
-      new RichEmbed({
-        title: ":exclamation: NotImplementedException has been thrown",
-        color: 0xff0000
-      })
-    );
-  }
-}
+export abstract class CommandGroup {}
 
 export class CommandDefinitions {
   public commandMap: Map<string, CommandDefinition>;
@@ -111,14 +124,43 @@ export class CommandDefinitions {
     try {
       await command.run(new CmdCtx(runArgs.args, runArgs.msg, command));
     } catch (e) {
-      if (e instanceof CommandStop) {
-        return;
+      if (e instanceof CommandFlowError) {
+        await this.handleError(e.actualErr, runArgs.msg.channel, e.editMsg);
+      } else {
+        await this.handleError(e, runArgs.msg.channel);
       }
-      if (e instanceof CommandError) {
-        await runArgs.msg.channel.send(error(`Error in \`${name}\`:`, e.msg));
-        return;
-      }
-      logger.error(`Unexpected error while running ${name}`);
+    }
+  }
+
+  private async handleError(
+    e: Error,
+    channel: TextChannel | DMChannel | GroupDMChannel,
+    editMsg?: Message
+  ) {
+    if (e instanceof CommandStop) {
+      return;
+    }
+    // TODO test this (throw fatal errors in flows and non-flows)
+    let embed: RichEmbed;
+    if (e instanceof CommandError) {
+      embed = error(`Error in \`${name}\`:`, e.msg);
+    } else {
+      embed = error(
+        `Unexpected error in \`${name}\`:`,
+        "Check logs to debug or contact bot developers"
+      );
+    }
+
+    if (editMsg) {
+      await editMsg.edit(embed);
+    } else {
+      await channel.send(embed);
+    }
+
+    if (e instanceof CommandError) {
+      logger.warn(`Command error in ${name}: ${e.msg}`);
+    } else {
+      logger.error(`Unexpected error in ${name}`);
       logger.error(e);
     }
   }

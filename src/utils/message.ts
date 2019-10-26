@@ -1,6 +1,19 @@
 import { Message, RichEmbed } from "discord.js";
 import { CmdCtx } from "../commands/definitions";
-import logger from "./logger";
+
+export class CommandFlowError extends Error {
+  public actualErr: Error;
+  public editMsg: Message;
+  // tslint:disable-next-line: variable-name
+  protected __proto__: Error;
+  constructor(e: Error, editMsg: Message) {
+    const trueProto = new.target.prototype;
+    super();
+    this.__proto__ = trueProto;
+    this.actualErr = e;
+    this.editMsg = editMsg;
+  }
+}
 
 export class CommandError extends Error {
   public msg: string;
@@ -102,13 +115,7 @@ export class Flow<T> {
         state[k] = temp[k];
       }
     } catch (e) {
-      if (e instanceof CommandError) {
-        await msg.edit(
-          error(`Error in \`${this.state.ctx.cmd.name}\`:`, e.msg)
-        );
-        throw new CommandStop();
-      }
-      throw e;
+      throw new CommandFlowError(e, msg);
     }
   }
 
