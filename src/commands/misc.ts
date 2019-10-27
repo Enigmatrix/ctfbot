@@ -6,7 +6,8 @@ import commands, { CmdCtx, Command, CommandGroup, Group } from "./definitions";
 export default class Misc extends CommandGroup {
   @Command({})
   public async test(ctx: CmdCtx) {
-    ctx.msg.channel.send(new RichEmbed().setFooter(":ok_hand: U1F44C :smirk:"));
+    throw new Error("sleek");
+
   }
 
   @Command({ desc: "Simple ping reply" })
