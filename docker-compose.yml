@@ -1,7 +1,9 @@
-version: '3'
+version: "3"
 
 services:
   bot:
     build: .
+    environment:
+      - NODE_ENV=production
     ports:
       - "8080:8080"

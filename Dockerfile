@@ -3,10 +3,11 @@ FROM node:slim
 RUN mkdir /src
 WORKDIR /src
 COPY package*.json /src/
-RUN npm install
+COPY yarn.lock /src/
+RUN yarn install
 
 COPY . /src
-RUN npm run build
+RUN yarn build
 
 EXPOSE 8080
-ENTRYPOINT npm start
+ENTRYPOINT yarn start
