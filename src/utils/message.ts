@@ -110,7 +110,7 @@ export class Flow<T> {
     msg: Message
   ) {
     try {
-      const temp = await func(state) || {};
+      const temp = (await func(state)) || {};
       for (const k of Object.keys(temp)) {
         state[k] = temp[k];
       }

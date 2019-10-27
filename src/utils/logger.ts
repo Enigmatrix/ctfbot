@@ -1,22 +1,20 @@
-import {createLogger, format, Logger, transports} from "winston";
+import { createLogger, format, Logger, transports } from "winston";
 
 let logger: Logger;
-if ((process.env.NODE_ENV || 'dev') === 'production') {
-  logger =  createLogger({
-    format: format.combine(
-      format.errors({stack: true}),
-      format.json()),
+if ((process.env.NODE_ENV || "dev") === "production") {
+  logger = createLogger({
+    format: format.combine(format.errors({ stack: true }), format.json()),
     // TODO: use the winston Discord transport
-    transports: [new transports.Console()],
+    transports: [new transports.Console()]
   });
-}
-else {
+} else {
   logger = createLogger({
     format: format.combine(
-      format.errors({stack: true}),
+      format.errors({ stack: true }),
       format.colorize(),
-      format.simple()),
-    transports: [new transports.Console()],
+      format.simple()
+    ),
+    transports: [new transports.Console()]
   });
 }
 

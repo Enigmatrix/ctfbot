@@ -154,6 +154,8 @@ export default class CTF extends CommandGroup {
          */
       })
 
-      .run(async ({ ctfChannel }) => `Checkout ${ctfChannel} for more information!`);
+      .run(
+        async ({ ctfChannel }) => `Checkout ${ctfChannel} for more information!`
+      );
   }
 }

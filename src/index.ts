@@ -1,7 +1,6 @@
 import bot from "./bot";
-import {initConnection} from './db';
-import {config} from "./utils/";
-
+import { initConnection } from "./db";
+import { config } from "./utils/";
 
 (async () => {
   await initConnection();
