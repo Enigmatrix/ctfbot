@@ -1,4 +1,4 @@
-import axios from '../utils/requests';
+import axios from "../utils/requests";
 
 export interface Organizer {
   id: number;
@@ -37,6 +37,8 @@ export interface Event {
 export async function eventFromUrl(ctftimeUrl: string): Promise<Event> {
   const segments = ctftimeUrl.split("event/");
   const last = segments[segments.length - 1];
-  const response = await axios.get<Event>(`https://ctftime.org/api/v1/events/${last.split("/")[0]}/`);
+  const response = await axios.get<Event>(
+    `https://ctftime.org/api/v1/events/${last.split("/")[0]}/`
+  );
   return response.data;
 }

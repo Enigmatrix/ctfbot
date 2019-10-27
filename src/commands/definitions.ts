@@ -1,18 +1,11 @@
-import {
-  Message,
-  RichEmbed,
-  TextChannel,
-  Channel,
-  DMChannel,
-  GroupDMChannel
-} from "discord.js";
+import { Message, RichEmbed } from "discord.js";
 import logger from "../utils/logger";
 import {
   CommandError,
+  CommandFlowError,
   CommandStop,
   error,
-  Flow,
-  CommandFlowError
+  Flow
 } from "../utils/message";
 
 export function Group(name: string) {
@@ -57,7 +50,6 @@ export class CmdCtx {
   }
 
   public async error(err: string): Promise<never> {
-    logger.warn(`Error in ${this.cmd.name}: ${err}`);
     throw new CommandError(err);
   }
 
@@ -121,7 +113,7 @@ export class CommandDefinitions {
     }
     logger.info(`Running command ${name} (${runArgs.msg.content})`);
 
-    const ctx = new CmdCtx(runArgs.args, runArgs.msg, command)
+    const ctx = new CmdCtx(runArgs.args, runArgs.msg, command);
     try {
       await command.run(ctx);
     } catch (e) {
@@ -133,11 +125,7 @@ export class CommandDefinitions {
     }
   }
 
-  private async handleError(
-    ctx: CmdCtx,
-    e: Error,
-    editMsg?: Message
-  ) {
+  private async handleError(ctx: CmdCtx, e: Error, editMsg?: Message) {
     if (e instanceof CommandStop) {
       return;
     }
@@ -159,9 +147,9 @@ export class CommandDefinitions {
     }
 
     if (e instanceof CommandError) {
-      logger.warn(`Command error in ${name}: ${e.msg}`);
+      logger.warn(`${ctx.cmd.name}: ${e.msg}`);
     } else {
-      logger.error(`Unexpected error in ${name}`);
+      logger.error(`Unexpected error in ${ctx.cmd.name}`);
       logger.error(e);
     }
   }

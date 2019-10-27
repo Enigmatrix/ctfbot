@@ -1,4 +1,5 @@
-import { TextChannel } from "discord.js";
+import { Message, RichEmbed, TextChannel } from "discord.js";
+import { CTFTimeCTF } from "../db/entities/ctf";
 import * as CTFTime from "../services/ctftime";
 import {
   Color,
@@ -8,11 +9,48 @@ import {
   getLabels,
   Label
 } from "../services/trello";
-import { isCTFTimeUrl } from "../utils";
+import { formatNiceSGT, isCTFTimeUrl } from "../utils";
 import { CmdCtx, Command, CommandGroup, Group } from "./definitions";
 
 @Group("CTF")
 export default class CTF extends CommandGroup {
+  public static ctfMainMesssageEmbed(ctftimeEvent: CTFTimeCTF) {
+    return new RichEmbed({
+      color: 0x1e88e5,
+      author: {
+        name: `${ctftimeEvent.name} (${ctftimeEvent.format})`,
+        icon_url: ctftimeEvent.logoUrl
+      },
+      description: ctftimeEvent.description,
+      fields: [
+        { name: "URL", value: ctftimeEvent.url },
+        { name: "Trello", value: ctftimeEvent.trelloUrl },
+        {
+          name: "Timing",
+          value:
+            formatNiceSGT(ctftimeEvent.start) +
+            " - " +
+            formatNiceSGT(ctftimeEvent.finish)
+        },
+        {
+          name: "Credentials",
+          value:
+            Object.keys(ctftimeEvent.credentials).length === 0
+              ? "None. Use `!addcreds field1=value1 field2=value2` to add credentials"
+              : Object.entries(ctftimeEvent.credentials)
+                  .map(([k, v]) => "```" + ` ${k} : ${v} ` + "```")
+                  .join("")
+        }
+      ],
+      url: ctftimeEvent.url,
+      footer: {
+        text: `Hosted by ${ctftimeEvent.hosts.join(
+          ", "
+        )}. React with the :ok_hand: emoji to get a DM 1hr before the CTF starts`
+      }
+    });
+  }
+
   @Command({
     desc: "Add a new ctf",
     usage: "!addctf <ctftime_url>"
@@ -20,6 +58,7 @@ export default class CTF extends CommandGroup {
   public async addctf(ctx: CmdCtx) {
     const ctftimeUrl = ctx.args[0];
     const { guild } = ctx.msg;
+
     await ctx
       .flow()
 
@@ -42,7 +81,6 @@ export default class CTF extends CommandGroup {
         )) as TextChannel;
         await ctfChannel.setParent(ctfCatChannel);
         ctfChannel.setTopic("SEE :pushpin: FOR INFO");
-
         return { ctfChannel };
       })
 
@@ -80,13 +118,42 @@ export default class CTF extends CommandGroup {
 
       .step(
         "Sending pinned CTF information",
-        async ({ ctftimeEvent, trelloBoard }) => {}
+        async ({ ctftimeEvent, trelloBoard, ctfChannel }) => {
+          const ctf = new CTFTimeCTF(
+            ctftimeEvent,
+            trelloBoard.shortUrl,
+            ctfChannel.id
+          );
+          const mainMessage = await ctfChannel.send(
+            CTF.ctfMainMesssageEmbed(ctf)
+          );
+
+          // TODO extract this out
+          const messages =
+            mainMessage instanceof Message ? [mainMessage] : mainMessage;
+          for (const message of messages) {
+            await message.pin();
+          }
+          const lastMsg = messages[messages.length - 1];
+          await lastMsg.react("👌");
+          ctf.discordMainMessageId = lastMsg.id;
+          return { ctf };
+        }
       )
 
-      .step("Saving CTF event to db", async ({}) => {})
+      .step("Saving CTF event to db", async ({ ctf }) => {
+        await ctf.save();
+      })
 
-      .step("Scheduling pre-CTF notification", async ({}) => {})
+      .step("Scheduling pre-CTF notification", async ({ ctf }) => {
+        // TODO
+        /*
+          await agenda.schedule(
+            moment(ctf.start).subtract(1, "hour").toDate(),
+            NOTIFY_CTF_REACTORS, { ctf: ctf.id });
+         */
+      })
 
-      .run(async ({ ctfChannel }) => `Checkout ${ctfChannel} for information!`);
+      .run(async ({ ctfChannel }) => `Checkout ${ctfChannel} for more information!`);
   }
 }
