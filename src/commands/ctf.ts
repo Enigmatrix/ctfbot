@@ -46,7 +46,7 @@ export default class CTF extends CommandGroup {
       footer: {
         text: `Hosted by ${ctftimeEvent.hosts.join(
           ", "
-        )}. React with the :ok_hand: emoji to get a DM 1hr before the CTF starts`
+        )}. React with the 👌 emoji to get a DM 1hr before the CTF starts`
       }
     });
   }
