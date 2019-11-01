@@ -1,4 +1,5 @@
 import { Challenge } from "../db/entities/ctf";
+import { User } from "../db/entities/user";
 import { getCTFTimeCTF } from "../services/ctf";
 import {
   Board,
@@ -9,7 +10,6 @@ import {
 } from "../services/trello";
 import { CommandError } from "../utils/message";
 import { CmdCtx, Command, CommandGroup, Group } from "./definitions";
-import {User} from '../db/entities/user';
 
 @Group("Challenge")
 export default class Challenges extends CommandGroup {
@@ -97,7 +97,10 @@ export default class Challenges extends CommandGroup {
         await ctf.save();
       })
 
-      .run(async ({}) => ``);
+      .run(
+        async ({ challenge }) =>
+          `<@${ctx.msg.author.id}> is now working on \`${challenge.name}\`!`
+      );
   }
 
   // TODO !solve implies workon
