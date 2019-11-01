@@ -1,4 +1,11 @@
-import { Message, RichEmbed } from "discord.js";
+import {
+  Attachment,
+  Message,
+  MessageOptions,
+  RichEmbed,
+  StringResolvable,
+  TextChannel
+} from "discord.js";
 import logger from "../utils/logger";
 import {
   CommandError,
@@ -39,17 +46,36 @@ export class CmdCtx {
   public args: string[];
   public msg: Message;
   public cmd: CommandDefinition;
+
   constructor(rawArgs: string[], msg: Message, cmd: CommandDefinition) {
     this.args = rawArgs;
     this.msg = msg;
     this.cmd = cmd;
   }
 
+  get textChannel() {
+    return this.msg.channel as TextChannel;
+  }
+
+  // Keep this synced with all discord.js `send` implementations
+  public async send(
+    content?: StringResolvable,
+    options?: MessageOptions | RichEmbed | Attachment
+  ): Promise<Message[]> {
+    let res: Message | Message[];
+    if (content) {
+      res = await this.msg.channel.send(content, options);
+    } else {
+      res = await this.msg.channel.send(options);
+    }
+    return res instanceof Message ? [res] : res;
+  }
+
   public async printUsage() {
     await this.msg.channel.send(this.cmd.usage);
   }
 
-  public async error(err: string): Promise<never> {
+  public error(err: string): never {
     throw new CommandError(err);
   }
 
@@ -151,6 +177,7 @@ export class CommandDefinitions {
     } else {
       logger.error(`Unexpected error in ${ctx.cmd.name}`);
       logger.error(e);
+      console.error(e);
     }
   }
 }

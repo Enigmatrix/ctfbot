@@ -1,56 +1,13 @@
-import { Message, RichEmbed, TextChannel } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { CTFTimeCTF } from "../db/entities/ctf";
+import { ctfMainEmbed } from "../services/ctf";
 import * as CTFTime from "../services/ctftime";
-import {
-  Color,
-  createBoard,
-  createBoardLabel,
-  deleteLabel,
-  getLabels,
-  Label
-} from "../services/trello";
-import { formatNiceSGT, isCTFTimeUrl } from "../utils";
+import { Board, Color, Label } from "../services/trello";
+import { isCTFTimeUrl } from "../utils";
 import { CmdCtx, Command, CommandGroup, Group } from "./definitions";
 
 @Group("CTF")
 export default class CTF extends CommandGroup {
-  public static ctfMainMesssageEmbed(ctftimeEvent: CTFTimeCTF) {
-    return new RichEmbed({
-      color: 0x1e88e5,
-      author: {
-        name: `${ctftimeEvent.name} (${ctftimeEvent.format})`,
-        icon_url: ctftimeEvent.logoUrl
-      },
-      description: ctftimeEvent.description,
-      fields: [
-        { name: "URL", value: ctftimeEvent.url },
-        { name: "Trello", value: ctftimeEvent.trelloUrl },
-        {
-          name: "Timing",
-          value:
-            formatNiceSGT(ctftimeEvent.start) +
-            " - " +
-            formatNiceSGT(ctftimeEvent.finish)
-        },
-        {
-          name: "Credentials",
-          value:
-            Object.keys(ctftimeEvent.credentials).length === 0
-              ? "None. Use `!addcreds field1=value1 field2=value2` to add credentials"
-              : Object.entries(ctftimeEvent.credentials)
-                  .map(([k, v]) => "```" + ` ${k} : ${v} ` + "```")
-                  .join("")
-        }
-      ],
-      url: ctftimeEvent.url,
-      footer: {
-        text: `Hosted by ${ctftimeEvent.hosts.join(
-          ", "
-        )}. React with the 👌 emoji to get a DM 1hr before the CTF starts`
-      }
-    });
-  }
-
   @Command({
     desc: "Add a new ctf",
     usage: "!addctf <ctftime_url>"
@@ -64,7 +21,7 @@ export default class CTF extends CommandGroup {
 
       .step("Getting CTFTime event data", async () => {
         if (!ctftimeUrl || !isCTFTimeUrl(ctftimeUrl)) {
-          await ctx.error(
+          ctx.error(
             "URL supplied must be a valid CTFTime event url. " +
               "e.g. https://ctftime.org/event/872"
           );
@@ -85,7 +42,7 @@ export default class CTF extends CommandGroup {
       })
 
       .step("Creating Trello board", async ({ ctftimeEvent }) => {
-        const board = await createBoard({
+        const board = await Board.create({
           name: ctftimeEvent.title,
           desc: `CTF Trello Board for ${ctftimeEvent.title}`,
           idOrganization: "hatssg",
@@ -94,11 +51,11 @@ export default class CTF extends CommandGroup {
           prefs_invitations: "members"
         });
 
-        for (const label of await getLabels(board.id)) {
+        for (const label of await Label.getAll(board.id)) {
           if (!label.id) {
             return;
           }
-          await deleteLabel(label.id);
+          await Label.delete(label.id);
         }
         const labels: Label[] = [
           { name: "pwn", color: Color.Orange },
@@ -110,7 +67,7 @@ export default class CTF extends CommandGroup {
           { name: "forensic", color: Color.Lime }
         ];
         for (const label of labels) {
-          await createBoardLabel(board.id, label);
+          await Label.create(board.id, label);
         }
 
         return { trelloBoard: board };
@@ -124,19 +81,11 @@ export default class CTF extends CommandGroup {
             trelloBoard.shortUrl,
             ctfChannel.id
           );
-          const mainMessage = await ctfChannel.send(
-            CTF.ctfMainMesssageEmbed(ctf)
-          );
+          const infoMessage = await ctfChannel.sendEmbed(ctfMainEmbed(ctf));
 
-          // TODO extract this out
-          const messages =
-            mainMessage instanceof Message ? [mainMessage] : mainMessage;
-          for (const message of messages) {
-            await message.pin();
-          }
-          const lastMsg = messages[messages.length - 1];
-          await lastMsg.react("👌");
-          ctf.discordMainMessageId = lastMsg.id;
+          await infoMessage.pin();
+          await infoMessage.react("👌");
+          ctf.discordMainMessageId = infoMessage.id;
           return { ctf };
         }
       )
