@@ -1,4 +1,4 @@
-import { Message, TextChannel } from "discord.js";
+import { TextChannel } from "discord.js";
 import { CTFTimeCTF } from "../db/entities/ctf";
 import { ctfMainEmbed } from "../services/ctf";
 import * as CTFTime from "../services/ctftime";
