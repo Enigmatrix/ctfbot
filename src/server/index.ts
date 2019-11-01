@@ -1,6 +1,7 @@
 import fastify from "fastify";
 import cors from "fastify-cors";
 import { createReadStream } from "fs";
+import { join } from "path";
 import commands from "../commands";
 // import { Resource } from "./entities/resource";
 import { config } from "../utils";
@@ -16,16 +17,17 @@ app.get("/health", async () => {
 });
 
 app.get("/api/help", async () => {
-  return Array.from(commands.commandMap.values())
-    .map(x => ({
-      name: x.name,
-      usage: x.usage,
-      desc: x.desc
-    }));
+  return Array.from(commands.commandMap.values()).map(x => ({
+    name: x.name,
+    usage: x.usage,
+    desc: x.desc
+  }));
 });
 
 app.setNotFoundHandler((_, reply) => {
-  reply.send(createReadStream("./index.html"));
+  reply
+    .header("Content-Type", "text/html")
+    .send(createReadStream(join(__dirname, "./index.html")));
 });
 
 /*
