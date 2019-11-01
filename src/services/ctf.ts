@@ -1,8 +1,10 @@
 import { RichEmbed } from "discord.js";
 import { CmdCtx } from "../commands/definitions";
-import { CTFTimeCTF } from "../db/entities/ctf";
+import { CTFTimeCTF, Challenge } from "../db/entities/ctf";
 import { formatNiceSGT } from "../utils";
 import { CommandError } from "../utils/message";
+import { User } from "../db/entities/user";
+import {Board, List} from './trello';
 
 const NOT_CTF_CHANNEL = "This command is only valid in a CTF channel";
 const NO_CREDS =
@@ -71,4 +73,57 @@ export function ctfMainEmbed(ctftimeEvent: CTFTimeCTF): RichEmbed {
       )}. React with the 👌 emoji to get a DM 1hr before the CTF starts`
     }
   });
+}
+
+export async function getChallengeUser(
+  ctx: CmdCtx,
+  challenge: Challenge,
+  opts: {
+    workingOnByYou: boolean;
+    alreadySolved: boolean;
+  }
+) {
+  const user = await User.findOne({ discordId: ctx.msg.author.id });
+  if (!user) {
+    throw new CommandError(
+      "register with `!register <trello_profile_url>` first. // Sorry for the inconvenience"
+    );
+  }
+  const idx = challenge.workers.findIndex(x => x.equals(user.id));
+  if (opts.workingOnByYou && idx === -1) {
+    throw new CommandError(
+      "Seems like you are not working on this challenge..."
+    );
+  } else if (!opts.workingOnByYou && idx !== -1) {
+    throw new CommandError(
+      "Seems like you are already working on this challenge..."
+    );
+  }
+  if (opts.alreadySolved && !challenge.solvedBy) {
+    throw new CommandError("Seems like the challenge is not already solved...");
+  } else if (!opts.alreadySolved && challenge.solvedBy) {
+    throw new CommandError("Seems like the challenge is already solved...");
+  }
+  return user;
+}
+
+export async function getChallenge(ctx: CmdCtx) {
+  const [name] = ctx.args;
+  const ctf = await getCTFTimeCTF(ctx);
+  const idx = ctf.challenges.findIndex(x => x.name === name);
+  if (idx === -1) {
+    throw new CommandError(`Challenge ${name} not found`);
+  }
+  return { name, ctf, idx, challenge: ctf.challenges[idx] };
+}
+
+export async function boardList(url: string, listName: string) {
+  const boardId = await Board.extractId(url);
+  const list = await List.get(boardId, listName);
+  if (!list) {
+    throw new CommandError(
+      `There is no \`${listName}\` list in the Trello board`
+    );
+  }
+  return { boardId, list };
 }
