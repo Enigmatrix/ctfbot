@@ -28,7 +28,7 @@ export enum Color {
 export interface CardCreateOpts {
   name?: string;
   desc?: string;
-  pos?: number|string;
+  pos?: number | string;
   due?: string;
   dueComplete?: boolean;
   idList: ID;
@@ -142,6 +142,19 @@ export interface Card {
   coordinates: string | { latitude: number; longitude: number };
 }
 
+export interface Member {
+  id: ID;
+  avatarHash: string;
+  fullName: string;
+  initials: string;
+  username: string;
+}
+
+export interface MemberType {
+  type: "member" | "organization";
+  id: ID;
+}
+
 export class Board {
   public static async create(opts: BoardCreateOpts): Promise<Board> {
     return await trello
@@ -154,6 +167,24 @@ export class Board {
     const sid = segments[segments.length - 1];
     const brd = await trello.get<Board>(`/boards/${sid}`).then(x => x.data);
     return brd.id;
+  }
+
+  public static async addMemberIfNotExists(
+    boardId: ID,
+    memberId: ID
+  ): Promise<void> {
+    const all: Member[] = await trello
+      .get(`/boards/${boardId}/members`)
+      .then(x => x.data);
+    if (all.findIndex(x => x.id === memberId) !== -1) {
+      return;
+    }
+
+    await trello.put(`/boards/${boardId}/members/${memberId}`, undefined, {
+      params: {
+        type: "admin"
+      }
+    });
   }
 }
 
@@ -197,6 +228,26 @@ export class Card {
     return await trello
       .post<Card>(`/cards/`, undefined, { params: opts })
       .then(x => x.data);
+  }
+
+  public static async addMember(cardId: ID, memId: ID) {
+    return await trello.post(`/cards/${cardId}/idMembers`, undefined, {
+      params: {
+        value: memId
+      }
+    });
+  }
+
+  public static async rmvMember(cardId: ID, memId: ID) {
+    return await trello.delete(`/cards/${cardId}/idMembers/${memId}`);
+  }
+
+  public static async move(cardId: ID, newListId: ID) {
+    return await trello.put(`/cards/${cardId}`, undefined, {
+      params: {
+        idList: newListId
+      }
+    });
   }
 }
 

@@ -177,7 +177,6 @@ export class CommandDefinitions {
     } else {
       logger.error(`Unexpected error in ${ctx.cmd.name}`);
       logger.error(e);
-      console.error(e);
     }
   }
 }
