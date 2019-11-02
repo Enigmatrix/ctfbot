@@ -4,10 +4,10 @@ import commands, { CmdCtx, Command, CommandGroup, Group } from "./definitions";
 
 @Group("Miscellaneous/Utility")
 export default class Misc extends CommandGroup {
-  @Command({})
-  public async test(ctx: CmdCtx) {
-    throw new Error("sleek");
-
+  @Command({ desc: "Kick a user. Ouchie" })
+  public async kick(ctx: CmdCtx) {
+    const user = ctx.msg.mentions.users.first();
+    ctx.send(`:mans_shoe: <@${user.id}> => :skull_crossbones:`);
   }
 
   @Command({ desc: "Simple ping reply" })

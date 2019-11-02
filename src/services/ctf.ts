@@ -1,10 +1,10 @@
 import { RichEmbed } from "discord.js";
 import { CmdCtx } from "../commands/definitions";
-import { CTFTimeCTF, Challenge } from "../db/entities/ctf";
+import { Challenge, CTFTimeCTF } from "../db/entities/ctf";
+import { User } from "../db/entities/user";
 import { formatNiceSGT } from "../utils";
 import { CommandError } from "../utils/message";
-import { User } from "../db/entities/user";
-import {Board, List} from './trello';
+import { Board, List } from "./trello";
 
 const NOT_CTF_CHANNEL = "This command is only valid in a CTF channel";
 const NO_CREDS =

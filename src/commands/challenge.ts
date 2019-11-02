@@ -9,7 +9,6 @@ import {
   Board,
   Card,
   Label,
-  List,
   randomTrelloColor
 } from "../services/trello";
 import { CmdCtx, Command, CommandGroup, Group } from "./definitions";
