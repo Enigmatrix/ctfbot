@@ -47,24 +47,24 @@ export function info(title: string, description?: string): RichEmbed {
 
 export function success(title: string, description?: string): RichEmbed {
   return new RichEmbed({
-    title,
-    description: description ? ":white_check_mark: " + description : undefined,
+    title: description ? title : undefined,
+    description: description ? ":white_check_mark: " + description : title,
     color: 0x28a745
   });
 }
 
 export function warn(title: string, description?: string): RichEmbed {
   return new RichEmbed({
-    title,
-    description: description ? ":warn: " + description : undefined,
+    title: description ? title : undefined,
+    description: description ? ":warn: " + description : title,
     color: 0xffc107
   });
 }
 
 export function error(title: string, description?: string): RichEmbed {
   return new RichEmbed({
-    title,
-    description: description ? ":x: " + description : undefined,
+    title: description ? title : undefined,
+    description: description ? ":x: " + description : title,
     color: 0xdc3545
   });
 }
