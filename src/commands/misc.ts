@@ -1,11 +1,17 @@
 import { Message, RichEmbed } from "discord.js";
 import moment from "moment";
-import agenda from "../services/agenda";
+import agenda, { AGENDA_ECHO, REPEATED_NOTIFY_UPCOMING_CTF } from "../services/agenda";
 import { formatNiceSGT } from "../utils";
 import commands, { CmdCtx, Command, CommandGroup, Group } from "./definitions";
 
 @Group("Miscellaneous/Utility")
 export default class Misc extends CommandGroup {
+  @Command({ desc: "Force upcoming events to show up" })
+  public async upcoming(_: CmdCtx) {
+    // await agenda.now(AGENDA_ECHO);
+    await agenda.now(REPEATED_NOTIFY_UPCOMING_CTF);
+  }
+
   @Command({ desc: "Kick a user. Ouchie" })
   public async kick(ctx: CmdCtx) {
     const user = ctx.msg.mentions.users.first();

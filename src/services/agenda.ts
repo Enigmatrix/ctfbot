@@ -13,6 +13,7 @@ const agenda = new Agenda({ db: { address: config("MONGO_URI") } });
 export const NOTIFY_CTF_REACTORS = "notifyCtfReactorsv1.0";
 export const REPEATED_NOTIFY_CTF_WRITEUPS = "repeated_notifyCtfWriteupsv1.0";
 export const REPEATED_NOTIFY_UPCOMING_CTF = "repeated_notifyUpcomingCtfv1.0";
+export const AGENDA_ECHO = "agendaEchov1.0";
 
 function defineJob(name: string, code: (job: Job) => Promise<void>) {
   agenda.define(name, async (job, done) => {
@@ -28,6 +29,14 @@ function defineJob(name: string, code: (job: Job) => Promise<void>) {
     }
   });
 }
+
+defineJob(AGENDA_ECHO, async job => {
+  const msg = job.attrs.data && job.attrs.data.msg;
+  const channel = bot.guilds
+    .first()
+    .channels.find(x => x.name === "bot-test") as TextChannel;
+  channel.send(msg || "Aloha amegos");
+})
 
 /*
 defineJob(REPEATED_NOTIFY_CTF_WRITEUPS, async (job) => {
@@ -101,6 +110,7 @@ defineJob(NOTIFY_CTF_REACTORS, async job => {
 });
 
 defineJob(REPEATED_NOTIFY_UPCOMING_CTF, async () => {
+  logger.info("running job");
   const channel = bot.guilds
     .first()
     .channels.find(x => x.name === "upcoming") as TextChannel;
@@ -163,6 +173,7 @@ defineJob(REPEATED_NOTIFY_UPCOMING_CTF, async () => {
 });
 
 agenda.on("ready", async () => {
+  logger.info("agenda up!");
   await agenda.purge(); /*
     let oldRepeatJobs = await agenda.jobs({name: {$regex: "repeated_.*"}});
     for(let job of oldRepeatJobs){
@@ -179,4 +190,6 @@ agenda.on("ready", async () => {
   await agenda.every("every 15 minutes", REPEATED_NOTIFY_CTF_WRITEUPS);
 });
 
-export default agenda.on("error", e => logger.error("Error from agenda", e));
+export default agenda
+  .on("error", e => logger.error("Error from agenda: ", e))
+  .on("fail", (e, job: Job) => logger.error(`Failed job: `, e));
