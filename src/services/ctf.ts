@@ -1,4 +1,5 @@
-import { RichEmbed } from "discord.js";
+import { Message, RichEmbed, TextChannel } from "discord.js";
+import bot from '../bot';
 import { CmdCtx } from "../commands/definitions";
 import { Challenge, CTFTimeCTF } from "../db/entities/ctf";
 import { User } from "../db/entities/user";
@@ -31,11 +32,21 @@ export async function isInCtfChannel(ctx: CmdCtx): Promise<boolean> {
   return !!(await getCTFTimeCTFFromId(ctx.textChannel.id));
 }
 
-export async function getCtfMainEmbed(ctx: CmdCtx, ctf?: CTFTimeCTF) {
-  if (!ctf) {
-    ctf = await getCTFTimeCTF(ctx);
+export async function getCtfMainEmbed(ctx?: CmdCtx, ctf?: CTFTimeCTF): Promise<Message> {
+  if (ctx) {
+    if (!ctf) {
+      ctf = await getCTFTimeCTF(ctx);
+    }
+    return await ctx.textChannel.fetchMessage(ctf.discordMainMessageId);
   }
-  return await ctx.textChannel.fetchMessage(ctf.discordMainMessageId);
+  else if (ctf && ctx) {
+    const channel = bot.guilds.first().channels.get(ctf.discordChannelId) as TextChannel;
+    if(!channel) { throw new Error("CTF channel not found from db"); }
+    return channel.fetchMessage(ctf.discordMainMessageId);
+  }
+  else {
+    throw new Error("Atleast `ctx` or `ctf` required");
+  }
 }
 
 export function ctfMainEmbed(ctftimeEvent: CTFTimeCTF): RichEmbed {

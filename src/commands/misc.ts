@@ -1,5 +1,7 @@
 import { Message, RichEmbed } from "discord.js";
 import moment from "moment";
+import agenda from "../services/agenda";
+import { formatNiceSGT } from "../utils";
 import commands, { CmdCtx, Command, CommandGroup, Group } from "./definitions";
 
 @Group("Miscellaneous/Utility")
@@ -26,7 +28,7 @@ export default class Misc extends CommandGroup {
       new RichEmbed({ title: "Pinging...", color: 0xffeb3b })
     )) as Message;
     const pingEnd = Date.now();
-    // const jobs = await agenda.jobs({ nextRunAt: { $gte: new Date() } });
+    const jobs = await agenda.jobs({ nextRunAt: { $gte: new Date() } });
 
     const memoryInfo =
       `${Math.floor(mem / (1024 * 1024 * 1024))}gb ` +
@@ -41,11 +43,11 @@ export default class Misc extends CommandGroup {
         description:
           `**Ping**: ${pingEnd - pingStart} ms\n` +
           `**Uptime**: ${moment.duration(uptime, "seconds").humanize()}\n` +
-          `**Memory**: ${memoryInfo}\n` /* +
-                    `**Jobs**:\n` +
-                    jobs
-                        .map((x) => `_${formatNiceSGT(x.attrs.nextRunAt)}_:\n${x.attrs.name}`)
-                    .join("\n\n"), */
+          `**Memory**: ${memoryInfo}\n` +
+          `**Jobs**:\n` +
+          jobs
+            .map(x => `_${formatNiceSGT(x.attrs.nextRunAt)}_:\n${x.attrs.name}`)
+            .join("\n\n")
       })
     );
   }

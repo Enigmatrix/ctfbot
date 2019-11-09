@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "dependencies": {
     "@discordjs/uws": "^10.149.0",
+    "@types/agenda": "^2.0.6",
     "@types/moment": "^2.13.0",
     "@types/moment-timezone": "^0.5.12",
     "@types/node": "^12.11.1",

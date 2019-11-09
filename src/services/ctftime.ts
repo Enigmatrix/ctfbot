@@ -42,3 +42,19 @@ export async function eventFromUrl(ctftimeUrl: string): Promise<Event> {
   );
   return response.data;
 }
+
+export const weeklyEvents = async () => {
+  const start = Math.floor(Date.now() / 1000);
+  const finish = start + 7 * 24 * 60 * 60;
+  const response = await axios.get<Event[]>(
+    `https://ctftime.org/api/v1/events/`,
+    {
+      params: {
+        limit: 100,
+        start,
+        finish
+      }
+    }
+  );
+  return response.data;
+};
