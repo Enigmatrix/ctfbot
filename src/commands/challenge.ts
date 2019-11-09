@@ -135,7 +135,7 @@ export default class Challenges extends CommandGroup {
 
       .run(
         async ({ challenge }) =>
-          `<@${ctx.msg.author.id}> has solved \`${challenge.name}\`!`
+          `<@${ctx.msg.author.id}> has solved \`${challenge.name}\` :tada:!`
       );
   }
 }
