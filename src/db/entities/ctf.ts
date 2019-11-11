@@ -78,7 +78,6 @@ export class CTFTimeCTF extends BaseEntity {
   @Column()
   public archived!: boolean;
 
-  // TODO extract this constructor out (leave as plain pojo)
   constructor(ctftimeEvent: Event, trelloBoardUrl: string, channelId: string) {
     super();
     if (!ctftimeEvent) {

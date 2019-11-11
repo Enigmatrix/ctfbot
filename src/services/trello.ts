@@ -35,7 +35,7 @@ export interface CardCreateOpts {
   idMembers?: string;
   idLabels?: string[];
   urlSource?: string;
-  // TODO fileSource: file
+  // fileSource: file
   idCardSource?: ID;
   keepFromSource?: string;
   address?: string;
@@ -76,7 +76,7 @@ export interface Board {
   labelNames: Label[];
   starred: boolean;
   limits: any;
-  // TODO memberships: ;
+  // memberships: ;
   enterpriseOwned: boolean;
 }
 
@@ -114,7 +114,7 @@ export interface Badges {
 export interface Card {
   id: ID;
   badges: Badges;
-  // TODO checkItemStates
+  // checkItemStates
   closed: boolean;
   dateLastActivity: Date;
   desc: string;

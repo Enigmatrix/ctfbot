@@ -155,7 +155,6 @@ export class CommandDefinitions {
     if (e instanceof CommandStop) {
       return;
     }
-    // TODO test this (throw fatal errors in flows and non-flows)
     let embed: RichEmbed;
     if (e instanceof CommandError) {
       embed = error(`Error in \`${ctx.cmd.name}\`:`, e.msg);
