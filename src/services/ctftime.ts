@@ -50,7 +50,6 @@ export const weeklyEvents = async () => {
     `https://ctftime.org/api/v1/events/`,
     {
       params: {
-        limit: 100,
         start,
         finish
       }
