@@ -21,15 +21,7 @@ export async function createResource(msg: Message) {
     );
     return;
   }
-  const resource = new Resource();
-  resource.authorId = msg.author.id;
-  resource.channelId = msg.channel.id;
-  resource.msgId = msg.id;
-  resource.link = link;
-  resource.tags = [];
-  resource.category = (msg.channel as TextChannel).name;
-  resource.timestamp = new Date();
-  resource.description = "";
+  const resource = new Resource(msg, link);
   await resource.save();
 
   await msg.react(resEmoji);
