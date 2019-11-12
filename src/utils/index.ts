@@ -13,22 +13,12 @@ export function config(key: string) {
   }
 }
 
-export function isUrl(s: string) {
-  // tslint:disable-next-line:max-line-length
-  return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(
-    s
-  );
-}
 
 export function isCTFTimeUrl(s: string) {
   // tslint:disable-next-line:max-line-length
   return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(
     s
   );
-}
-
-export function isInInterestLabChannel(msg: Message): boolean {
-  return (msg.channel as TextChannel).parent.name === "Interest Labs";
 }
 
 export function formatNiceSGT(date: Date) {
