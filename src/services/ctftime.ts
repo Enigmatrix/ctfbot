@@ -1,4 +1,4 @@
-import axios from "../utils/requests";
+import axios from "@/utils/requests";
 
 export interface Organizer {
   id: number;

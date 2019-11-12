@@ -1,9 +1,10 @@
 import "reflect-metadata";
-import bot from "./bot";
-import { initConnection } from "./db";
-import { setupServer } from "./server";
-import agenda from "./services/agenda";
-import { config } from "./utils/";
+
+import bot from "@/bot";
+import { initConnection } from "@/db";
+import { setupServer } from "@/server";
+import agenda from "@/services/agenda";
+import { config } from "@/utils/";
 
 (async () => {
   await initConnection();

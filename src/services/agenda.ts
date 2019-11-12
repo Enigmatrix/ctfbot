@@ -1,12 +1,13 @@
+import bot from "@/bot";
+import { CTFTimeCTF } from "@/db/entities/ctf";
+import { getCtfMainEmbed } from "@/services/ctf";
+import { weeklyEvents } from "@/services/ctftime";
+import { config, formatNiceSGT } from "@/utils/";
+import logger from "@/utils/logger";
+
 import Agenda, { Job } from "agenda";
 import { RichEmbed, TextChannel } from "discord.js";
 import { ObjectID } from "typeorm";
-import bot from "../bot";
-import { CTFTimeCTF } from "../db/entities/ctf";
-import { config, formatNiceSGT } from "../utils/";
-import logger from "../utils/logger";
-import { getCtfMainEmbed } from "./ctf";
-import { weeklyEvents } from "./ctftime";
 
 const agenda = new Agenda({ db: { address: config("MONGO_URI") } });
 

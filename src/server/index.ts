@@ -1,10 +1,11 @@
+import commands from "@/commands";
+import { Resource } from "@/db/entities/resource";
+import { config } from "@/utils";
 import fastify from "fastify";
 import cors from "fastify-cors";
 import { createReadStream } from "fs";
 import { join } from "path";
-import commands from "../commands";
-// import { Resource } from "./entities/resource";
-import { config } from "../utils";
+import { getMongoRepository } from "typeorm";
 
 const app = fastify({ logger: true });
 
@@ -30,20 +31,16 @@ app.setNotFoundHandler((_, reply) => {
     .send(createReadStream(join(__dirname, "./index.html")));
 });
 
-/*
-
-app.get("/api/resources/categories", async (request, reply) => {
-    return getMongoRepository(Resource).distinct("category", {});
+app.get("/api/resources/categories", async () => {
+  return getMongoRepository(Resource).distinct("category", {});
 });
 
-app.get("/api/resources/by_category/:category", async (request, reply) => {
-  return (await Resource.find({ category: request.params.category })).map((x) => {
+app.get("/api/resources/by_category/:category", async (request, _) => {
+  return (await Resource.find({ category: request.params.category })).map(x => {
     const { id, ...obj } = x;
     return obj;
   });
 });
-
-*/
 
 // TODO use winston logger for this
 export const setupServer = async () => {

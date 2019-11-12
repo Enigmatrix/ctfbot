@@ -1,11 +1,11 @@
+import bot from '@/bot';
+import { CmdCtx } from "@/commands/definitions";
+import { Challenge, CTFTimeCTF } from "@/db/entities/ctf";
+import { User } from "@/db/entities/user";
+import { Board, List } from "@/services/trello";
+import { formatNiceSGT } from "@/utils";
+import { CommandError } from "@/utils/message";
 import { Message, RichEmbed, TextChannel } from "discord.js";
-import bot from '../bot';
-import { CmdCtx } from "../commands/definitions";
-import { Challenge, CTFTimeCTF } from "../db/entities/ctf";
-import { User } from "../db/entities/user";
-import { formatNiceSGT } from "../utils";
-import { CommandError } from "../utils/message";
-import { Board, List } from "./trello";
 
 const NOT_CTF_CHANNEL = "This command is only valid in a CTF channel";
 const NO_CREDS =
