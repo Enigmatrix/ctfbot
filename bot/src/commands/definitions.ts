@@ -1,11 +1,3 @@
-import logger from "@/utils/logger";
-import {
-  CommandError,
-  CommandFlowError,
-  CommandStop,
-  error,
-  Flow
-} from "@/utils/message";
 import {
   Attachment,
   Message,
@@ -14,6 +6,14 @@ import {
   StringResolvable,
   TextChannel
 } from "discord.js";
+import logger from "../utils/logger";
+import {
+  CommandError,
+  CommandFlowError,
+  CommandStop,
+  error,
+  Flow
+} from "../utils/message";
 
 export function Group(name: string) {
   return <T extends new (...args: any[]) => {}>(ctor: T) => {

@@ -1,13 +1,13 @@
-import { CmdCtx, Command, CommandGroup, Group } from "@/commands/definitions";
-import { CTFTimeCTF } from "@/db/entities/ctf";
-import agenda, { NOTIFY_CTF_REACTORS } from "@/services/agenda";
-import { ctfMainEmbed, getCtfMainEmbed, getCTFTimeCTF } from "@/services/ctf";
-import * as CTFTime from "@/services/ctftime";
-import { Board, Color, Label } from "@/services/trello";
-import { isCTFTimeUrl } from "@/utils";
-import { CommandError, success } from "@/utils/message";
 import { TextChannel } from "discord.js";
 import moment from "moment";
+import { CmdCtx, Command, CommandGroup, Group } from "../commands/definitions";
+import { CTFTimeCTF } from "../db/entities/ctf";
+import agenda, { NOTIFY_CTF_REACTORS } from "../services/agenda";
+import { ctfMainEmbed, getCtfMainEmbed, getCTFTimeCTF } from "../services/ctf";
+import * as CTFTime from "../services/ctftime";
+import { Board, Color, Label } from "../services/trello";
+import { isCTFTimeUrl } from "../utils";
+import { CommandError, success } from "../utils/message";
 
 @Group("CTF")
 export default class CTF extends CommandGroup {

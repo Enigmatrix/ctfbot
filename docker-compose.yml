@@ -4,6 +4,6 @@ services:
   bot:
     build: .
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=dev # production
     ports:
       - "8080:8080"

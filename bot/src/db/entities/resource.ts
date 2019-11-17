@@ -1,5 +1,5 @@
-import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
 import { Message, TextChannel } from "discord.js";
+import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
 
 @Entity()
 export class Resource extends BaseEntity {

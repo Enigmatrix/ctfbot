@@ -1,5 +1,5 @@
-import axios from "@/utils/requests";
 import { chooseRandom, config } from "../utils";
+import axios from "../utils/requests";
 
 const trello = axios.create({
   baseURL: "https://api.trello.com/1",

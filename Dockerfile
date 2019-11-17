@@ -1,12 +1,12 @@
 FROM node:slim
 
-RUN mkdir /src
-WORKDIR /src
-COPY package*.json /src/
-COPY yarn.lock /src/
+RUN mkdir -p /src/bot
+WORKDIR /src/bot
+COPY bot/package*.json /src/bot/
+COPY bot/yarn.lock /src/bot/
 RUN yarn install
 
-COPY . /src
+COPY bot /src/bot
 RUN yarn build
 
 EXPOSE 8080

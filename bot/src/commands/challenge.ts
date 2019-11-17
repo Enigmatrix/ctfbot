@@ -1,12 +1,12 @@
-import { CmdCtx, Command, CommandGroup, Group } from "@/commands/definitions";
-import { Challenge } from "@/db/entities/ctf";
+import { CmdCtx, Command, CommandGroup, Group } from "../commands/definitions";
+import { Challenge } from "../db/entities/ctf";
 import {
   boardList,
   getChallenge,
   getChallengeUser,
   getCTFTimeCTF
-} from "@/services/ctf";
-import { Board, Card, Label, randomTrelloColor } from "@/services/trello";
+} from "../services/ctf";
+import { Board, Card, Label, randomTrelloColor } from "../services/trello";
 
 @Group("Challenge")
 export default class Challenges extends CommandGroup {

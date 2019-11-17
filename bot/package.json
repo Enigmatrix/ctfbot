@@ -4,7 +4,7 @@
   "description": "CTF Bot for Discord",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch '*.ts' --exec 'ts-node' -r tsconfig-paths/register src/index.ts",
+    "dev": "nodemon --watch '*.ts' --exec 'ts-node' src/index.ts",
     "start": "node build/index.js",
     "server": "node build/server.js",
     "build": "./node_modules/.bin/tsc",

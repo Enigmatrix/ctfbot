@@ -1,5 +1,5 @@
-import log from "@/utils/logger";
 import moment from "moment-timezone";
+import log from "./logger";
 
 export function config(key: string) {
   try {

@@ -1,5 +1,5 @@
-import { config } from "@/utils/";
 import { Connection, createConnection } from "typeorm";
+import { config } from "../utils/";
 
 export let initConnection = async () => {
   connection = await createConnection({

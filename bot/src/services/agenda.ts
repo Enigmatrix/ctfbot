@@ -1,9 +1,9 @@
-import bot from "@/bot";
-import { CTFTimeCTF } from "@/db/entities/ctf";
-import { getCtfMainEmbed } from "@/services/ctf";
-import { weeklyEvents } from "@/services/ctftime";
-import { config, formatNiceSGT } from "@/utils/";
-import logger from "@/utils/logger";
+import bot from "../bot";
+import { CTFTimeCTF } from "../db/entities/ctf";
+import { getCtfMainEmbed } from "../services/ctf";
+import { weeklyEvents } from "../services/ctftime";
+import { config, formatNiceSGT } from "../utils/";
+import logger from "../utils/logger";
 
 import Agenda, { Job } from "agenda";
 import { RichEmbed, TextChannel } from "discord.js";

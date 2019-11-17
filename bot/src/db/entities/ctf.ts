@@ -1,5 +1,5 @@
-import { Event } from "@/services/ctftime";
 import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
+import { Event } from "../../services/ctftime";
 
 export class Challenge {
   @Column()

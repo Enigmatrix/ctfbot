@@ -1,6 +1,6 @@
-import { Resource } from "@/db/entities/resource";
-import { info } from "@/utils/message";
 import { Message, MessageReaction, TextChannel, User } from "discord.js";
+import { Resource } from "../db/entities/resource";
+import { info } from "../utils/message";
 
 const resEmoji = "❓";
 const urlregex = /(?:https?:\/\/(?:www\.)?|www\.)[a-z0-9]+(?:[-.][a-z0-9]+)*\.[a-z]{2,5}(?::[0-9]{1,5})?(?:\/\S*)?/gm;

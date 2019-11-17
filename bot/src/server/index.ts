@@ -1,11 +1,11 @@
-import commands from "@/commands";
-import { Resource } from "@/db/entities/resource";
-import { config } from "@/utils";
 import fastify from "fastify";
 import cors from "fastify-cors";
 import { createReadStream } from "fs";
 import { join } from "path";
 import { getMongoRepository } from "typeorm";
+import commands from "../commands";
+import { Resource } from "../db/entities/resource";
+import { config } from "../utils";
 
 const app = fastify({ logger: true });
 

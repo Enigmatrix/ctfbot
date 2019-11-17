@@ -1,5 +1,5 @@
-import { CmdCtx } from "@/commands/definitions";
 import { Message, RichEmbed } from "discord.js";
+import { CmdCtx } from "../commands/definitions";
 
 export class CommandFlowError extends Error {
   public actualErr: Error;
