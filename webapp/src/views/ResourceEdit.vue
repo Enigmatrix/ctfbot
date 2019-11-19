@@ -55,23 +55,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import moment from "moment-timezone";
 import Tags from "@/components/Tags.vue";
-
-export interface ResourceEditModel {
-  link: string;
-  description: string;
-  category: string;
-  tags: string[];
-}
-
-export interface ResourceModel {
-  link: string;
-  description: string;
-  category: string;
-  tags: string[];
-  timestamp: Date;
-  author: string;
-  channel: string;
-}
+import {ResourceModel} from "../../../shared/resource";
 
 @Component({
   components: { Tags }
