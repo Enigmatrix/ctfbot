@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-5 w-full md:w-4/5 md:mx-auto flex flex-col mt-3">
+  <div class="mx-5 w-full md:w-4/5 md:mx-auto flex flex-col mt-3" v-if="resource !== undefined">
     <div class="flex flex-col mt-8">
       <span class="label text-2xl">Link</span>
       <textarea
@@ -41,11 +41,13 @@
 
     <div class="flex-1" />
 
-
     <div class="input m-2 text-center">
-      Posted by
-      <span class="text-blue-500">{{resource.author}}</span> in
-      <span class="text-green-500">{{resource.channel}}</span> at
+      Posted
+      <span v-if="resource.author && resource.channel">
+        by
+        <span class="text-blue-500">{{resource.author}}</span> in
+        <span class="text-green-500">{{resource.channel}}</span>
+      </span> at
       <span class="text-orange-500">{{formatNiceSGT(resource.timestamp)}}</span>
     </div>
   </div>
@@ -55,7 +57,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import moment from "moment-timezone";
 import Tags from "@/components/Tags.vue";
-import {ResourceModel} from "../../../shared/resource";
+import { ResourceModel } from "../../../shared/resource";
 
 @Component({
   components: { Tags }
@@ -63,15 +65,13 @@ import {ResourceModel} from "../../../shared/resource";
 export default class ResourceEdit extends Vue {
   @Prop() private id!: string;
 
-  public resource: ResourceModel = {
-    link: "https://www.google.com",
-    description: "Google Web Services",
-    category: "web",
-    tags: ["google", "web", "search"],
-    timestamp: new Date(),
-    author: "@dickheadedzed",
-    channel: "#web"
-  };
+  public resource!: ResourceModel;
+
+  async mounted() {
+    const res = await fetch(`/api/resources/${this.id}`);
+    this.resource = (await res.json()) as ResourceModel;
+    this.$forceUpdate();
+  }
 
   formatNiceSGT(date: Date) {
     return (
