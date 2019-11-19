@@ -1,5 +1,6 @@
 import fastify from "fastify";
 import cors from "fastify-cors";
+import staticServe from "fastify-static";
 import { createReadStream } from "fs";
 import { join } from "path";
 import { getMongoRepository } from "typeorm";
@@ -9,9 +10,15 @@ import { config } from "../utils";
 
 const app = fastify({ logger: true });
 
+const servePath = join(__dirname, '../../../webapp/build');
+
 app.register(cors, {
   origin: "*"
 });
+
+app.register(staticServe, {
+  root: servePath
+})
 
 app.get("/health", async () => {
   return { OK: true };
@@ -28,7 +35,7 @@ app.get("/api/help", async () => {
 app.setNotFoundHandler((_, reply) => {
   reply
     .header("Content-Type", "text/html")
-    .send(createReadStream(join(__dirname, "./index.html")));
+    .send(createReadStream(join(servePath, "index.html")));
 });
 
 app.get("/api/resources/categories", async () => {
