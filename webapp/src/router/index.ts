@@ -1,14 +1,15 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
+import ResourceEdit from '../views/ResourceEdit.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: Home,
+    path: '/resource/:id',
+    name: 'resource',
+    component: ResourceEdit,
+    props: true,
   },
   {
     path: '/about',

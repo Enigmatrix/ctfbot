@@ -1,9 +1,5 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+  <div id="app" class="flex bg-gray-800 min-h-screen text-gray-300">
     <router-view/>
   </div>
 </template>
@@ -15,7 +11,12 @@
   font-family 'Avenir', Helvetica, Arial, sans-serif
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
-  text-align center
-  color #2c3e50
-  margin-top 60px
+
+.input
+  font-family 'PT Sans Narrow'
+
+.label
+  font-family 'PT Sans Caption'
+
+@import url('https://fonts.googleapis.com/css?family=PT+Sans+Caption|PT+Sans+Narrow&display=swap')
 </style>
