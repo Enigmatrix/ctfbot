@@ -12,6 +12,6 @@ export interface ResourceModel {
   category: string;
   tags: string[];
   timestamp: Date;
-  author: string;
-  channel: string;
+  author?: string;
+  channel?: string;
 }
