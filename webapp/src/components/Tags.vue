@@ -13,12 +13,13 @@
     </div>
 
     <input
-      class="bg-transparent border-0 appearance-none flex-1 p-2 outline-none min-w-0"
+      class="bg-transparent border-0 appearance-none flex-1 p-2 outline-none min-w-0 tag-input"
       v-model="tagline"
       @focus="focused = true"
       @blur="focused = false"
       @keyup.enter="addTag"
       @keyup.space="addTag"
+      placeholder="enter tag then space/enter"
     />
   </div>
 </template>
@@ -54,3 +55,7 @@ export default class Tags extends Vue {
   }
 }
 </script>
+<style lang="stylus">
+.tag-input::placeholder
+  color gray
+</style>

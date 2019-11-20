@@ -1,5 +1,20 @@
 <template>
-  <div class="mx-5 w-full md:w-4/5 md:mx-auto flex flex-col mt-3" v-if="resource !== undefined">
+  <div class="mx-5 w-full md:w-4/5 md:mx-auto flex flex-col mt-3" v-if="resource">
+    <div
+      class="mt-8 label bg-green-500 text-white flex border-l-4 border-green-700 p-2"
+      v-if="message && message.type === 'success'"
+    >
+      <span class="flex-1">{{message.text}}</span>
+      <button @click="clearMessage">X</button>
+    </div>
+    <div
+      class="mt-8 label bg-red-500 text-white flex border-l-4 border-red-700 p-2"
+      v-if="message && message.type === 'error'"
+    >
+      <span class="flex-1">{{message.text}}</span>
+      <button @click="clearMessage">X</button>
+    </div>
+
     <div class="flex flex-col mt-8">
       <span class="label text-2xl">Link</span>
       <textarea
@@ -37,7 +52,10 @@
       <Tags :tags="resource.tags" />
     </div>
 
-    <button class="label bg-green-800 mt-8 mb-4 p-2 rounded-lg shadow-lg md:w-64 md:self-end">SAVE</button>
+    <button
+      @click="save"
+      class="label bg-green-800 mt-8 mb-4 p-2 rounded-lg shadow-lg md:w-64 md:self-end"
+    >SAVE</button>
 
     <div class="flex-1" />
 
@@ -57,7 +75,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import moment from "moment-timezone";
 import Tags from "@/components/Tags.vue";
-import { ResourceModel } from "../../../shared/resource";
+import { ResourceModel, ResourceEditModel } from "../../../shared/resource";
 
 @Component({
   components: { Tags }
@@ -65,12 +83,34 @@ import { ResourceModel } from "../../../shared/resource";
 export default class ResourceEdit extends Vue {
   @Prop() private id!: string;
 
-  public resource!: ResourceModel;
+  private resource: ResourceModel | null = null;
+  private message: { text: string; type: "error" | "success" } | null = null;
 
   async mounted() {
     const res = await fetch(`/api/resources/${this.id}`);
     this.resource = (await res.json()) as ResourceModel;
     this.$forceUpdate();
+  }
+
+  async save() {
+    if (!this.resource) return;
+    const { tags, link, description, category } = this.resource;
+    const res = await fetch(`/api/resources/${this.id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ tags, link, description, category })
+    });
+    if ((await res.json()).ok) {
+      this.message = { text: "Save successful!", type: "success" };
+    } else {
+      this.message = { text: "Save failed!", type: "error" };
+    }
+  }
+
+  clearMessage() {
+    this.message = null;
   }
 
   formatNiceSGT(date: Date) {
