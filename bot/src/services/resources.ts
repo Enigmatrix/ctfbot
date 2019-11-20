@@ -42,7 +42,7 @@ export async function resourceAuthorReaction(
   }
   const dm = await newUser.createDM();
   const formLink = `http://ctfbot.hats.sg/resource/${resource.id}`;
-  await dm.send(info(`Provide info for ${resource.link} using this form ${formLink} or the !res command (!res link tag1,tag2..tagn desc)`));
+  await dm.send(info(`Provide info for ${resource.link}`, `Use this form ${formLink} or the !res command (!res link tag1,tag2..tagn desc)`));
 }
 
 function isInInterestLabChannel(msg: Message): boolean {
