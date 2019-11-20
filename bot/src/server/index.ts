@@ -4,12 +4,12 @@ import cors from "fastify-cors";
 import staticServe from "fastify-static";
 import { createReadStream } from "fs";
 import { join } from "path";
-import { getMongoRepository, ObjectID } from "typeorm";
-import { ResourceEditModel, ResourceModel } from "../../../shared/resource";
+import { getMongoRepository } from "typeorm";
+import bot from "../bot";
 import commands from "../commands";
 import { Resource } from "../db/entities/resource";
+import { ResourceModel } from "../shared/resource";
 import { config } from "../utils";
-import bot from "../bot";
 
 const app = fastify({ logger: true });
 

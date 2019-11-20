@@ -75,7 +75,10 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import moment from "moment-timezone";
 import Tags from "@/components/Tags.vue";
-import { ResourceModel, ResourceEditModel } from "../../../shared/resource";
+import {
+  ResourceModel,
+  ResourceEditModel
+} from "../../../bot/src/shared/resource";
 
 @Component({
   components: { Tags }
