@@ -19,7 +19,11 @@ bot.on("message", async msg => {
   }
 
   if (hasResourceLink(msg)) {
-    await createResource(msg);
+    try {
+      await createResource(msg);
+    } catch (err) {
+      log.error("Error in Resource creation", err);
+    }
   } else if (msg.content[0] === "!") {
     const [cmd, ...args] = splitargs(msg.content.substr(1));
     await commands.run(cmd, { args, msg });
@@ -27,7 +31,11 @@ bot.on("message", async msg => {
 });
 
 bot.on("messageReactionAdd", async (reaction, newUser) => {
-  await resourceAuthorReaction(reaction, newUser);
+  try {
+    await resourceAuthorReaction(reaction, newUser);
+  } catch (err) {
+    log.error("Error in Resource author reaction", err);
+  }
 });
 
 export default bot;
