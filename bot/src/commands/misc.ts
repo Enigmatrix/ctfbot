@@ -1,5 +1,6 @@
 import { Message, RichEmbed } from "discord.js";
 import moment from "moment";
+import { Resource } from "../db/entities/resource";
 import agenda, { REPEATED_NOTIFY_UPCOMING_CTF } from "../services/agenda";
 import { formatNiceSGT } from "../utils";
 import commands, { CmdCtx, Command, CommandGroup, Group } from "./definitions";
@@ -9,6 +10,28 @@ export default class Misc extends CommandGroup {
   @Command({ desc: "Force upcoming events to show up" })
   public async upcoming(_: CmdCtx) {
     await agenda.now(REPEATED_NOTIFY_UPCOMING_CTF);
+  }
+
+  @Command({
+    desc: "Update resource information",
+    usage: "!res link category tag1,tag2..tagn desc"
+  })
+  public async res(ctx: CmdCtx) {
+    const [category, link, tagsRaw, desc] = ctx.args;
+    const tags = tagsRaw.split(",");
+
+    const res = await Resource.findOne({ link });
+    if (!res) {
+      ctx.error("Resource not found for link");
+      return;
+    }
+
+    res.category = category;
+    res.tags = tags.filter((x, i, arr) => arr.indexOf(x) === i);
+    res.link = link;
+    res.description = desc;
+
+    await res.save();
   }
 
   @Command({ desc: "Kick a user. Ouchie" })
