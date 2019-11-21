@@ -18,15 +18,15 @@ bot.on("message", async msg => {
     return;
   }
 
-  if (hasResourceLink(msg)) {
+  if (msg.content[0] === "!") {
+    const [cmd, ...args] = splitargs(msg.content.substr(1));
+    await commands.run(cmd, { args, msg });
+  } else if (hasResourceLink(msg)) {
     try {
       await createResource(msg);
     } catch (err) {
       log.error("Error in Resource creation", err);
     }
-  } else if (msg.content[0] === "!") {
-    const [cmd, ...args] = splitargs(msg.content.substr(1));
-    await commands.run(cmd, { args, msg });
   }
 });
 

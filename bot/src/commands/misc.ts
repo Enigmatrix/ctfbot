@@ -17,8 +17,12 @@ export default class Misc extends CommandGroup {
     usage: "!res link category tag1,tag2..tagn desc"
   })
   public async res(ctx: CmdCtx) {
-    const [category, link, tagsRaw, desc] = ctx.args;
-    const tags = tagsRaw.split(",");
+    const [link, category, tagsRaw, desc] = ctx.args;
+    if (!category || !link || !tagsRaw || !desc) {
+      await ctx.printUsage();
+      return;
+    }
+    const tags = tagsRaw.split(",").filter(x => x !== '');
 
     const res = await Resource.findOne({ link });
     if (!res) {
