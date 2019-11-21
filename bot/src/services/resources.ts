@@ -48,7 +48,7 @@ export async function resourceAuthorReaction(
     await newUser.send(
       info(
         `Provide info for ${resource.link}`,
-        `Use this form ${formLink} or the !res command (!res link tag1,tag2..tagn desc)`
+        `Use this form ${formLink} or the !res command (!res ${resource.link} category tag1,tag2..tagn desc)`
       )
     );
   } else if (
