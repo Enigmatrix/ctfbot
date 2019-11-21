@@ -2,7 +2,8 @@ import { Message, MessageReaction, TextChannel, User } from "discord.js";
 import { Resource } from "../db/entities/resource";
 import { info } from "../utils/message";
 
-const resEmoji = "❓";
+const resEmoji = "🗒️ ";
+const resRmvEmoji = "❌";
 const urlregex = /(?:https?:\/\/(?:www\.)?|www\.)[a-z0-9]+(?:[-.][a-z0-9]+)*\.[a-z]{2,5}(?::[0-9]{1,5})?(?:\/\S*)?/gm;
 
 export function hasResourceLink(msg: Message): boolean {
@@ -25,6 +26,7 @@ export async function createResource(msg: Message) {
   await resource.save();
 
   await msg.react(resEmoji);
+  await msg.react(resRmvEmoji);
 }
 
 export async function resourceAuthorReaction(
@@ -37,12 +39,24 @@ export async function resourceAuthorReaction(
       channelId: reaction.message.channel.id
     }
   });
-  if (!resource || !reaction.me || reaction.emoji.name !== resEmoji) {
+  if (!resource || !reaction.me) {
     return;
   }
-  const dm = await newUser.createDM();
-  const formLink = `http://ctfbot.hats.sg/resource/${resource.id}`;
-  await dm.send(info(`Provide info for ${resource.link}`, `Use this form ${formLink} or the !res command (!res link tag1,tag2..tagn desc)`));
+  if (reaction.emoji.name === resEmoji) {
+    const dm = await newUser.createDM();
+    const formLink = `http://ctfbot.hats.sg/resource/${resource.id}`;
+    await dm.send(
+      info(
+        `Provide info for ${resource.link}`,
+        `Use this form ${formLink} or the !res command (!res link tag1,tag2..tagn desc)`
+      )
+    );
+  } else if (
+    reaction.emoji.name === resRmvEmoji &&
+    resource.authorId === reaction.message.author.id
+  ) {
+    await resource.remove();
+  }
 }
 
 function isInInterestLabChannel(msg: Message): boolean {
