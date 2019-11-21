@@ -1,6 +1,7 @@
 import { Message, MessageReaction, TextChannel, User } from "discord.js";
 import { Resource } from "../db/entities/resource";
 import { info } from "../utils/message";
+import bot from '../bot';
 
 const resEmoji = "🗒️";
 const resRmvEmoji = "❌";
@@ -39,7 +40,7 @@ export async function resourceAuthorReaction(
       channelId: reaction.message.channel.id
     }
   });
-  if (!resource || !reaction.me) {
+  if (!resource || !reaction.me || newUser.id === bot.user.id) {
     return;
   }
   if (reaction.emoji.name === resEmoji) {
