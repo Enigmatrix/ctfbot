@@ -43,9 +43,9 @@ export async function resourceAuthorReaction(
     return;
   }
   if (reaction.emoji.name === resEmoji) {
-    const dm = await newUser.createDM();
+
     const formLink = `http://ctfbot.hats.sg/resource/${resource.id}`;
-    await dm.send(
+    await newUser.send(
       info(
         `Provide info for ${resource.link}`,
         `Use this form ${formLink} or the !res command (!res link tag1,tag2..tagn desc)`
