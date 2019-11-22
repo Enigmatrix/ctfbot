@@ -33,17 +33,6 @@ app.register(fastifySession, {
   store: new SessionStore<any>()
 });
 
-app.get("/debug", async req => {
-  return req.session;
-});
-
-app.post("/debug", async req => {
-  for (const k of Object.keys(req.body)) {
-    req.session[k] = req.body;
-  }
-  return req.session;
-});
-
 app.get("/api/health", async () => {
   return { OK: true };
 });
