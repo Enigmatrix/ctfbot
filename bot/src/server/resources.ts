@@ -5,6 +5,7 @@ import bot from "../bot";
 import { Resource } from "../db/entities/resource";
 import { ResourceModel } from "../shared/resource";
 import { Authenticated } from "./session";
+import { searchResources } from "../services/resources";
 
 export default function(app: FastifyInstance, _: any, done: () => void) {
   app.get("/api/resources/categories", async () => {
@@ -14,6 +15,12 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
   app.get("/api/resources/by_category/:category", async (request, _) => {
     return (await Resource.find({ category: request.params.category })).map(
       toResourceModel
+    );
+  });
+
+  app.get("/api/resources/search", async (request, _) => {
+    return await searchResources(request.query.q || "").then(x =>
+      x.map(toResourceModel)
     );
   });
 
@@ -71,7 +78,7 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
       tags: res.tags,
       description: res.description,
       timestamp: res.timestamp,
-      author: author ? author.nickname : undefined,
+      author: author ? author.displayName : undefined,
       channel: channel ? channel.name : undefined
     };
   }

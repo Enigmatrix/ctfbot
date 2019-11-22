@@ -1,8 +1,9 @@
 import { Message, MessageReaction, TextChannel, User } from "discord.js";
-import { Resource } from "../db/entities/resource";
-import { info } from "../utils/message";
 import bot from "../bot";
-import {config} from '../utils';
+import { Resource } from "../db/entities/resource";
+import { config } from "../utils";
+import { info } from "../utils/message";
+import { FindManyOptions } from "typeorm";
 
 const resEmoji = "🗒️";
 const resRmvEmoji = "❌";
@@ -10,6 +11,13 @@ const urlregex = /(?:https?:\/\/(?:www\.)?|www\.)[a-z0-9]+(?:[-.][a-z0-9]+)*\.[a
 
 export function hasResourceLink(msg: Message): boolean {
   return isInInterestLabChannel(msg) && urlregex.test(msg.content);
+}
+
+export async function searchResources(terms: string): Promise<Resource[]> {
+  const results = Resource.find({
+    $text: { $search: terms }
+  } as FindManyOptions<Resource>);
+  return results;
 }
 
 export async function createResource(msg: Message) {
