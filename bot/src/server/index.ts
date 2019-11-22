@@ -7,6 +7,7 @@ import { createReadStream } from "fs";
 import { join } from "path";
 import commands from "../commands";
 import { config } from "../utils";
+import oauth2 from './oauth2';
 import resources from "./resources";
 import {SessionStore} from './session';
 
@@ -57,6 +58,7 @@ app.get("/api/help", async () => {
 
 // routes
 app.register(resources);
+app.register(oauth2);
 
 app.setNotFoundHandler((_, reply) => {
   reply

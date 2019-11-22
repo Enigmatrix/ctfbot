@@ -23,6 +23,11 @@
   resolved "https://registry.yarnpkg.com/@discordjs/uws/-/uws-10.149.0.tgz#5ec3d12aa140aea402ad8bfabeddb2986a371bb9"
   integrity sha512-N1wjoAD2DOgzevqzyTOWTgyO2divX03JWNQx4JHm/jQ/BRzZNkhwVRO3RC5Guww+srdgs4Tw4gwrzlJrlOhq/Q==
 
+"@servie/events@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@servie/events/-/events-1.0.0.tgz#8258684b52d418ab7b86533e861186638ecc5dc1"
+  integrity sha512-sBSO19KzdrJCM3gdx6eIxV8M9Gxfgg6iDQmH5TIAGaUu+X9VDdsINXJOnoiZ1Kx3TrHdH4bt5UVglkjsEGBcvw==
+
 "@types/agenda@^2.0.6":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@types/agenda/-/agenda-2.0.6.tgz#56e81fcd6dc633e5599b6dac527274d51b3a717a"
@@ -74,6 +79,11 @@
   version "12.11.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.11.1.tgz#1fd7b821f798b7fa29f667a1be8f3442bb8922a3"
   integrity sha512-TJtwsqZ39pqcljJpajeoofYRfeZ7/I/OMUQ5pR4q5wOKf2ocrUvBAZUMhWsOvKx3dVc/aaV5GluBivt0sWqA5A==
+
+"@types/tough-cookie@^2.3.5":
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-2.3.5.tgz#9da44ed75571999b65c37b60c9b2b88db54c585d"
+  integrity sha512-SCcK7mvGi3+ZNz833RRjFIxrn4gI1PPR3NtuIS+6vMkvmsGjosqTJwRt5bAEFLRz+wtJMWv8+uOnZf2hi2QXTg==
 
 "@types/winston@^2.4.4":
   version "2.4.4"
@@ -382,6 +392,11 @@ builtin-modules@^1.1.1:
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
   integrity sha1-Jw8HbFpywC9bZaR9+Uxf46J4iS8=
 
+byte-length@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/byte-length/-/byte-length-1.0.2.tgz#ba5a5909240b0121c079b7f7b15248d6f08223cc"
+  integrity sha512-ovBpjmsgd/teRmgcPh23d4gJvxDoXtAzEL9xTfMU8Yc2kqCDb7L9jAG0XHl1nzuGl+h3ebCIF1i62UFyA9V/2Q==
+
 cache-base@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/cache-base/-/cache-base-1.0.1.tgz#0a7f46416831c8b662ee36fe4e7c59d76f666ab2"
@@ -491,6 +506,14 @@ cli-highlight@^2.0.0:
     mz "^2.4.0"
     parse5 "^4.0.0"
     yargs "^13.0.0"
+
+client-oauth2@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/client-oauth2/-/client-oauth2-4.2.5.tgz#cee9499ef0acc84ee545a76a8a51942ddf26f473"
+  integrity sha512-GAhVLveAbBkwcfEH/d5lTW9eCgcPR3Up93cx7v4qWTdLCa4O0m3ykNNn4aAVeWOiHfWL5skO+3u0F/gfAxZuPQ==
+  dependencies:
+    popsicle "12.0.4"
+    safe-buffer "^5.1.1"
 
 cliui@^5.0.0:
   version "5.0.0"
@@ -844,6 +867,13 @@ encodeurl@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
   integrity sha1-rT/0yG7C0CkyL1oCw6mmBslbP1k=
+
+end-of-stream@^1.1.0:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.4.4.tgz#5ae64a5f45057baf3626ec14da0ca5e4b2431eb0"
+  integrity sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
+  dependencies:
+    once "^1.4.0"
 
 env-variable@0.0.x:
   version "0.0.5"
@@ -1454,6 +1484,11 @@ ini@^1.3.4, ini@~1.3.0:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
   integrity sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==
 
+ip-regex@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-2.1.0.tgz#fa78bf5d2e6913c911ce9f819ee5146bb6d844e9"
+  integrity sha1-+ni/XS5pE8kRzp+BnuUUa7bYROk=
+
 ipaddr.js@1.9.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.0.tgz#37df74e430a0e47550fe54a2defe30d8acd95f65"
@@ -1837,7 +1872,14 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
-make-error@^1.1.1:
+make-error-cause@^2.2.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/make-error-cause/-/make-error-cause-2.3.0.tgz#ecd11875971e506d510e93d37796e5b83f46d6f9"
+  integrity sha512-etgt+n4LlOkGSJbBTV9VROHA5R7ekIPS4vfh+bCAoJgRrJWdqJCBbpS3osRJ/HrT7R68MzMiY3L3sDJ/Fd8aBg==
+  dependencies:
+    make-error "^1.3.5"
+
+make-error@^1.1.1, make-error@^1.3.5:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.5.tgz#efe4e81f6db28cadd605c70f29c831b58ef776c8"
   integrity sha512-c3sIjNUow0+8swNwVpqoH4YCShKNFkMaw6oH1mNS2haDZQqkeZFlHS3dhoeEbKKmJB4vXpJucU6oH75aDYeE9g==
@@ -2211,7 +2253,7 @@ on-finished@~2.3.0:
   dependencies:
     ee-first "1.1.1"
 
-once@^1.3.0:
+once@^1.3.0, once@^1.3.1, once@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
   integrity sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
@@ -2352,6 +2394,57 @@ pino@^5.13.2:
     quick-format-unescaped "^3.0.3"
     sonic-boom "^0.7.5"
 
+popsicle-content-encoding@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/popsicle-content-encoding/-/popsicle-content-encoding-1.0.0.tgz#2ab419083fee0387bf6e64d21b1a9af560795adb"
+  integrity sha512-4Df+vTfM8wCCJVTzPujiI6eOl3SiWQkcZg0AMrOkD1enMXsF3glIkFUZGvour1Sj7jOWCsNSEhBxpbbhclHhzw==
+
+popsicle-cookie-jar@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/popsicle-cookie-jar/-/popsicle-cookie-jar-1.0.0.tgz#9e8c89be7182b31f7ce0e66dad465ae475d8f47c"
+  integrity sha512-vrlOGvNVELko0+J8NpGC5lHWDGrk8LQJq9nwAMIVEVBfN1Lib3BLxAaLRGDTuUnvl45j5N9dT2H85PULz6IjjQ==
+  dependencies:
+    "@types/tough-cookie" "^2.3.5"
+    tough-cookie "^3.0.1"
+
+popsicle-redirects@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/popsicle-redirects/-/popsicle-redirects-1.1.0.tgz#2a5abb49a7ad49c02e90b24d4608dc0b8b23176a"
+  integrity sha512-XCpzVjVk7tty+IJnSdqWevmOr1n8HNDhL86v7mZ6T1JIIf2KGybxUk9mm7ZFOhWMkGB0e8XkacHip7BV8AQWQA==
+
+popsicle-transport-http@^1.0.0:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/popsicle-transport-http/-/popsicle-transport-http-1.0.6.tgz#b73a65426f7ef9d0bfedd98673b84cd92e061bdd"
+  integrity sha512-J/d1MhlqgaDro9xWe31RCNFBlUs3kG52rl7YNKYZdF8nllgGtXwhfcLlzwNJOW/M+nPOyxFvqOZIi6Qq599Hlw==
+  dependencies:
+    make-error-cause "^2.2.0"
+    pump "^3.0.0"
+
+popsicle-transport-xhr@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/popsicle-transport-xhr/-/popsicle-transport-xhr-1.0.2.tgz#aa4b7ab74d37f880cf857622cbbaf5ead3e43cb2"
+  integrity sha512-v9eAJnj1tydT4VmDdyKFE1z/+oL01vB7AS3LfSFMAYv33dzqlxtbApKALcYWBQotIqw3FoIqd2FiDR6qJsOxtA==
+
+popsicle-user-agent@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/popsicle-user-agent/-/popsicle-user-agent-1.0.0.tgz#976af355b605966168733c4e03ad1e4f783f5d48"
+  integrity sha512-epKaq3TTfTzXcxBxjpoKYMcTTcAX8Rykus6QZu77XNhJuRHSRxMd+JJrbX/3PFI0opFGSN0BabbAYCbGxbu0mA==
+
+popsicle@12.0.4:
+  version "12.0.4"
+  resolved "https://registry.yarnpkg.com/popsicle/-/popsicle-12.0.4.tgz#297adb1132a79fdbc54ca902645811b177f6234f"
+  integrity sha512-UuxhAFa4RXBecC6ZK24sKra/9va1bTxnb3CQpFsm+VBW72sl+UtTAmZv7LZTvvDNnGusAqisN+a6xSN9xSQzZA==
+  dependencies:
+    popsicle-content-encoding "^1.0.0"
+    popsicle-cookie-jar "^1.0.0"
+    popsicle-redirects "^1.0.0"
+    popsicle-transport-http "^1.0.0"
+    popsicle-transport-xhr "^1.0.0"
+    popsicle-user-agent "^1.0.0"
+    servie "^4.0.6"
+    throwback "^4.1.0"
+    tough-cookie "^3.0.1"
+
 posix-character-classes@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/posix-character-classes/-/posix-character-classes-0.1.1.tgz#01eac0fe3b5af71a2a6c02feabb8c1fef7e00eab"
@@ -2385,7 +2478,7 @@ pseudomap@^1.0.2:
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
   integrity sha1-8FKijacOYYkX7wqKw0wa5aaChrM=
 
-psl@^1.1.24:
+psl@^1.1.24, psl@^1.1.28:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.4.0.tgz#5dd26156cdb69fa1fdb8ab1991667d3f80ced7c2"
   integrity sha512-HZzqCGPecFLyoRj5HLfuDSKYTJkAfB5thKBIkRHtGjWwY7p1dAyveIbXIq4tO0KYfDF2tHqPUgY9SDnGm00uFw==
@@ -2395,12 +2488,20 @@ pstree.remy@^1.1.7:
   resolved "https://registry.yarnpkg.com/pstree.remy/-/pstree.remy-1.1.7.tgz#c76963a28047ed61542dc361aa26ee55a7fa15f3"
   integrity sha512-xsMgrUwRpuGskEzBFkH8NmTimbZ5PcPup0LA8JJkHIm2IMUbQcpo3yeLNWVrufEYjh8YwtSVh0xz6UeWc5Oh5A==
 
+pump@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/pump/-/pump-3.0.0.tgz#b4a2116815bde2f4e1ea602354e8c75565107a64"
+  integrity sha512-LwZy+p3SFs1Pytd/jYct4wpv49HiYCqd9Rlc5ZVdk0V+8Yzv6jR5Blk3TRmPL1ft69TxP0IMZGJ+WPFU2BFhww==
+  dependencies:
+    end-of-stream "^1.1.0"
+    once "^1.3.1"
+
 punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
   integrity sha1-wNWmOycYgArY4esPpSachN1BhF4=
 
-punycode@^2.1.0:
+punycode@^2.1.0, punycode@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
   integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
@@ -2597,7 +2698,7 @@ rimraf@^2.6.1:
   dependencies:
     glob "^7.1.3"
 
-safe-buffer@^5.0.1, safe-buffer@^5.1.2, safe-buffer@~5.2.0:
+safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.0.tgz#b74daec49b1148f88c64b68d49b1e815c1f2f519"
   integrity sha512-fZEwUGbVl7kouZs1jCdMLdt95hdIv0ZeHg6L7qPeciMZhZ+/gdesW4wgTARkrFWEpspjEATAzUGPG8N2jJiwbg==
@@ -2683,6 +2784,14 @@ send@^0.16.0:
     on-finished "~2.3.0"
     range-parser "~1.2.0"
     statuses "~1.4.0"
+
+servie@^4.0.6:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/servie/-/servie-4.3.2.tgz#7168140d62cb9476cb8b184fc8ceda24d5154e7e"
+  integrity sha512-1NpFf3LjkDDq4IIuBqtqHfSdPWhXpuyWwuBdwbifZjWSxQd8rCWz5W9AluxNvWfteM1qQ26puODIzWljvBJc5A==
+  dependencies:
+    "@servie/events" "^1.0.0"
+    byte-length "^1.0.2"
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
@@ -3009,6 +3118,11 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
+throwback@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/throwback/-/throwback-4.1.0.tgz#421aac7ba9eff473105385ac4a2b0130d4b0a59c"
+  integrity sha512-dLFe8bU8SeH0xeqeKL7BNo8XoPC/o91nz9/ooeplZPiso+DZukhoyZcSz9TFnUNScm+cA9qjU1m1853M6sPOng==
+
 timed-out@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-4.0.1.tgz#f32eacac5a175bea25d7fab565ab3ed8741ef56f"
@@ -3050,6 +3164,15 @@ touch@^3.1.0:
   integrity sha512-WBx8Uy5TLtOSRtIq+M03/sKDrXCLHxwDcquSP2c43Le03/9serjQBIztjRz6FkJez9D/hleyAXTBGLwwZUw9lA==
   dependencies:
     nopt "~1.0.10"
+
+tough-cookie@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-3.0.1.tgz#9df4f57e739c26930a018184887f4adb7dca73b2"
+  integrity sha512-yQyJ0u4pZsv9D4clxO69OEjLWYw+jbgspjTue4lTQZLfV0c5l1VmK2y1JK8E9ahdpltPOaAThPcp5nKPUgSnsg==
+  dependencies:
+    ip-regex "^2.1.0"
+    psl "^1.1.28"
+    punycode "^2.1.1"
 
 tough-cookie@~2.4.3:
   version "2.4.3"
