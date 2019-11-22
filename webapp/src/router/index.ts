@@ -1,15 +1,18 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
+import VueRouter, { RouteConfig } from 'vue-router';
 import ResourceEdit from '../views/ResourceEdit.vue';
 
 Vue.use(VueRouter);
 
-const routes = [
+const routes: RouteConfig[] = [
   {
     path: '/resource/:id',
     name: 'resource',
     component: ResourceEdit,
     props: true,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/about',
@@ -25,6 +28,19 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach(async (to, _, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    const res = await fetch('/api/user/info');
+    if (res.ok) {
+      next();
+    } else {
+      window.location.replace(`/api/login?redirectUrl=${encodeURIComponent(to.fullPath)}`);
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
