@@ -1,21 +1,21 @@
 <template>
-  <div class="mx-5 w-full md:w-4/5 md:mx-auto flex flex-col mt-3" v-if="resource">
+  <div class="px-5 w-full md:w-4/5 md:mx-auto flex flex-col mt-3" v-if="resource">
     <div
-      class="mt-8 label bg-green-500 text-white flex border-l-4 border-green-700 p-2"
+      class="mt-4 label bg-green-500 text-white flex border-l-4 border-green-700 p-2"
       v-if="message && message.type === 'success'"
     >
       <span class="flex-1">{{message.text}}</span>
       <button @click="clearMessage">X</button>
     </div>
     <div
-      class="mt-8 label bg-red-500 text-white flex border-l-4 border-red-700 p-2"
+      class="mt-4 label bg-red-500 text-white flex border-l-4 border-red-700 p-2"
       v-if="message && message.type === 'error'"
     >
       <span class="flex-1">{{message.text}}</span>
       <button @click="clearMessage">X</button>
     </div>
 
-    <div class="flex flex-col mt-8">
+    <div class="flex flex-col mt-4">
       <span class="label text-2xl">Link</span>
       <textarea
         name="description"
@@ -75,6 +75,7 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import moment from "moment-timezone";
 import Tags from "@/components/Tags.vue";
+import request from "../requests";
 import {
   ResourceModel,
   ResourceEditModel
@@ -90,22 +91,19 @@ export default class ResourceEdit extends Vue {
   private message: { text: string; type: "error" | "success" } | null = null;
 
   async mounted() {
-    const res = await fetch(`/api/resources/${this.id}`);
-    this.resource = (await res.json()) as ResourceModel;
+    this.resource = await request
+      .get<ResourceModel>(`/api/resources/${this.id}`)
+      .then(x => x.data);
     this.$forceUpdate();
   }
 
   async save() {
     if (!this.resource) return;
     const { tags, link, description, category } = this.resource;
-    const res = await fetch(`/api/resources/${this.id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ tags, link, description, category })
+    const res = await request.post(`/api/resources/${this.id}`, {
+      body: { tags, link, description, category }
     });
-    if ((await res.json()).ok) {
+    if (res.status === 200) {
       this.message = { text: "Save successful!", type: "success" };
     } else {
       this.message = { text: "Save failed!", type: "error" };

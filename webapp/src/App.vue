@@ -1,8 +1,21 @@
 <template>
-  <div id="app" class="flex bg-gray-800 min-h-screen text-gray-300">
+  <div id="app" class="flex flex-col bg-gray-800 min-h-screen text-gray-300">
+    <NavBar/>
     <router-view/>
   </div>
 </template>
+
+
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator";
+import NavBar from "./components/NavBar.vue";
+
+@Component({
+  components: { NavBar }
+})
+export default class App extends Vue {
+}
+</script>
 
 <style lang="stylus">
 @import 'assets/styles/tailwind.postcss';

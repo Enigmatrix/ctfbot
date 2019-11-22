@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import ResourceEdit from '../views/ResourceEdit.vue';
+import getUserInfo, { login } from '@/session';
 
 Vue.use(VueRouter);
 
@@ -32,11 +33,11 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, _, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    const res = await fetch('/api/user/info');
-    if (res.ok) {
+    const info = await getUserInfo();
+    if (info) {
       next();
     } else {
-      window.location.replace(`/api/login?redirectUrl=${encodeURIComponent(to.fullPath)}`);
+      login(to.fullPath);
     }
   } else {
     next();
