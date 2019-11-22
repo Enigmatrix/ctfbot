@@ -1,14 +1,14 @@
 import fastify from "fastify";
-import cookie from "fastify-cookie";
+import fastifyCookie from "fastify-cookie";
 import cors from "fastify-cors";
-import session from "fastify-session";
+import fastifySession from "fastify-session";
 import staticServe from "fastify-static";
 import { createReadStream } from "fs";
 import { join } from "path";
 import commands from "../commands";
 import { config } from "../utils";
-import resources from './resources';
-import SessionStore from './SessionStore';
+import resources from "./resources";
+import {SessionStore} from './session';
 
 const app = fastify({ logger: true });
 
@@ -22,27 +22,26 @@ app.register(staticServe, {
   root: servePath
 });
 
-app.register(cookie);
-
-app.register(session, {
+app.register(fastifyCookie);
+app.register(fastifySession, {
   secret: config("SERVER_SECRET"),
   cookie: {
     secure: false
   },
   saveUninitialized: false,
   store: new SessionStore<any>()
-})
+});
 
-app.get('/debug', async (req) => {
+app.get("/debug", async req => {
   return req.session;
-})
+});
 
-app.post('/debug', async (req) => {
+app.post("/debug", async req => {
   for (const k of Object.keys(req.body)) {
     req.session[k] = req.body;
   }
   return req.session;
-})
+});
 
 app.get("/api/health", async () => {
   return { OK: true };
@@ -64,7 +63,6 @@ app.setNotFoundHandler((_, reply) => {
     .header("Content-Type", "text/html")
     .send(createReadStream(join(servePath, "index.html")));
 });
-
 
 // TODO use winston logger for this
 export const setupServer = async () => {

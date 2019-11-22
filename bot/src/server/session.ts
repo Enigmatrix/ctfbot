@@ -1,6 +1,15 @@
+import { FastifyReply, FastifyRequest } from "fastify";
+import {ServerResponse} from 'http';
 import { Session } from "../db/entities/session";
 
-export default class SessionStore<T> {
+
+export async function Authenticated(request: FastifyRequest, reply: FastifyReply<ServerResponse>) {
+  if(!request.session.discordId) {
+    // TODO redirect
+  }
+}
+
+export class SessionStore<T> {
   public async set(
     sessionId: string,
     sessionDetails: T,

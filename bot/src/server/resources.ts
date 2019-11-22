@@ -4,6 +4,7 @@ import { getMongoRepository } from "typeorm";
 import bot from "../bot";
 import { Resource } from "../db/entities/resource";
 import { ResourceModel } from "../shared/resource";
+import { Authenticated } from "./session";
 
 export default function(app: FastifyInstance, _: any, done: () => void) {
   app.get("/api/resources/categories", async () => {
@@ -16,10 +17,14 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
     );
   });
 
-  app.get("/api/resources/:id", async (request, _) => {
-    const id = request.params.id;
-    return toResourceModel(await findResourceById(id));
-  });
+  app.get(
+    "/api/resources/:id",
+    { preValidation: Authenticated },
+    async (request, _) => {
+      const id = request.params.id;
+      return toResourceModel(await findResourceById(id));
+    }
+  );
 
   app.post("/api/resources/:id", async (request, _) => {
     const id = request.params.id;
