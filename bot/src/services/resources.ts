@@ -2,6 +2,7 @@ import { Message, MessageReaction, TextChannel, User } from "discord.js";
 import { Resource } from "../db/entities/resource";
 import { info } from "../utils/message";
 import bot from "../bot";
+import {config} from '../utils';
 
 const resEmoji = "🗒️";
 const resRmvEmoji = "❌";
@@ -44,7 +45,7 @@ export async function resourceAuthorReaction(
     return;
   }
   if (reaction.emoji.name === resEmoji) {
-    const formLink = `http://ctfbot.hats.sg/resource/${resource.id}`;
+    const formLink = `${config("SERVER_BASE")}/resource/${resource.id}`;
     await newUser.send(
       info(
         `Provide info for ${resource.link}`,
