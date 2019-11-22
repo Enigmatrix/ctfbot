@@ -1,5 +1,7 @@
-import { Message, RichEmbed } from "discord.js";
+import { Message, RichEmbed, User, GuildMember } from "discord.js";
 import { CmdCtx } from "../commands/definitions";
+import { Resource } from "../db/entities/resource";
+import bot from "../bot";
 
 export class CommandFlowError extends Error {
   public actualErr: Error;
@@ -67,6 +69,27 @@ export function error(title: string, description?: string): RichEmbed {
     description: description ? ":x: " + description : title,
     color: 0xdc3545
   });
+}
+
+export function resourceCard(res: Resource): RichEmbed {
+  let author: GuildMember | undefined;
+  if (res.authorId) {
+    author = bot.guilds.first().members.get(res.authorId);
+  }
+  let embed = new RichEmbed()
+    .setColor(0x17a2b8)
+    .setURL(res.link)
+    .setTitle(res.link)
+    .setDescription(res.description)
+    .addField("Category", res.category || "")
+    .addField("Tags", res.tags.join(", ") || "<no tags>")
+    .setTimestamp(res.timestamp);
+
+  if (author) {
+    embed = embed.setAuthor(author.displayName, author.user.displayAvatarURL);
+  }
+
+  return embed;
 }
 
 interface FlowState {
