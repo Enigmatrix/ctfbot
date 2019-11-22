@@ -1,11 +1,23 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import {ServerResponse} from 'http';
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { ServerResponse } from "http";
 import { Session } from "../db/entities/session";
 
+export default async function(app: FastifyInstance, _: any) {
+  app.get(
+    "/api/user/info",
+    { preValidation: Authenticated },
+    async (req, _) => {
+      return req.session.discordInfo;
+    }
+  );
+}
 
-export async function Authenticated(request: FastifyRequest, reply: FastifyReply<ServerResponse>) {
-  if(!request.session.discordId) {
-    // TODO redirect
+export async function Authenticated(
+  request: FastifyRequest,
+  reply: FastifyReply<ServerResponse>
+) {
+  if (!request.session.discordInfo) {
+    reply.code(401).send("Login using /api/login first!");
   }
 }
 

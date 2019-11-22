@@ -26,27 +26,31 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
     }
   );
 
-  app.post("/api/resources/:id", async (request, _) => {
-    const id = request.params.id;
-    const body = request.body;
+  app.post(
+    "/api/resources/:id",
+    { preValidation: Authenticated },
+    async (request, _) => {
+      const id = request.params.id;
+      const body = request.body;
 
-    const resource = await findResourceById(id);
-    if (body.link) {
-      resource.link = body.link;
+      const resource = await findResourceById(id);
+      if (body.link) {
+        resource.link = body.link;
+      }
+      if (body.category) {
+        resource.category = body.category;
+      }
+      if (body.description) {
+        resource.description = body.description;
+      }
+      if (body.tags) {
+        const tags = body.tags as string[];
+        resource.tags = tags.filter((x, i, arr) => arr.indexOf(x) === i);
+      }
+      await resource.save();
+      return { ok: true };
     }
-    if (body.category) {
-      resource.category = body.category;
-    }
-    if (body.description) {
-      resource.description = body.description;
-    }
-    if (body.tags) {
-      const tags = body.tags as string[];
-      resource.tags = tags.filter((x, i, arr) => arr.indexOf(x) === i);
-    }
-    await resource.save();
-    return { ok: true };
-  });
+  );
 
   async function findResourceById(id: string): Promise<Resource> {
     // FIXME could throw error here too (invalid hex string/invalid length)

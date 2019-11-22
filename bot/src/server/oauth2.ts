@@ -1,11 +1,9 @@
 import OAuth2 from "client-oauth2";
 import { User } from "discord.js";
 import { FastifyInstance } from "fastify";
+import bot from "../bot";
 import { config } from "../utils";
 import axios from "../utils/requests";
-import bot from "../bot";
-
-// TODO include state
 
 export default function(app: FastifyInstance, _: any, done: () => void) {
   app.get("/api/login", async (req, reply) => {
@@ -34,6 +32,7 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
     req.session.discordInfo = user;
     reply.redirect(redirectUrl);
   });
+
   done();
 }
 
@@ -53,7 +52,7 @@ function createDiscordOAuth2(redirectUrl: string) {
     clientSecret: config("DISCORD_CLIENT_SECRET"),
     accessTokenUri: "https://discordapp.com/api/oauth2/token",
     authorizationUri: "https://discordapp.com/api/oauth2/authorize",
-    redirectUri: "http://localhost:8080/api/login/callback",
+    redirectUri: config("SERVER_BASE") + "/api/login/callback",
     state,
     scopes: ["identify"]
   });
