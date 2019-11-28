@@ -15,10 +15,15 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
   });
 
   app.get("/api/login/callback", async (req, reply) => {
-    if (!req.query.state) {
+    const state = req.query.state;
+    if (!state) {
+      throw new Error("OAuth2 state not provided!");
+    }
+    const details = oath2states[state];
+    if (!details) {
       throw new Error("OAuth2 state not found!");
     }
-    const { oauth2, redirectUrl } = findDiscordOAuth2(req.query.state);
+    const {oauth2, redirectUrl} = details;
     let token = await oauth2.code.getToken(req.raw.url!);
     token = await token.refresh();
     const meReq = token.sign({
@@ -30,6 +35,7 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
       throw new Error("You must be a member of HATS SG first!");
     }
     req.session.discordInfo = user;
+    delete oath2states[state];
     reply.redirect(redirectUrl);
   });
 
@@ -38,12 +44,6 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
 
 // TODO move this to a class
 const oath2states: Record<string, { oauth2: OAuth2; redirectUrl: string }> = {};
-
-function findDiscordOAuth2(state: string) {
-  const details = oath2states[state];
-  delete oath2states[state];
-  return details;
-}
 
 function createDiscordOAuth2(redirectUrl: string) {
   const state = generateRandomState();
