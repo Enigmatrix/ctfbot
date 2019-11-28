@@ -16,10 +16,10 @@ export default function(app: FastifyInstance, _: any, done: () => void) {
 
   app.get("/api/login/callback", async (req, reply) => {
     const state = req.query.state;
+    const details = oath2states[state];
     if (!state) {
       throw new Error("OAuth2 state not provided!");
     }
-    const details = oath2states[state];
     if (!details) {
       throw new Error("OAuth2 state not found!");
     }
@@ -67,7 +67,7 @@ function generateRandomState() {
   let randStr = "";
 
   for (let i = 0; i < 20 + rand; i++) {
-    randStr += String.fromCharCode(33 + Math.floor(Math.random() * 94));
+    randStr += String.fromCharCode(0x61 + Math.floor(Math.random() * 26));
   }
 
   return randStr;
