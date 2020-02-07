@@ -56,7 +56,7 @@ export default class Misc extends CommandGroup {
   @Command({ desc: "Ban a user. :hammer:" })
   public async ban(ctx: CmdCtx) {
     const user = ctx.msg.mentions.users.first();
-    ctx.send(`:hammer <@${user.id}> has been banned ... for 0.15 microseconds.`);
+    ctx.send(`:hammer: <@${user.id}> has been banned ... for 0.15 microseconds.`);
   }
 
   @Command({ desc: "Simple ping reply" })
