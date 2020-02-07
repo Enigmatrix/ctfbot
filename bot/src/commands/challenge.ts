@@ -23,7 +23,7 @@ export default class Challenges extends CommandGroup {
 
       .step("Getting info from db and Trello", async () => {
         const ctf = await getCTFTimeCTF(ctx);
-        const { boardId, list } = await boardList(ctf.url, "To Do");
+        const { boardId, list } = await boardList(ctf.trelloUrl, "To Do");
         return { ctf, todo: list, boardId };
       })
 
