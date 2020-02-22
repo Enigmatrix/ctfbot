@@ -1,5 +1,6 @@
 <template>
   <div class="help p-4 text-sm container mx-auto">
+    <h1 class="py-6 text-3xl font-mono font-bold">CTFBot --help</h1>
     <section>
       <h2>Introduction</h2>
       <p>

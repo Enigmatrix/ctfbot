@@ -21,7 +21,6 @@
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^1.2.0",
-    "@ky-is/vue-cli-plugin-tailwind": "^2.0.0",
     "@vue/cli-plugin-babel": "^4.0.0",
     "@vue/cli-plugin-eslint": "^4.0.0",
     "@vue/cli-plugin-router": "^4.0.0",
@@ -36,6 +35,7 @@
     "stylus-loader": "^3.0.2",
     "tailwindcss": "^1.0.1",
     "typescript": "~3.5.3",
+    "vue-cli-plugin-tailwind": "^1.2.0",
     "vue-template-compiler": "^2.6.10"
   }
 }
