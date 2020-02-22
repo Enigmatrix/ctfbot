@@ -68,18 +68,19 @@
       <p>
         On the CTF website itself, there should be a list of challenges that are open
         for us to solve. To track the progress of these challenges on our team's side,
-        you will have to follow our workflow:
+        we use Trello (to hold details about the challenges), and we use Discord commands
+        to change challenge status. Here is the workflow:
         <img src="/img/help/workflow.png">
       </p>
     <div class="bg-blue-600 p-4 border-l-4 border-blue-700 my-2">
       <span class="font-bold text-base">TIP</span>
-      <p class="text-sm">Put all information regarding the challenge in Trello.
-      Discord should used for asking help, reporting status, and complaining only!</p>
+      <span class="text-sm px-4">Put all information regarding the challenge in Trello.
+      Discord should used for asking help, reporting status, and complaining only!</span>
     </div>
     <div class="bg-blue-600 p-4 border-l-4 border-blue-700">
       <span class="font-bold text-base">TIP</span>
-      <p class="text-sm">All these commands are meant to be run in the CTF channel itself.
-      Do not run these in other channels</p>
+      <span class="text-sm px-4">All these commands are meant to be run in the CTF channel itself.
+      Do not run these in other channels</span>
     </div>
       <p>
         <li class="font-mono">addchall</li>
@@ -88,7 +89,6 @@
     belong to, usually categories like <b class="h-mono">pwn</b>, <b class="h-mono">web</b> and
     <b class="h-mono">crypto</b>. A card will be created in the Trello board under
     <b class="h-mono">To Do</b>.</p>
-    <div>todo: picure here</div>
     <p>
     <li class="font-mono">rmvchall</li>
     <b class="cmd">!rmvchall &lt;name&gt;</b> removes the challenge from tracking.
@@ -99,7 +99,6 @@
     <b class="cmd">!workon &lt;name&gt;</b> is used to signal that you are working on the challenge.
     The associated Trello card will be moved to <b class="h-mono">Doing</b> with your Trello name as
     the assignee.
-    <div>todo: picure here</div>
     </p>
     <p>
     <li class="font-mono">ditch</li>
@@ -119,12 +118,59 @@
     <b class="cmd">!unsolve &lt;name&gt;</b> brings the challenge back to unsolved status, and moves
     the card to the <b class="h-mono">To Do</b> list. Don't be fake news!
     </p>
+
+    <p>Here is an example of a Trello board for one of our CTFs:</p>
+    <img src="/img/help/trello.png">
     </section>
     <section>
       <h2>Resources</h2>
+      <p>
+        Members post articles about exploits and innovative challenges in the
+        <b class="category">Interest Labs</b> category, under a suitable channel.
+        These articles are catalogued, with the option for manual intervention to
+        provide extra details. Here is an example (posted under
+        <b class="channel">cryptography</b>):
+      </p>
+      <img src="/img/help/resource.png">
+      <p>
+        To provide additional details, click on the 🗒 icon. A private
+        message will be sent by CTFBot. Click on the link to provide more details, or use
+        <b class="cmd">
+          !res &lt;link&gt;  &lt;category&gt;  &lt;tag1,tag2...&gt; &lt;description&gt;
+        </b>
+        <div class="flex flex-wrap">
+          <img src="/img/help/ctfbot-res-pm.png">
+          <img src="/img/help/ctfbot-res-form.png" class="shadow-lg rounded">
+        </div>
+
+        To search for articles with respect to certain keywords, use the
+        <b class="cmd">!search &lt;keyword&gt;</b> in any channel, including the
+        CTFBot private message channel.
+
+      <img src="/img/help/ctfbot-search.png">
+      </p>
     </section>
     <section>
-      <h2>Fun Stuff</h2>
+      <h2>Misc</h2>
+      <p>
+        CTFBot also has some random fun miscellaneous tools.
+        <li class="font-mono">!help</li>
+        <b class="cmd">!help</b> or <b class="cmd">!help &lt;command&gt;</b> will provide
+        usage help for all commands or just the one command, respectively
+      <div class="flex flex-wrap">
+        <img src="/img/help/ctfbot-help.png">
+        <img src="/img/help/ctfbot-help-addctf.png">
+      </div>
+      <li class="font-mono">!ping</li>
+      <b class="cmd">!ping</b> to check whether the bot is up
+      <li class="font-mono">!status</li>
+      <b class="cmd">!status</b> to see more details like memory usage and uptime.
+      <img src="/img/help/ctfbot-status.png">
+      <li class="font-mono">!kick</li>
+        <b class="cmd">!kick @user</b> to kick a user (only show a message :) )
+      <li class="font-mono">!ban</li>
+      <b class="cmd">!ban @user</b> to `ban` a user (only show a message :) )
+      </p>
     </section>
   </div>
 </template>
