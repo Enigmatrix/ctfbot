@@ -17,7 +17,7 @@
         to be catalogued, with the option to add our own descriptions.
       </p>
     </section>
-    <section>
+    <p>
       <h2>CTF Workflow</h2>
       <h3>Finding CTFs</h3>
       <p>
@@ -66,7 +66,26 @@
         On the CTF website itself, there should be a list of challenges that are open
         for us to solve. To track the progress of these challenges on our team's side,
         you will have to follow our workflow:
+        <img src="/img/help/workflow.png">
       </p>
+      <p>
+        <li class="font-mono">addchall</li>
+      </p>
+    <p>
+    <li class="font-mono">rmvchall</li>
+    </p>
+    <p>
+    <li class="font-mono">workon</li>
+    </p>
+    <p>
+    <li class="font-mono">ditch</li>
+    </p>
+    <p>
+    <li class="font-mono">solve</li>
+    </p>
+    <p>
+    <li class="font-mono">unsolve</li>
+    </p>
     </section>
     <section>
       <h2>Resources</h2>
