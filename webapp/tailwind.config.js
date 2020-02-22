@@ -4,6 +4,9 @@ module.exports = {
       inset: {
         full: '100%',
       },
+      container: {
+        center: true,
+      },
       opacity: {
         10: '0.1',
         90: '0.9',

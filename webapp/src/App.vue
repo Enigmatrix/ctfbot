@@ -21,7 +21,7 @@ export default class App extends Vue {
 @import 'assets/styles/tailwind.postcss';
 
 #app
-  font-family 'Avenir', Helvetica, Arial, sans-serif
+  font-family 'DM Sans', Helvetica, Arial, sans-serif
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
 
@@ -31,5 +31,5 @@ export default class App extends Vue {
 .label
   font-family 'PT Sans Caption'
 
-@import url('https://fonts.googleapis.com/css?family=PT+Sans+Caption|PT+Sans+Narrow&display=swap')
+@import url('https://fonts.googleapis.com/css?family=PT+Sans+Caption|PT+Sans+Narrow|DM+Sans&display=swap')
 </style>
