@@ -10,7 +10,8 @@
       <p>
         We made CTFBot because we were tired of looking up at CTFTime for new CTFs.
         Furthermore, information about challenges would be buried amongst other chatter
-        in our Discord channel, and we wanted a better way to manage this.
+        in our Discord channel, and we wanted a better way to manage this. We put the
+        challenges in Trello and manage the discussion and challenge status there.
       </p>
       <p>
         We also find a lot of articles about CTF challenges and the leading edge of the
@@ -28,7 +29,8 @@
         You can run <b class="cmd">!addctf &lt;ctf_url&gt;</b> in the
         <b class="channel">#capture-the-flag</b> channel to create a channel for the CTF
         and start tracking it. A new channel will be created in the <b class="category">CTFs</b>
-        category, with details about the CTF in an embed message. e.g.
+        category, with details about the CTF in an embed message. e.g. start time, end time and
+        associated Trello board. Here is an example:
         <b class="cmd">!addctf https://ctftime.org/event/825/</b> will produce:
         <div class="flex flex-wrap">
           <img src="/img/help/new-ctf-category.png">
@@ -69,23 +71,53 @@
         you will have to follow our workflow:
         <img src="/img/help/workflow.png">
       </p>
+    <div class="bg-blue-600 p-4 border-l-4 border-blue-700 my-2">
+      <span class="font-bold text-base">TIP</span>
+      <p class="text-sm">Put all information regarding the challenge in Trello.
+      Discord should used for asking help, reporting status, and complaining only!</p>
+    </div>
+    <div class="bg-blue-600 p-4 border-l-4 border-blue-700">
+      <span class="font-bold text-base">TIP</span>
+      <p class="text-sm">All these commands are meant to be run in the CTF channel itself.
+      Do not run these in other channels</p>
+    </div>
       <p>
         <li class="font-mono">addchall</li>
-      </p>
+    <b class="cmd">!addchall &lt;name&gt; &lt;cat1&gt;,&lt;cat2&gt;...</b> is used to add
+    a challenge for tracking. <b class="h-mono">cat1,cat2,...</b> are the category the challenges
+    belong to, usually categories like <b class="h-mono">pwn</b>, <b class="h-mono">web</b> and
+    <b class="h-mono">crypto</b>. A card will be created in the Trello board under
+    <b class="h-mono">To Do</b>.</p>
+    <div>todo: picure here</div>
     <p>
     <li class="font-mono">rmvchall</li>
+    <b class="cmd">!rmvchall &lt;name&gt;</b> removes the challenge from tracking.
+    The associated Trello card is also removed.
     </p>
     <p>
     <li class="font-mono">workon</li>
+    <b class="cmd">!workon &lt;name&gt;</b> is used to signal that you are working on the challenge.
+    The associated Trello card will be moved to <b class="h-mono">Doing</b> with your Trello name as
+    the assignee.
+    <div>todo: picure here</div>
     </p>
     <p>
     <li class="font-mono">ditch</li>
+    <b class="cmd">!ditch &lt;name&gt;</b> is used to signal that you are no longer working on the
+    challenge. The associated Trello card will be moved back to <b class="h-mono">To Do</b> if you
+    are the only one working on the challenge.
+    Your Trello name will be removed from the card's list of assignees. If you are going to use
+    this, please leave adequate information on your findings in the Trello card!
     </p>
     <p>
     <li class="font-mono">solve</li>
+    <b class="cmd">!solve &lt;name&gt;</b> marks the challenge as solved, and the Trello card will
+    be moved to the <b class="h-mono">Done</b> list. Congratulations!
     </p>
     <p>
     <li class="font-mono">unsolve</li>
+    <b class="cmd">!unsolve &lt;name&gt;</b> brings the challenge back to unsolved status, and moves
+    the card to the <b class="h-mono">To Do</b> list. Don't be fake news!
     </p>
     </section>
     <section>
