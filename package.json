@@ -2,9 +2,11 @@
   "name": "ctfbot",
   "version": "1.0.0",
   "description": "CTFBot for Discord",
-  "main": "bot/index.ts",
+  "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "build": "tsc",
+    "bot": "node build/index.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,8 @@
   },
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "devDependencies": {
+    "jest": "^26.0.1",
+    "ts-jest": "^26.1.0",
     "typescript": "^3.9.5"
   }
 }
