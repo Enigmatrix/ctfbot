@@ -1,0 +1,26 @@
+{
+  "name": "ctfbot",
+  "version": "1.0.0",
+  "description": "CTFBot for Discord",
+  "main": "bot/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Enigmatrix/ctfbot.git"
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "Enigmatrix",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Enigmatrix/ctfbot/issues"
+  },
+  "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
+  "devDependencies": {
+    "typescript": "^3.9.5"
+  }
+}
