@@ -1,23 +1,22 @@
 import {Command, CommandoClient, CommandoMessage} from "discord.js-commando";
+import {Message} from "discord.js";
 
 export default class VoteCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
-			name: 'vote',
-			memberName: 'vote',
-			group: 'Utility',
-			description: 'Setup a vote',
-			args: [
-				{
-					key: 'url',
-					prompt: 'URL supplied must be a valid CTFTime event url. e.g. https://ctftime.org/event/872',
-					type: 'string'
-				}
-			],
+			name: "vote",
+			memberName: "vote",
+			group: "misc",
+			description: "Setup a vote",
 		});
 	}
 
-	run(message: CommandoMessage, { url }: { url: string }) {
-		return message.say('sry wat ' + url);
+	async run(message: CommandoMessage): Promise<Message|Message[]|null> {
+		return await message.direct(
+			`\`\`\`json
+			{
+				id
+			}
+			\`\`\``);
 	}
 }
