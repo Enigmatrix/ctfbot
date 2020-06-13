@@ -10,12 +10,12 @@ const client = new CommandoClient({
 client.registry
 	.registerDefaultTypes()
 	.registerGroups([
-		['first', 'Your First Command Group'],
-		['second', 'Your Second Command Group'],
+		['ctf', 'CTF Management Commands'],
+		['challenge', 'CTF Challenge Management Commands'],
 	])
 	.registerDefaultGroups()
-	.registerDefaultCommands() /*
-	.registerCommandsIn(path.join(__dirname, 'commands')) */;
+	.registerDefaultCommands()
+	.registerCommandsIn(path.join(__dirname, 'commands'));
 
 client.once('ready', () => {
 	if (!client.user) {
