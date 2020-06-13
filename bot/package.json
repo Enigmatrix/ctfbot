@@ -8,23 +8,19 @@
     "build": "tsc",
     "bot": "node build/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Enigmatrix/ctfbot.git"
-  },
-  "keywords": [
-    "discord",
-    "bot"
-  ],
   "author": "Enigmatrix",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Enigmatrix/ctfbot/issues"
-  },
-  "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "devDependencies": {
     "jest": "^26.0.1",
     "ts-jest": "^26.1.0",
     "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "@types/better-sqlite3": "^5.4.0",
+    "@types/ws": "^7.2.5",
+    "better-sqlite3": "^7.1.0",
+    "discord.js": "^12.2.0",
+    "discord.js-commando": "github:discordjs/Commando",
+    "sqlite": "^4.0.11"
   }
 }
