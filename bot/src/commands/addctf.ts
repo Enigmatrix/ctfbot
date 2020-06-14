@@ -1,6 +1,10 @@
 import {Command, CommandoClient, CommandoMessage} from "discord.js-commando";
 import {Message} from "discord.js";
 
+function isCTFTimeUrl(url: string): boolean {
+  return url != ""; // TODO
+}
+
 export default class AddCtfCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -12,7 +16,8 @@ export default class AddCtfCommand extends Command {
 				{
 					key: "url",
 					prompt: "URL supplied must be a valid CTFTime event url. e.g. https://ctftime.org/event/872",
-					type: "string"
+					type: "string",
+          validate: isCTFTimeUrl
 				}
 			],
 		});
