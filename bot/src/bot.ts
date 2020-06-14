@@ -1,6 +1,7 @@
 import { CommandoClient } from "discord.js-commando";
 import { config } from "./util";
 import path from "path";
+import logger from "./util/logger";
 
 const bot = new CommandoClient({
   commandPrefix: "!",
@@ -20,14 +21,15 @@ bot.registry
 
 bot.once("ready", () => {
 	if (!bot.user) {
-		console.log("Not logged in?");
+    logger.crit("Login Failure");
 		return;
 	}
-	console.log(`Logged in as ${bot.user.tag}! (${bot.user.id})`);
-	bot.user.setActivity("with Commando");
+	logger.info(`CTFBot logged in as ${bot.user.tag}! (${bot.user.id})`);
 });
 
-bot.on("error", console.error);
+bot.on("error", e => {
+  logger.error(e);
+});
 
 export async function setupBot(): Promise<void> {
   await bot.login(config("DISCORD_BOT_TOKEN"));
