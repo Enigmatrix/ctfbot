@@ -6,12 +6,14 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
+    "postbuild": "ef-tspm",
     "start": "node build/index.js",
     "lint": "tsc --noEmit && eslint \"**/*.ts\" --quiet --fix"
   },
   "author": "Enigmatrix",
   "license": "MIT",
   "devDependencies": {
+    "@ef-carbon/tspm": "^2.2.5",
     "@types/better-sqlite3": "^5.4.0",
     "@types/ws": "^7.2.5",
     "@typescript-eslint/eslint-plugin": "^3.2.0",

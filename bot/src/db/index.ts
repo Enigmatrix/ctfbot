@@ -1,5 +1,5 @@
 import { Connection, createConnection } from "typeorm";
-import { config } from "../util/";
+import { config } from "@/util";
 
 export async function initConnection(): Promise<void> {
   connection = await createConnection({
