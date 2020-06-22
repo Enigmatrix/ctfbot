@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export interface Organizer {
   id: number;
   name: string;
@@ -32,3 +34,15 @@ export interface Event {
   ctf_id: number;
 }
 
+export function isCTFTimeUrl(s: string): boolean {
+  return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
+}
+
+export async function ctftimeEventFromUrl(ctftimeUrl: string): Promise<Event> {
+  const segments = ctftimeUrl.split("event/");
+  const last = segments[segments.length - 1];
+  const response = await axios.get<Event>(
+    `https://ctftime.org/api/v1/events/${last.split("/")[0]}/`
+  );
+  return response.data;
+}

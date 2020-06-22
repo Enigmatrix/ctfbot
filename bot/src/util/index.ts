@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export function developMode(): boolean {
   return (process.env.NODE_ENV || "dev") === "dev";
 }
@@ -15,4 +17,10 @@ export function config(key: string): string {
    throw Error(`Configuration '${key}' not found in Environment nor .env file`);
   }
   return value;
+}
+
+export function humanTimeSGT(date: Date) {
+  return moment(date)
+    .tz("Asia/Singapore")
+    .format("ddd DD/MM, h:mma");
 }

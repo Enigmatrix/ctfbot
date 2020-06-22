@@ -29,6 +29,7 @@
   "devDependencies": {
     "@ef-carbon/tspm": "^2.2.5",
     "@types/jest": "^26.0.0",
+    "@types/moment-timezone": "^0.5.13",
     "@types/node": "^14.0.13",
     "@types/ws": "^7.2.5",
     "@typescript-eslint/eslint-plugin": "^3.2.0",
@@ -42,9 +43,12 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "discord.js": "^12.2.0",
     "discord.js-commando": "github:discordjs/Commando",
     "dotenv": "^8.2.0",
+    "moment": "^2.27.0",
+    "moment-timezone": "^0.5.31",
     "mongodb": "^3.5.9",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.25",
