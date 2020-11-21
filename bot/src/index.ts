@@ -5,11 +5,14 @@ config({ path: "../.env" }); // place .env file containing environment variables
 
 import { setupBot } from "@/bot";
 import { initConnection } from "@/db";
-import logger from "./util/logger";
+import agenda from "@/services/agenda";
+import logger from "@/util/logger";
 
 (async () => {
   logger.info("Starting CTFBot...");
   await initConnection();
+  logger.info("Starting Agenda Jobs management");
+  await agenda.start();
   logger.info("Connected to database");
   await setupBot();
 })();

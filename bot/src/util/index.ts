@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from "moment-timezone";
 
 export function developMode(): boolean {
   return (process.env.NODE_ENV || "dev") === "dev";
