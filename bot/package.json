@@ -37,7 +37,8 @@
     "dotenv": "^8.2.0",
     "luxon": "^1.26.0",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^3.9.9"
+    "typescript": "^3.9.9",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/chai": "^4.2.15",
