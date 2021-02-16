@@ -1,4 +1,4 @@
-import ctftime from "../src/services/ctftime";
+import ctftime from "@/services/ctftime";
 import "mocha";
 import {expect} from "chai";
 

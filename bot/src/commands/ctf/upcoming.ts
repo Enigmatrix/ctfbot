@@ -1,9 +1,9 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
-import ctftime, { Event } from "../../services/ctftime";
 import { DateTime } from "luxon";
 import { MessageEmbed } from "discord.js";
-import { formatSGT } from "../../util/format";
-import { EMBED_INFO, EMBED_SUCCESS, EMBED_WARN } from "../../util/embed";
+import { formatSGT } from "@/util/format";
+import ctftime, { Event } from "@/services/ctftime";
+import { EMBED_INFO, EMBED_SUCCESS, EMBED_WARN } from "@/util/embed";
 
 export default class Upcoming extends Command {
     constructor(client: CommandoClient) {

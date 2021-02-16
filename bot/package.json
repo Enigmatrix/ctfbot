@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node build/index.js",
+    "start": "link-module-alias && node build/index.js",
     "watch": "tsc -p tsconfig.json -w",
     "lint": "tsc --noEmit && eslint \"**/*.ts\" --quiet --fix",
     "test": "mocha -r ts-node/register \"tests/**/*.spec.ts\""
@@ -25,6 +25,10 @@
   "bugs": {
     "url": "https://github.com/Enigmatrix/ctfbot/issues"
   },
+  "_moduleAliasIgnoreWarning": true,
+  "_moduleAliases": {
+    "@": "build"
+  },
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "dependencies": {
     "axios": "^0.21.1",
@@ -42,6 +46,7 @@
     "@types/node": "^14.14.28",
     "@types/ws": "^7.4.0",
     "chai": "^4.3.0",
+    "link-module-alias": "^1.2.0",
     "mocha": "^8.3.0",
     "ts-mockito": "^2.6.1",
     "ts-node": "^9.1.1"

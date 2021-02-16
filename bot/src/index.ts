@@ -1,6 +1,6 @@
 import {CommandoClient} from "discord.js-commando";
 import path from "path";
-import config from "./util/config";
+import config from "@/util/config";
 
 const client = new CommandoClient({
     commandPrefix: '!',
