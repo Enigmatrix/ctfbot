@@ -39,16 +39,16 @@ class CTFTime {
     private inner: AxiosInstance;
 
     constructor() {
-        this.inner = axios.create({
-            baseURL: "https://ctftime.org/api/v1",
-            headers: {
-              'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
-            }
-        });
+      this.inner = axios.create({
+        baseURL: "https://ctftime.org/api/v1",
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+        }
+      });
     }
 
     async events(start: DateTime|Date|number, finish: DateTime|Date|number, limit: number|undefined = undefined) {
-        return await this.inner.get<Event[]>("/events/", { params: { start: +start, finish: +finish, limit } }).then(x => x.data);
+      return await this.inner.get<Event[]>("/events/", { params: { start: +start, finish: +finish, limit } }).then(x => x.data);
     }
 }
 
