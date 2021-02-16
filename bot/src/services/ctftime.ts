@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
+import {DateTime} from "luxon";
 
 export interface Organizer {
   id: number;
@@ -13,7 +14,7 @@ export interface Duration {
 export interface Event {
   organizers: Organizer[];
   onsite: boolean;
-  finish: Date;
+  finish: string;
   description: string;
   weight: number;
   title: string;
@@ -21,7 +22,7 @@ export interface Event {
   is_votable_now: boolean;
   restrictions: string;
   format: string;
-  start: Date;
+  start: string;
   participants: number;
   ctftime_url: string;
   location: string;
@@ -34,15 +35,21 @@ export interface Event {
   ctf_id: number;
 }
 
-export function isCTFTimeUrl(s: string): boolean {
-  return /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/([0-9])+(\/)?$/.test(s);
+class CTFTime {
+    private inner: AxiosInstance;
+
+    constructor() {
+        this.inner = axios.create({
+            baseURL: "https://ctftime.org/api/v1",
+            headers: {
+              'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+            }
+        });
+    }
+
+    async events(start: DateTime|Date|number, finish: DateTime|Date|number, limit: number|undefined = undefined) {
+        return await this.inner.get<Event[]>("/events/", { params: { start: +start, finish: +finish, limit } }).then(x => x.data);
+    }
 }
 
-export async function ctftimeEventFromUrl(ctftimeUrl: string): Promise<Event> {
-  const segments = ctftimeUrl.split("event/");
-  const last = segments[segments.length - 1];
-  const response = await axios.get<Event>(
-    `https://ctftime.org/api/v1/events/${last.split("/")[0]}/`
-  );
-  return response.data;
-}
+export default new CTFTime();

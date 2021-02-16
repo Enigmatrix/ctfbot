@@ -1,18 +1,25 @@
-import "reflect-metadata";
+import {CommandoClient} from "discord.js-commando";
+import path from "path";
+import config from "./util/config";
 
-import { config } from "dotenv";
-config({ path: "../.env" }); // place .env file containing environment variables in root project folder.
+const client = new CommandoClient({
+    commandPrefix: '!',
+    owner: config.get("DISCORD_OWNER")
+});
 
-import { setupBot } from "@/bot";
-import { initConnection } from "@/db";
-import agenda from "@/services/agenda";
-import logger from "@/util/logger";
+client.registry
+	.registerDefaultTypes()
+	.registerGroups([
+		['ctf', 'CTF channel management'],
+		['challenge', 'Manage challenges in a CTF'],
+	])
+	.registerDefaultGroups()
+	.registerDefaultCommands()
+	.registerCommandsIn(path.join(__dirname, 'commands'));
 
-(async () => {
-  logger.info("Starting CTFBot...");
-  await initConnection();
-  logger.info("Starting Agenda Jobs management");
-  await agenda.start();
-  logger.info("Connected to database");
-  await setupBot();
-})();
+client.once('ready', () => {
+	console.log(`Logged in as ${client.user?.tag}! (${client.user?.id})`); // TODO log.success here
+});
+
+
+client.login(config.get("DISCORD_TOKEN"));
