@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "link-module-alias && node build/index.js",
-    "watch": "tsc -p tsconfig.json -w",
+    "dev": "nodemon -x 'npm run build && npm start' -e ts",
     "lint": "tsc --noEmit && eslint \"**/*.ts\" --quiet --fix",
     "test": "mocha -r ts-node/register \"tests/**/*.spec.ts\""
   },
@@ -51,7 +51,7 @@
     "eslint": "^7.20.0",
     "link-module-alias": "^1.2.0",
     "mocha": "^8.3.0",
-    "ts-mockito": "^2.6.1",
+    "nodemon": "^2.0.7",
     "ts-node": "^9.1.1"
   }
 }
