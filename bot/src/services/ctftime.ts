@@ -36,20 +36,31 @@ export interface Event {
 }
 
 class CTFTime {
-    private inner: AxiosInstance;
+  static CTFTIME_URL = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?ctftime.org\/event\/(?<id>([0-9])+)(\/)?$/;
 
-    constructor() {
-      this.inner = axios.create({
-        baseURL: "https://ctftime.org/api/v1",
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
-        }
-      });
-    }
+  private inner: AxiosInstance;
 
-    async events(start: DateTime|Date|number, finish: DateTime|Date|number, limit: number|undefined = undefined) {
-      return await this.inner.get<Event[]>("/events/", { params: { start: +start, finish: +finish, limit } }).then(x => x.data);
-    }
+  constructor() {
+    this.inner = axios.create({
+      baseURL: "https://ctftime.org/api/v1",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36"
+      }
+    });
+  }
+
+  isValidUrl(url: string) {
+    return CTFTime.CTFTIME_URL.test(url);
+  }
+
+  async events(start: DateTime|Date|number, finish: DateTime|Date|number, limit: number|undefined = undefined) {
+    return await this.inner.get<Event[]>("/events/", { params: { start: +start, finish: +finish, limit } }).then(x => x.data);
+  }
+
+  async eventForUrl(url: string) {
+    const id = url.match(CTFTime.CTFTIME_URL)?.groups?.id;
+    return await this.inner.get<Event>(`/events/${id}/`).then(x => x.data);
+  }
 }
 
 export default new CTFTime();

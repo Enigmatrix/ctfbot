@@ -6,17 +6,19 @@ export class Database {
     static instance: Database;
 
     static async init() {
-        const conn = await createConnection({
-            type: "mongodb",
-            url: config.get("DATA_CONNECTION_URI"),
-            entities: [__dirname + "/entities/*.js"]
-        });
-        log.info("connected to database");
-        this.instance = new Database(conn);
+      const conn = await createConnection({
+        type: "mongodb",
+        url: config.get("DATA_CONNECTION_URI"),
+        entities: [__dirname + "/entities/*.js"],
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      });
+      log.info("connected to database");
+      this.instance = new Database(conn);
     }
 
     constructor(conn: Connection) {
-        this.conn = conn;
+      this.conn = conn;
     }
 
     private conn: Connection;
