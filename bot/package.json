@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/Enigmatrix/ctfbot#readme",
   "dependencies": {
+    "agenda": "^4.0.1",
     "axios": "^0.21.1",
     "discord.js": "^12.5.1",
     "discord.js-commando": "git+https://git@github.com/discordjs/Commando.git",
@@ -43,6 +44,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@types/agenda": "^3.0.2",
     "@types/chai": "^4.2.15",
     "@types/luxon": "^1.25.3",
     "@types/mocha": "^8.2.0",

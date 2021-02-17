@@ -5,6 +5,8 @@ import { CTFTimeCTF } from "@/data/entities/ctftimectf";
 import { formatSGT } from "@/util/format";
 import { EMBED_INFO1 } from "@/util/embed";
 import config from "@/util/config";
+import NotifyCTFReactors from "@/jobs/NotifyCTFReactors";
+import { DateTime } from "luxon";
 
 export default class AddCTF extends Command {
   constructor(client: CommandoClient) {
@@ -66,7 +68,8 @@ export default class AddCTF extends Command {
     
     await ctf.save();
 
-    // TODO schedule job here
+    const time = DateTime.fromISO(ctf.info.start).minus({ hour: 1 }).toJSDate(); // 1 hour before start
+    NotifyCTFReactors.schedule(time, { ctf_id: ctf.id });
 
     return message.say(`Done! Head over to ${channel} for more info.`);
   }
