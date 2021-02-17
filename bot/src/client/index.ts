@@ -1,4 +1,4 @@
-import { GuildChannelResolvable, Message, TextChannel } from "discord.js";
+import { GuildChannel, GuildChannelResolvable, Message, TextChannel } from "discord.js";
 import {CommandoClient} from "discord.js-commando";
 import path from "path";
 import config from "@/util/config";
@@ -42,6 +42,12 @@ export async function fetchChannelMessage(channelFind: GuildChannelResolvable, m
     throw new Error(`Message ${messageFind} not found.`);
   }
   return [channel, message];
+}
+
+export async function findChannel(fn: (c: GuildChannel) => boolean): Promise<GuildChannel|undefined> {
+  const guild = client.guilds.cache.first();
+  const channel = guild?.channels.cache.find(fn);
+  return channel;
 }
 
 export default client;
