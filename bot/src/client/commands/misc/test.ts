@@ -1,3 +1,4 @@
+import ctftime from "@/services/ctftime";
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 
 export default class Test extends Command {
@@ -11,6 +12,7 @@ export default class Test extends Command {
   }
 
   async run(message: CommandoMessage, args: string) {
+    console.log(await ctftime.recentWriteups());
     return null;
   }
 }

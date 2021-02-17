@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
-import { Event } from "@/services/ctftime";
+import { Event, Writeup } from "@/services/ctftime";
 
 @Entity()
 export class CTFTimeCTF extends BaseEntity {
@@ -14,6 +14,9 @@ export class CTFTimeCTF extends BaseEntity {
 
     @Column()
     public credentials!: { [key: string]: string };
+
+    @Column()
+    public writeups!: { [task: string]: Writeup[] }
 
     @Column()
     public archived!: boolean;

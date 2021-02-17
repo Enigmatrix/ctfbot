@@ -18,6 +18,7 @@ export abstract class Job<T> {
 
     register() {
       agenda.define<T>(this.ID, async (job, done) => {
+        log.info(`running job ${this.ID}`);
         await this.run(job.attrs.data)
           .then(() => { 
             log.info(`job ${this.ID} success`);
@@ -39,22 +40,4 @@ export abstract class Job<T> {
     }
 }
 
-agenda.on("ready", async () => {
-  await agenda.purge(); /*
-    let oldRepeatJobs = await agenda.jobs({name: {$regex: "repeated_.*"}});
-    for(let job of oldRepeatJobs){
-        await job.remove();
-    }*/
-
-  /*
-    await agenda.create(REPEATED_NOTIFY_UPCOMING_CTF)
-        .schedule('sunday at 6pm')
-        .repeatEvery('1 week', { timezone: "Asia/Singapore", skipImmediate: true })
-        .save();
-    */
-
-  //await agenda.every("every 15 minutes", REPEATED_NOTIFY_CTF_WRITEUPS);
-  log.info("jobs ready");
-});
-
-export default agenda.on("error", e => log.error("agenda error", e));
+export default agenda;

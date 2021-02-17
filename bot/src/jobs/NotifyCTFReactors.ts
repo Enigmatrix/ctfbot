@@ -1,9 +1,8 @@
 import { ObjectID } from "typeorm";
 import { Job } from "@/jobs/base";
 import { CTFTimeCTF } from "@/data/entities/ctftimectf";
-import log from "@/util/logging";
 import client, { fetchChannelMessage } from "@/client";
-import { MessageEmbed, TextChannel } from "discord.js";
+import { MessageEmbed } from "discord.js";
 import { EMBED_INFO1 } from "@/util/embed";
 
 class NotifyCTFReactors extends Job<{ ctf_id: ObjectID }> {

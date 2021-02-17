@@ -33,6 +33,7 @@
   "dependencies": {
     "agenda": "^4.0.1",
     "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.5",
     "discord.js": "^12.5.1",
     "discord.js-commando": "git+https://git@github.com/discordjs/Commando.git",
     "dotenv": "^8.2.0",
