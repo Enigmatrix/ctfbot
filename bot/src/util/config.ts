@@ -8,7 +8,11 @@ class Config {
 
   get(key: string) {
     // TODO split by debug and prod
-    return process.env[key];
+    const value = process.env[key];
+    if (value === undefined) {
+      throw new Error(`Config key ${key} not found`)
+    }
+    return value;
   }
 }
 

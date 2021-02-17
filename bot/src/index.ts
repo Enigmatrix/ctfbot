@@ -1,7 +1,10 @@
+import "reflect-metadata";
 import {CommandoClient} from "discord.js-commando";
 import path from "path";
+import {Database} from "@/data";
 import config from "@/util/config";
 import log from "@/util/logging";
+
 
 const client = new CommandoClient({
   commandPrefix: "!",
@@ -18,16 +21,18 @@ client.registry
   .registerCommandsIn(path.join(__dirname, "commands"));
 
 client.once("ready", () => {
-  log.info(`logged in!`, { id: client.user?.id, tag: client.user?.tag });
+  log.info("logged in!", { id: client.user?.id, tag: client.user?.tag });
 });
 
-client.on('commandRun', (cmd, _, msg, args, fromPattern) => {
+client.on("commandRun", (cmd, _, msg, args, fromPattern) => {
   log.debug("command executed", { cmd: cmd.name, msg: msg.id, args, fromPattern });
 });
 
-client.on('commandError', (cmd, err, msg, args, fromPattern) => {
+client.on("commandError", (cmd, err, msg, args, fromPattern) => {
   log.error("error in command", err, { cmd: cmd.name, msg: msg.id, args, fromPattern });
 });
 
-
-client.login(config.get("DISCORD_TOKEN"));
+(async () => {
+  await Database.init();
+  await client.login(config.get("DISCORD_TOKEN"));
+})();
