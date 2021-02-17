@@ -32,16 +32,16 @@ client.on("commandError", (cmd, err, msg, args, fromPattern) => {
 });
 
 export async function fetchChannelMessage(channelFind: GuildChannelResolvable, messageFind: string): Promise<[TextChannel, Message]> {
-    const guild = client.guilds.cache.first();
-    const channel = guild?.channels.resolve(channelFind) as TextChannel|undefined;
-    if(!channel) {
-        throw new Error(`Channel ${channelFind} not found.`);
-    }
-    const message = await channel.messages.fetch(messageFind);
-    if(!message) {
-        throw new Error(`Message ${messageFind} not found.`);
-    }
-    return [channel, message];
+  const guild = client.guilds.cache.first();
+  const channel = guild?.channels.resolve(channelFind) as TextChannel|undefined;
+  if(!channel) {
+    throw new Error(`Channel ${channelFind} not found.`);
+  }
+  const message = await channel.messages.fetch(messageFind);
+  if(!message) {
+    throw new Error(`Message ${messageFind} not found.`);
+  }
+  return [channel, message];
 }
 
 export default client;

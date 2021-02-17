@@ -4,8 +4,8 @@
   "description": "CTFBot for Discord",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "link-module-alias && node build/index.js",
+    "build": "tsc && link-module-alias",
+    "start": "node build/index.js",
     "dev": "nodemon -x 'npm run build && npm start' -e ts",
     "lint": "tsc --noEmit && eslint \"**/*.ts\" --quiet --fix",
     "test": "mocha -r ts-node/register \"tests/**/*.spec.ts\""
