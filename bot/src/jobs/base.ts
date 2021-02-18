@@ -32,11 +32,11 @@ export abstract class Job<T> {
     }
 
     async schedule(when: string|Date, args: T) {
-      await agenda.schedule<T>(when, this.ID, args);
+      return await agenda.schedule<T>(when, this.ID, args);
     }
 
     async every(interval: string|number, args: T) {
-      await agenda.every<T>(interval, this.ID, args);
+      return await agenda.every<T>(interval, this.ID, args);
     }
 }
 

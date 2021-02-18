@@ -5,7 +5,7 @@ import client from "@/client";
 import config from "@/util/config";
 
 (async () => {
-  await agenda.start();
   await data.init();
   await client.login(config.get("DISCORD_TOKEN"));
+  await agenda.start();
 })();

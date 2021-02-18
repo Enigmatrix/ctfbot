@@ -44,6 +44,15 @@ export async function fetchChannelMessage(channelFind: GuildChannelResolvable, m
   return [channel, message];
 }
 
+export async function fetchChannel(channelFind: GuildChannelResolvable): Promise<GuildChannel> {
+  const guild = client.guilds.cache.first();
+  const channel = guild?.channels.resolve(channelFind) as TextChannel|undefined;
+  if(!channel) {
+    throw new Error(`Channel ${channelFind} not found.`);
+  }
+  return channel;
+}
+
 export async function findChannel(fn: (c: GuildChannel) => boolean): Promise<GuildChannel|undefined> {
   const guild = client.guilds.cache.first();
   const channel = guild?.channels.cache.find(fn);
