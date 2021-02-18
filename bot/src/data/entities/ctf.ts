@@ -2,7 +2,7 @@ import { BaseEntity, Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
 import { Event, Writeup } from "@/services/ctftime";
 
 @Entity()
-export class CTFTimeCTF extends BaseEntity {
+export class CTF extends BaseEntity {
     @ObjectIdColumn()
     public id!: ObjectID;
 

@@ -1,7 +1,7 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import ctftime from "@/services/ctftime";
-import { CTFTimeCTF } from "@/data/entities/ctftimectf";
-import { mainMessageEmbed } from "@/util/embed";
+import { CTF } from "@/data/entities/ctf";
+import { ctfMainMessageEmbed } from "@/util/embed";
 import config from "@/util/config";
 import NotifyCTFReactors from "@/jobs/NotifyCTFReactors";
 import { DateTime } from "luxon";
@@ -32,9 +32,9 @@ export default class AddCTF extends Command {
       reason: `Channel for ${event.title}`
     });
 
-    const ctf = new CTFTimeCTF(event);
+    const ctf = new CTF(event);
 
-    const mainMessage = await channel.send(mainMessageEmbed(ctf));
+    const mainMessage = await channel.send(ctfMainMessageEmbed(ctf));
     ctf.discord = { channel: channel.id, mainMessage: mainMessage.id };
 
     await mainMessage.pin();

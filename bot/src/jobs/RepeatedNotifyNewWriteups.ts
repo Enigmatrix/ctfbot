@@ -1,5 +1,5 @@
 import { fetchChannelMessage } from "@/client";
-import { CTFTimeCTF } from "@/data/entities/ctftimectf";
+import { CTF } from "@/data/entities/ctf";
 import { Job } from "@/jobs/base";
 import ctftime, { Writeup } from "@/services/ctftime";
 import { EMBED_INFO3 } from "@/util/embed";
@@ -16,7 +16,7 @@ class RepeatedNotifyNewWriteups extends Job<void> {
       if (this.prevNewestWriteupUrl === newestWriteupUrl) {
         return;
       }
-      const ctfs = await CTFTimeCTF.find({ archived: false });
+      const ctfs = await CTF.find({ archived: false });
       const newWriteups: {[ctfUrl: string]: Writeup[] } = {};
       for(const writeup of writeups) {
         if(writeup.url === this.prevNewestWriteupUrl) {

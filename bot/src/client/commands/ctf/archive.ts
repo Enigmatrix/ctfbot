@@ -1,5 +1,5 @@
 import { fetchChannelMessage, findChannel } from "@/client";
-import { CTFTimeCTF } from "@/data/entities/ctftimectf";
+import { CTF } from "@/data/entities/ctf";
 import { CategoryChannel } from "discord.js";
 import { Command, CommandoClient, CommandoMessage, FriendlyError } from "discord.js-commando";
 
@@ -15,7 +15,7 @@ export default class Archive extends Command {
 
   async run(message: CommandoMessage) {
     // TODO move all this common code into one file.
-    const ctf = await CTFTimeCTF.findOne({ where: { "discord.channel": message.channel.id, archived: false } });
+    const ctf = await CTF.findOne({ where: { "discord.channel": message.channel.id, archived: false } });
     if(!ctf) {
       throw new FriendlyError("This channel is not a valid CTF channel.");
     }

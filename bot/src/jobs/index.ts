@@ -10,10 +10,9 @@ for(const job of [NotifyCTFReactors, RepeatedNotifyNewWriteups]) {
 export default agenda.on("ready", async () => {
   await agenda.purge();
 
-  const oldRepeatJobs = await agenda.jobs({name: {$regex: "repeated_.*"}});
-  for(const job of oldRepeatJobs){
-    await job.remove();
-  }
+  await Promise.all((
+    await agenda.jobs({name: {$regex: "repeated_.*"}}))
+      .map(job => job.remove()));
 
   await RepeatedNotifyNewWriteups.every("15 minutes");
   log.info("jobs ready");

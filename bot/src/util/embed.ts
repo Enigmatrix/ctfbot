@@ -1,4 +1,4 @@
-import { CTFTimeCTF } from "@/data/entities/ctftimectf";
+import { CTF } from "@/data/entities/ctf";
 import { MessageEmbed } from "discord.js";
 import { formatSGT } from "./format";
 
@@ -13,7 +13,7 @@ export const EMBED_WARN2 = 0xFF8800;
 export const EMBED_ERROR = 0xff4444;
 export const EMBED_ERROR2 = 0xcc0000;
 
-export function mainMessageEmbed(ctf: CTFTimeCTF) {
+export function ctfMainMessageEmbed(ctf: CTF) {
   return new MessageEmbed({
     color: EMBED_INFO1,
     author: {

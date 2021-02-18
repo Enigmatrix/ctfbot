@@ -1,6 +1,6 @@
 import { ObjectID } from "typeorm";
 import { Job } from "@/jobs/base";
-import { CTFTimeCTF } from "@/data/entities/ctftimectf";
+import { CTF } from "@/data/entities/ctf";
 import client, { fetchChannelMessage } from "@/client";
 import { MessageEmbed } from "discord.js";
 import { EMBED_INFO1 } from "@/util/embed";
@@ -9,7 +9,7 @@ class NotifyCTFReactors extends Job<{ ctf_id: ObjectID }> {
     ID: string = "notifyCtfReactorsv1.0";
 
     async run(args: { ctf_id: ObjectID; }) {
-      const ctf = await CTFTimeCTF.findOne(args.ctf_id);
+      const ctf = await CTF.findOne(args.ctf_id);
       if(!ctf) {
         throw new Error(`CTF not found ${args.ctf_id}`);
       }

@@ -1,6 +1,6 @@
 import { fetchChannelMessage } from "@/client";
-import { CTFTimeCTF } from "@/data/entities/ctftimectf";
-import { mainMessageEmbed } from "@/util/embed";
+import { CTF } from "@/data/entities/ctf";
+import { ctfMainMessageEmbed } from "@/util/embed";
 import { Command, CommandoClient, CommandoMessage, FriendlyError } from "discord.js-commando";
 
 export default class RmvCred extends Command {
@@ -21,7 +21,7 @@ export default class RmvCred extends Command {
   }
 
   async run(message: CommandoMessage, args: {key: string, value: string}) {
-    const ctf = await CTFTimeCTF.findOne({ where: { "discord.channel": message.channel.id, archived: false } });
+    const ctf = await CTF.findOne({ where: { "discord.channel": message.channel.id, archived: false } });
     if(!ctf) {
       throw new FriendlyError("This channel is not a valid CTF channel.");
     }
@@ -29,7 +29,7 @@ export default class RmvCred extends Command {
     await ctf.save();
     
     const [_, mainMessage] = await fetchChannelMessage(ctf.discord.channel, ctf.discord.mainMessage);
-    await mainMessage.edit(mainMessageEmbed(ctf));
+    await mainMessage.edit(ctfMainMessageEmbed(ctf));
 
     return null;
   }
