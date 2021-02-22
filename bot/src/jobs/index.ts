@@ -17,8 +17,8 @@ export default agenda.on("ready", async () => {
 
   await RepeatedNotifyNewWriteups.every("15 minutes");
   await agenda.create(RepeatedUpcoming.ID)
-    .schedule("monday at 8am")
     .repeatEvery("1 week", { timezone: "Asia/Singapore", skipImmediate: true })
+    .schedule("monday at 8am")
     .save();
 
   log.info("jobs ready");
