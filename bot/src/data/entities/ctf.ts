@@ -25,6 +25,7 @@ export class CTF extends BaseEntity {
       super();
       this.archived = false;
       this.credentials = {};
+      this.writeups = {};
       this.info = info;
     }
 }
