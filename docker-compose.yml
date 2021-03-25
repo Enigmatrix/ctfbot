@@ -4,10 +4,13 @@ services:
   data:
     image: mongo
     restart: always
+    volumes:
+      - ./db:/data/db
   
   bot:
     build: ./bot
     restart: always
+    depends_on: data
     environment:
       - DISCORD_TOKEN
       - DISCORD_OWNER
