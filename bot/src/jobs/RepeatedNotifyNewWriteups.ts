@@ -3,6 +3,7 @@ import { CTF } from "@/data/entities/ctf";
 import { Job } from "@/jobs/base";
 import ctftime, { Writeup } from "@/services/ctftime";
 import { EMBED_INFO3 } from "@/util/embed";
+import logging from "@/util/logging";
 import { MessageEmbed } from "discord.js";
 
 class RepeatedNotifyNewWriteups extends Job<void> {
@@ -12,8 +13,10 @@ class RepeatedNotifyNewWriteups extends Job<void> {
 
     async run() {
       const writeups = await ctftime.recentWriteups();
+      logging.info("writeups fetched: ", writeups);
       const newestWriteupUrl = writeups[0].url;
       if (this.prevNewestWriteupUrl === newestWriteupUrl) {
+        logging.info("prev == newest", this.prevNewestWriteupUrl, newestWriteupUrl);
         return;
       }
       const ctfs = await CTF.find({ archived: false });
@@ -26,6 +29,7 @@ class RepeatedNotifyNewWriteups extends Job<void> {
           newWriteups[writeup.ctf.url] = [];
         }
         newWriteups[writeup.ctf.url].push(writeup);
+        logging.info("adding writeup", writeup.ctf.name, writeup);
       }
 
       for(const ctf of ctfs) {
