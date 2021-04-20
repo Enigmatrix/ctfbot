@@ -5,6 +5,7 @@ import { ctfMainMessageEmbed } from "@/util/embed";
 import config from "@/util/config";
 import NotifyCTFReactors from "@/jobs/NotifyCTFReactors";
 import { DateTime } from "luxon";
+import NotifyCTFEnd from "@/jobs/NotifyCTFEnd";
 
 export default class AddCTF extends Command {
   constructor(client: CommandoClient) {
@@ -44,6 +45,8 @@ export default class AddCTF extends Command {
 
     const time = DateTime.fromISO(ctf.info.start).minus({ hour: 1 }).toJSDate(); // 1 hour before start
     NotifyCTFReactors.schedule(time, { ctf_id: ctf.id });
+    const end = DateTime.fromISO(ctf.info.finish).toJSDate();
+    NotifyCTFEnd.schedule(end, { ctf_id: ctf.id });
 
     return message.say(`Done! Head over to ${channel} for more info.`);
   }

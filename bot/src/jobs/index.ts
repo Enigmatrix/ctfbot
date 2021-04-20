@@ -3,8 +3,9 @@ import RepeatedNotifyNewWriteups from "@/jobs/RepeatedNotifyNewWriteups";
 import RepeatedUpcoming from "@/jobs/RepeatedUpcoming";
 import agenda from "@/jobs/base";
 import log from "@/util/logging";
+import NotifyCTFEnd from "./NotifyCTFEnd";
 
-for(const job of [NotifyCTFReactors, RepeatedNotifyNewWriteups, RepeatedUpcoming]) {
+for(const job of [NotifyCTFReactors, RepeatedNotifyNewWriteups, RepeatedUpcoming, NotifyCTFEnd]) {
   job.register();
 }
 
