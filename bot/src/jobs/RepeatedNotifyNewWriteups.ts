@@ -29,7 +29,7 @@ class RepeatedNotifyNewWriteups extends Job<void> {
           newWriteups[writeup.ctf.url] = [];
         }
         newWriteups[writeup.ctf.url].push(writeup);
-        logging.info("adding writeup", writeup.ctf.name, writeup);
+        logging.info("adding writeup: " + JSON.stringify(writeup.ctf.name) + " " + JSON.stringify(writeup));
       }
 
       for(const ctf of ctfs) {
