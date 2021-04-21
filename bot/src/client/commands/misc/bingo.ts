@@ -64,6 +64,7 @@ export default class Bingo extends Command {
     }
     if (x >= 0 && x < 5 && y >= 0 && y < 5) {
       ctf.bingo[y][x][message.author.id] = 1;
+      await ctf.save();
     }
     // TODO marking here
     const img = await this.write(ctf.bingo);
