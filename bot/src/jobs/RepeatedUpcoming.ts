@@ -42,7 +42,7 @@ class RepeatedUpcoming extends Job<{ channel: string }|undefined> {
           },
           description: event.description,
           fields: [
-            { name: "URL", value: event.url },
+            { name: "URL", value: !!event.url ? event.url : "Unknown event URL" },
             {
               name: "Timing",
               value: `${formatSGT(event.start)} - ${formatSGT(event.finish)}`,
